@@ -1,3 +1,7 @@
+/* Generated design tokens. Do not edit build/css/tokens.css by hand —
+   edit tokens/tokens.json and run `npm run tokens`. */
+@import "../../build/css/tokens.css";
+
 :root {
   --background: #ffffff;
   --foreground: #171717;

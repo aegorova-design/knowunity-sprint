@@ -22,6 +22,7 @@
 - Never invent a token or component, or fork/detach one — see design-system.md "Never do this" and "Gaps waiting for a decision".
 - Never capitalize a label, button, or heading beyond sentence case, except proper nouns (Knowie, PRO) — see design-system.md "Never do this".
 - Never use a CSS fallback value on a token (e.g. `var(--token, #333)`).
+- Never edit `build/css/tokens.css` — it is generated; edit `tokens/tokens.json` and run `npm run tokens`.
 - Never treat 04-platform-constraints.md or explain-out-loud-sprint-flow.md as present — design-system.md references both but neither exists in this repo.
 
 ## File map
