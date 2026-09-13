@@ -1,6 +1,6 @@
 # Knowie design system rules
 
-Rules, not values. Every value lives in tokens.json. If this file and tokens.json disagree, tokens.json wins and this file has a bug.
+Rules, not values. Every value lives in tokens/tokens.json. If this file and tokens/tokens.json disagree, tokens/tokens.json wins and this file has a bug.
 
 Source: Figma file Yummy__Knowie Design Sprint (key 2wQS1QXnRuDtXMJESRpeQh), renamed from Yummy__Knowie Design System. Scope for this sprint comes from 04-platform-constraints.md: iOS-style web app, iPhone canvas, dark mode only.
 
@@ -9,7 +9,7 @@ Source: Figma file Yummy__Knowie Design Sprint (key 2wQS1QXnRuDtXMJESRpeQh), ren
 1. Check the component list below. If a component does the job, use it.
 2. If a component almost does the job, use it and write down what's missing. Don't fork it.
 3. If nothing does the job, stop. Write down the gap and a proposed name, then wait for a decision.
-4. Take every value from the semantic layer in tokens.json. If the value you need isn't there, say so.
+4. Take every value from the semantic layer in tokens/tokens.json. If the value you need isn't there, say so.
 
 ## Which component, when
 
@@ -72,7 +72,7 @@ Every one of them is an addition made on purpose during the sprint, not a base-l
 
 The block quoted under each heading is the component's own description in Figma, verbatim. That description is the source of truth for when to reach for it and what not to do with it. If this file and the Figma description disagree, the description wins.
 
-Values are not repeated here. Every fill, padding, radius, gap and text style comes from the semantic layer in tokens.json.
+Values are not repeated here. Every fill, padding, radius, gap and text style comes from the semantic layer in tokens/tokens.json.
 
 **Term outcomes.** statusTag, termRow and mascotMessage all name the same four end states for a term: Unaided, Hinted, Revealed, Skipped. Their definitions and their XP live in explain-out-loud-sprint-flow.md, not here. A fifth outcome is a product decision before it is a variant.
 
@@ -187,7 +187,7 @@ These are the conventions the sprint components follow. Anything new in this fil
 
 **Fixed labels stay fixed.** A label the variant decides is a plain text layer, not a text property, so it cannot drift on an instance. statusTag works this way.
 
-**Every value from tokens.json.** Auto layout on everything, padding and gap from Size tokens, fills and text from the semantic layer. No hand-set spacing, no hand-set type.
+**Every value from tokens/tokens.json.** Auto layout on everything, padding and gap from Size tokens, fills and text from the semantic layer. No hand-set spacing, no hand-set type.
 
 ### Open on naming
 
@@ -201,7 +201,7 @@ The role axis is not named consistently across the eight. Six use `variant` or `
 
 **Variant values** name a role, state or size. They never name an appearance: Primary, Secondary, Tertiary, Default, Pressed, Disabled, Loading, and S, M, L. Sizes run in T-shirt steps, with XXS and 2XL onward for the ends.
 
-**Semantic tokens** follow role, then element, then state: background/surface, interactive/primaryHover, text/linkHover. Figma uses slashes and tokens.json uses dots.
+**Semantic tokens** follow role, then element, then state: background/surface, interactive/primaryHover, text/linkHover. Figma uses slashes and tokens/tokens.json uses dots.
 - Foreground on a fill takes the on prefix plus the fill's name: interactive/onPrimary, accent/brand/onBold.
 - Emphasis pairs are bold and subtle, each with its matching on token.
 - States are a camelCase suffix: Hover, Active, Pressed, Inverse.
@@ -216,7 +216,7 @@ The role axis is not named consistently across the eight. Six use `variant` or `
 
 ## Never do this
 
-- Never invent a value that isn't in tokens.json. If something is missing, say so instead of filling the gap.
+- Never invent a value that isn't in tokens/tokens.json. If something is missing, say so instead of filling the gap.
 - Never use a CSS fallback value like var(--token, #333). If a token resolves to nothing, that's a bug to fix, not to hide.
 - Never use capitals on a label, button or heading except for proper nouns. Sentence case everywhere: "Start practice", not "Start Practice". Knowie and PRO are proper nouns.
 - Never put an appearance word in a semantic name. A word that describes how a color looks belongs in the primitive layer only. The same goes for variant values.
@@ -230,7 +230,7 @@ The role axis is not named consistently across the eight. Six use `variant` or `
 - Never let color alone carry meaning. Got it, partial and missed each need an icon, a label or a shape as well as a color.
 - Never break a sprint component's own rules. Each one carries its nevers in its Figma description, quoted in the Sprint components section. They count the same as the ones in this list.
 - Never put anything on hover. There is no hover on this canvas, and the hover tokens exist for other platforms.
-- Never make a tap target smaller than the minimum in 04-platform-constraints.md. That minimum isn't in tokens.json yet.
+- Never make a tap target smaller than the minimum in 04-platform-constraints.md. That minimum isn't in tokens/tokens.json yet.
 - Never use a text style below the minimum sizes in 04-platform-constraints.md for text a student has to read.
 - Never override a component's fill to a token its variants don't offer. Add the variant through a decision instead.
 
@@ -248,7 +248,7 @@ These are known violations. Don't copy them.
 - **Example screens detach components.** They build the app bar and main buttons from detached frames instead of appBar and button instances.
 - **Caption S is too small.** It's below the minimum caption size in 04-platform-constraints.md, and chips XXS, progressIndicator and textBlock S all use it.
 - **Body line height is too tight.** Body M and Body S sit below the body line-height range in the platform constraints.
-- **Font family mismatch.** tokens.json holds Greed Standard-TRIAL, but the platform constraints require Inter Variable for prototypes. Inter Variable isn't in tokens.json.
+- **Font family mismatch.** tokens/tokens.json holds Greed Standard-TRIAL, but the platform constraints require Inter Variable for prototypes. Inter Variable isn't in tokens/tokens.json.
 - **Progress fill conflicts with the token description.** interactive.primary's description claims progress bar fills, but progressIndicator uses accent.brand.bold.
 - **Inconsistent naming.**
   - chips is plural and every other component is singular.

@@ -1,0 +1,310 @@
+/**
+ * GENERATED FILE — DO NOT EDIT BY HAND.
+ * 
+ * Every value here comes from tokens/tokens.json.
+ * Edit the token, then run: npm run tokens
+ * Hand edits will be overwritten on the next build.
+ */
+
+:root {
+  --color-navy-800: #22242f;
+  --color-navy-900: #1a1c26;
+  --color-navy-950: #090c18;
+  --color-neutral-0: #ffffff;
+  --color-neutral-950: #0a0a0a;
+  --color-violet-50: #f4f2ff;
+  --color-violet-100: #e4e0ff;
+  --color-violet-200: #d2ccfa;
+  --color-violet-300: #a78bfa;
+  --color-violet-400: #7b65e0;
+  --color-violet-500: #9178e6;
+  --color-violet-900: #15103a;
+  --color-violet-950: #0e0a18;
+  --color-green-300: #4ae5b0;
+  --color-green-500: #00c386;
+  --color-green-600: #009a6a;
+  --color-green-900: #0a2e22;
+  --color-green-950: #0a1f18;
+  --color-red-200: #fca5a5;
+  --color-red-300: #ff8585;
+  --color-red-400: #ff6b6b;
+  --color-red-500: #e85555;
+  --color-red-900: #532831;
+  --color-red-950: #2a0808;
+  --color-coral-200: #ffb59b;
+  --color-coral-400: #fb7e5b;
+  --color-coral-900: #512e2c;
+  --color-coral-950: #2e0f06;
+  --color-blue-300: #7ba8f2;
+  --color-blue-400: #5fa0fc;
+  --color-blue-900: #0a1635;
+  --color-blue-950: #06173b;
+  --color-magenta-200: #f7b5de;
+  --color-magenta-400: #e879c0;
+  --color-magenta-900: #380d29;
+  --color-magenta-950: #2c0a20;
+  --color-gold-300: #fcd34d;
+  --color-gold-400: #f5b53d;
+  --color-gold-900: #3a2d0b;
+  --color-gold-950: #2a1d04;
+  --color-amber-300: #fbbf4d;
+  --color-amber-400: #f59e0b;
+  --color-amber-900: #3a2a08;
+  --color-amber-950: #241905;
+  --color-orange-300: #f9a86b;
+  --color-orange-400: #e8792a;
+  --color-orange-900: #3d2410;
+  --color-orange-950: #2a1508;
+  --color-alpha-light-05: rgba(255, 255, 255, 0.051);
+  --color-alpha-light-10: rgba(255, 255, 255, 0.102);
+  --color-alpha-light-18: rgba(255, 255, 255, 0.1804);
+  --color-alpha-light-24: rgba(255, 255, 255, 0.2392);
+  --color-alpha-light-25: rgba(255, 255, 255, 0.251);
+  --color-alpha-light-40: rgba(255, 255, 255, 0.4);
+  --color-alpha-light-48: rgba(245, 243, 255, 0.4784);
+  --color-alpha-light-68: rgba(245, 243, 255, 0.6784);
+  --color-alpha-dark-10: rgba(10, 10, 10, 0.102);
+  --color-alpha-dark-50: rgba(10, 10, 10, 0.502);
+  --color-alpha-glass-60: rgba(61, 61, 61, 0.6);
+  --color-homie-inkwell: #9178e6;
+  --color-homie-eyes: #0a0a0a;
+  --space-0: 0px;
+  --space-100: 4px;
+  --space-125: 5px;
+  --space-150: 6px;
+  --space-200: 8px;
+  --space-250: 10px;
+  --space-300: 12px;
+  --space-400: 16px;
+  --space-600: 24px;
+  --space-700: 28px;
+  --space-800: 32px;
+  --space-1200: 48px;
+  --space-1600: 64px;
+  --space-2400: 96px;
+  --space-4000: 160px;
+  --space-050: 2px;
+  --space-negative-100: -4px;
+  --space-negative-200: -8px;
+  --space-negative-300: -12px;
+  --space-negative-400: -16px;
+  --space-negative-600: -24px;
+  --radius-100: 4px;
+  --radius-150: 6px;
+  --radius-200: 8px;
+  --radius-300: 12px;
+  --radius-400: 16px;
+  --radius-600: 24px;
+  --radius-800: 32px;
+  --radius-900: 36px;
+  --radius-full: 9999px;
+  --stroke-border: 1px;
+  --stroke-heavy-border: 2px;
+  --icon-100: 8px;
+  --icon-150: 12px;
+  --icon-200: 16px;
+  --icon-250: 20px;
+  --icon-300: 24px;
+  --icon-400: 32px;
+  --icon-500: 40px;
+  --icon-600: 48px;
+  --illustration-500: 40px;
+  --illustration-800: 64px;
+  --illustration-1500: 120px;
+  --illustration-2500: 200px;
+  --illustration-4000: 320px;
+  --font-family-display: 'Greed Standard-TRIAL';
+  --font-family-default: 'Greed Standard-TRIAL';
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-heavy: 900;
+  --font-size-2xs: 9px;
+  --font-size-xs: 12px;
+  --font-size-sm: 15px;
+  --font-size-md: 18px;
+  --font-size-lg: 21px;
+  --font-size-xl: 28px;
+  --font-size-2xl: 33px;
+  --font-size-3xl: 44px;
+  --font-size-4xl: 59px;
+  --font-size-5xl: 76px;
+  --font-size-6xl: 103px;
+  --font-size-root: 16px;
+  --font-line-height-2xs: 12px;
+  --font-line-height-xs: 16px;
+  --font-line-height-sm: 20px;
+  --font-line-height-md: 24px;
+  --font-line-height-lg: 28px;
+  --font-line-height-xl: 36px;
+  --font-line-height-2xl: 44px;
+  --font-line-height-3xl: 60px;
+  --font-line-height-4xl: 76px;
+  --font-line-height-5xl: 104px;
+  --font-tracking-tight: -1%;
+  --font-tracking-none: 0%;
+  --font-tracking-loose: 1%;
+  --color-background-page: var(--color-navy-950); /** Root canvas behind every screen, with cards and sheets on background.surface instead. */
+  --color-background-surface: var(--color-navy-800); /** Elevated container fill for cards, bottom sheets, modals, menus, chat bubbles and toasts. */
+  --color-background-inverse: var(--color-violet-50); /** Light block on the dark page for tooltips, toasts and snackbars, paired with text.inverse. */
+  --color-background-scrim: var(--color-alpha-dark-50); /** Semi-transparent overlay that dims content behind a modal, dialog or bottom sheet. */
+  --color-background-floating: var(--color-alpha-glass-60); /** Translucent frosted-glass fill for menus, tooltips and popovers that float above content. */
+  --color-background-stacking: var(--color-alpha-light-10); /** Additive white layer that lifts toasts and floating notifications off dark surfaces. */
+  --color-background-input: var(--color-navy-900); /** Resting fill of editable fields such as text inputs, textareas and search. */
+  --color-interactive-primary: var(--color-violet-50); /** Fill for the one main call to action per screen and for progress bar fills. */
+  --color-interactive-primary-hover: var(--color-violet-100); /** Pointer hover state of interactive.primary. */
+  --color-interactive-primary-active: var(--color-violet-200); /** Pressed state of interactive.primary at the moment of tap or click. */
+  --color-interactive-on-primary: var(--color-navy-950); /** Text and icons on interactive.primary, holding at least 4.5:1 against it. */
+  --color-interactive-secondary: var(--color-alpha-light-10); /** Fill for supporting actions such as Skip, Cancel, filter chips, outlined buttons and toggles. */
+  --color-interactive-secondary-hover: var(--color-alpha-light-18); /** Pointer hover state of interactive.secondary. */
+  --color-interactive-secondary-active: var(--color-alpha-light-24); /** Pressed state of interactive.secondary. */
+  --color-interactive-on-secondary: var(--color-violet-50); /** Text and icons on interactive.secondary fills. */
+  --color-interactive-destructive: var(--color-red-400); /** Fill for irreversible harmful actions such as delete, remove and block. */
+  --color-interactive-destructive-hover: var(--color-red-300); /** Pointer hover state of interactive.destructive. */
+  --color-interactive-destructive-active: var(--color-red-500); /** Pressed state of interactive.destructive. */
+  --color-interactive-on-destructive: var(--color-red-950); /** Text and icons on interactive.destructive, holding at least 4.5:1 against it. */
+  --color-interactive-disabled: var(--color-alpha-light-05); /** Fill for controls that are unavailable, paired with text.disabled. */
+  --color-interactive-pressed: var(--color-alpha-light-10); /** Press overlay layered on the resting fill of elements on light or vivid surfaces. */
+  --color-interactive-pressed-inverse: var(--color-alpha-dark-10); /** Press overlay layered on the resting fill of elements on dark surfaces. */
+  --color-text-primary: var(--color-violet-50); /** Default highest-contrast text for headlines, body copy, titles and labels. */
+  --color-text-secondary: var(--color-alpha-light-68); /** Reduced-emphasis text for subtitles, captions, timestamps, helper text and metadata. */
+  --color-text-tertiary: var(--color-alpha-light-48); /** Lowest-emphasis readable text for counts and inline hints, never for anything needed to proceed. */
+  --color-text-disabled: var(--color-alpha-light-40); /** Text on disabled controls and placeholder text in empty fields. */
+  --color-text-inverse: var(--color-navy-950); /** Dark text on light or vivid fills such as background.inverse. */
+  --color-text-link: var(--color-violet-500); /** Inline hyperlink text in body copy only, not buttons or navigation. */
+  --color-text-link-hover: var(--color-violet-300); /** Pointer hover state of text.link. */
+  --color-text-success: var(--color-green-300); /** Confirmation text such as Correct or a passed validation message. */
+  --color-text-error: var(--color-red-200); /** Validation message text under a failed field. */
+  --color-text-warning: var(--color-gold-300); /** Caution text for limits, expiry notices and last-attempt messages. */
+  --color-text-on-accent: var(--color-violet-950); /** Text on any accent bold fill, holding at least 4.5:1 against it. */
+  --color-border-default: var(--color-alpha-light-10); /** Standard edge for card outlines, dividers, separators and inputs at rest. */
+  --color-border-strong: var(--color-alpha-light-25); /** Higher-contrast edge for dividers and table rules that must read at a glance. */
+  --color-border-focus: var(--color-violet-300); /** Keyboard focus ring for any focusable element, drawn at Stroke.Heavy Border. */
+  --color-border-focus-secondary: var(--color-violet-50); /** Keyboard focus ring for secondary buttons, chips and toggles where the violet ring reads weakly. */
+  --color-border-focus-destructive: var(--color-neutral-0); /** White keyboard focus ring for delete and remove buttons. */
+  --color-border-error: var(--color-red-400); /** Edge of an input that failed validation, paired with text.error. */
+  --color-border-success: var(--color-green-500); /** Edge of an input confirmed correct. */
+  --color-border-selected: var(--color-violet-500); /** Edge of a chosen card, active tab or picked answer, paired with highlight.surface. */
+  --color-highlight-surface: var(--color-violet-900); /** Fill of a chosen card, active tab or picked answer. */
+  --color-highlight-border: var(--color-violet-400); /** Edge of a chosen element sitting on highlight.surface, never used alone. */
+  --color-mascot-primary: var(--color-violet-500); /** Knowie's signature violet for mascot fills and mascot-hero screens, only when Knowie is present. */
+  --color-mascot-eyes: var(--color-neutral-0); /** Knowie's eye whites, for mascot illustration only. */
+  --color-mascot-pupils: var(--color-neutral-950); /** Knowie's pupils, for mascot illustration only. */
+  --color-accent-green-bold: var(--color-green-500); /** Solid green accent fill for streak counters, progress markers and positive stat chips. */
+  --color-accent-green-on-bold: var(--color-green-950); /** Text and icons on accent.green.bold. */
+  --color-accent-green-subtle: var(--color-green-900); /** Low-emphasis green tint behind a green stat, chip or panel. */
+  --color-accent-green-on-subtle: var(--color-green-300); /** Text and icons on accent.green.subtle. */
+  --color-accent-coral-bold: var(--color-coral-400); /** Solid coral accent fill for decorative emphasis, category tags and illustration accents. */
+  --color-accent-coral-on-bold: var(--color-coral-950); /** Text and icons on accent.coral.bold. */
+  --color-accent-coral-subtle: var(--color-coral-900); /** Low-emphasis coral tint behind a coral stat, chip or panel. */
+  --color-accent-coral-on-subtle: var(--color-coral-200); /** Text and icons on accent.coral.subtle. */
+  --color-accent-blue-bold: var(--color-blue-400); /** Solid blue accent fill for informational chips and secondary category tags. */
+  --color-accent-blue-on-bold: var(--color-blue-950); /** Text and icons on accent.blue.bold. */
+  --color-accent-blue-subtle: var(--color-blue-900); /** Low-emphasis blue tint behind a blue stat, chip or panel. */
+  --color-accent-blue-on-subtle: var(--color-blue-300); /** Text and icons on accent.blue.subtle. */
+  --color-accent-magenta-bold: var(--color-magenta-400); /** Solid magenta accent fill for decorative category tags. */
+  --color-accent-magenta-on-bold: var(--color-magenta-950); /** Text and icons on accent.magenta.bold. */
+  --color-accent-magenta-subtle: var(--color-magenta-900); /** Low-emphasis magenta tint behind a magenta stat, chip or panel. */
+  --color-accent-magenta-on-subtle: var(--color-magenta-200); /** Text and icons on accent.magenta.subtle. */
+  --color-accent-brand-bold: var(--color-violet-500); /** Solid brand accent fill for brand moments and onboarding hero panels. */
+  --color-accent-brand-on-bold: var(--color-violet-950); /** Text and icons on accent.brand.bold. */
+  --color-accent-brand-subtle: var(--color-violet-900); /** Low-emphasis brand tint behind a brand stat, chip or panel. */
+  --color-accent-brand-on-subtle: var(--color-violet-400); /** Text and icons on accent.brand.subtle. */
+  --color-pro-bold: var(--color-gold-400); /** Solid PRO fill for PRO badges and upgrade banners. */
+  --color-pro-on-bold: var(--color-gold-950); /** Text and icons on pro.bold. */
+  --color-pro-subtle: var(--color-gold-900); /** Low-emphasis PRO tint behind PRO content. */
+  --color-pro-on-subtle: var(--color-gold-300); /** Text and icons on pro.subtle. */
+  --color-feedback-success-bold: var(--color-green-600); /** Solid success fill for correct answer banners and completion states. */
+  --color-feedback-success-on-bold: var(--color-green-950); /** Text and icons on feedback.success.bold. */
+  --color-feedback-success-subtle: var(--color-green-900); /** Tinted success panel behind a correct result. */
+  --color-feedback-success-on-subtle: var(--color-green-300); /** Text and icons on feedback.success.subtle. */
+  --color-feedback-error-bold: var(--color-red-400); /** Solid error fill for incorrect answer banners and failed validation summaries. */
+  --color-feedback-error-on-bold: var(--color-red-950); /** Text and icons on feedback.error.bold. */
+  --color-feedback-error-subtle: var(--color-red-900); /** Tinted error panel behind a wrong result. */
+  --color-feedback-error-on-subtle: var(--color-red-200); /** Text and icons on feedback.error.subtle. */
+  --color-feedback-warning-bold: var(--color-amber-400); /** Solid warning fill for caution states that are not a verdict. */
+  --color-feedback-warning-on-bold: var(--color-amber-950); /** Text and icons on feedback.warning.bold. */
+  --color-feedback-warning-subtle: var(--color-amber-900); /** Tinted warning panel behind a caution message. */
+  --color-feedback-warning-on-subtle: var(--color-amber-300); /** Text and icons on feedback.warning.subtle. */
+  --color-feedback-partial-bold: var(--color-orange-400); /** Solid partial fill for the almost verdict banner in the recall loop. */
+  --color-feedback-partial-on-bold: var(--color-orange-950); /** Text and icons on feedback.partial.bold. */
+  --color-feedback-partial-subtle: var(--color-orange-900); /** Tinted partial panel behind a partial result. */
+  --color-feedback-partial-on-subtle: var(--color-orange-300); /** Text and icons on feedback.partial.subtle. */
+  --greed-display-l-font-family: var(--font-family-default); /** Font family of the Display L text style; use when setting Display L text. */
+  --greed-display-l-font-weight: var(--font-weight-heavy); /** Font weight of the Display L text style; use when setting Display L text. */
+  --greed-display-l-font-size: var(--font-size-6xl); /** Font size of the Display L text style; use when setting Display L text. */
+  --greed-display-l-line-height: var(--font-line-height-5xl); /** Line height of the Display L text style; use when setting Display L text. */
+  --greed-display-m-font-family: var(--font-family-default); /** Font family of the Display M text style; use when setting Display M text. */
+  --greed-display-m-font-weight: var(--font-weight-bold); /** Font weight of the Display M text style; use when setting Display M text. */
+  --greed-display-m-font-size: var(--font-size-5xl); /** Font size of the Display M text style; use when setting Display M text. */
+  --greed-display-m-line-height: var(--font-line-height-4xl); /** Line height of the Display M text style; use when setting Display M text. */
+  --greed-display-s-font-family: var(--font-family-default); /** Font family of the Display S text style; use when setting Display S text. */
+  --greed-display-s-font-weight: var(--font-weight-bold); /** Font weight of the Display S text style; use when setting Display S text. */
+  --greed-display-s-font-size: var(--font-size-4xl); /** Font size of the Display S text style; use when setting Display S text. */
+  --greed-display-s-line-height: var(--font-line-height-3xl); /** Line height of the Display S text style; use when setting Display S text. */
+  --greed-headline-xl-font-family: var(--font-family-default); /** Font family of the Headline XL text style; use when setting Headline XL text. */
+  --greed-headline-xl-font-weight: var(--font-weight-bold); /** Font weight of the Headline XL text style; use when setting Headline XL text. */
+  --greed-headline-xl-font-size: var(--font-size-3xl); /** Font size of the Headline XL text style; use when setting Headline XL text. */
+  --greed-headline-xl-line-height: var(--font-line-height-2xl); /** Line height of the Headline XL text style; use when setting Headline XL text. */
+  --greed-headline-l-font-family: var(--font-family-default); /** Font family of the Headline L text style; use when setting Headline L text. */
+  --greed-headline-l-font-weight: var(--font-weight-bold); /** Font weight of the Headline L text style; use when setting Headline L text. */
+  --greed-headline-l-font-size: var(--font-size-2xl); /** Font size of the Headline L text style; use when setting Headline L text. */
+  --greed-headline-l-line-height: var(--font-line-height-xl); /** Line height of the Headline L text style; use when setting Headline L text. */
+  --greed-headline-m-font-family: var(--font-family-default); /** Font family of the Headline M text style; use when setting Headline M text. */
+  --greed-headline-m-font-weight: var(--font-weight-bold); /** Font weight of the Headline M text style; use when setting Headline M text. */
+  --greed-headline-m-font-size: var(--font-size-xl); /** Font size of the Headline M text style; use when setting Headline M text. */
+  --greed-headline-m-line-height: var(--font-line-height-lg); /** Line height of the Headline M text style; use when setting Headline M text. */
+  --greed-headline-s-font-family: var(--font-family-default); /** Font family of the Headline S text style; use when setting Headline S text. */
+  --greed-headline-s-font-weight: var(--font-weight-bold); /** Font weight of the Headline S text style; use when setting Headline S text. */
+  --greed-headline-s-font-size: var(--font-size-lg); /** Font size of the Headline S text style; use when setting Headline S text. */
+  --greed-headline-s-line-height: var(--font-line-height-md); /** Line height of the Headline S text style; use when setting Headline S text. */
+  --greed-headline-xs-bold-font-family: var(--font-family-default); /** Font family of the Headline XS Bold text style; use when setting Headline XS Bold text. */
+  --greed-headline-xs-bold-font-weight: var(--font-weight-semibold); /** Font weight of the Headline XS Bold text style; use when setting Headline XS Bold text. */
+  --greed-headline-xs-bold-font-size: var(--font-size-md); /** Font size of the Headline XS Bold text style; use when setting Headline XS Bold text. */
+  --greed-headline-xs-bold-line-height: var(--font-line-height-sm); /** Line height of the Headline XS Bold text style; use when setting Headline XS Bold text. */
+  --greed-headline-xs-regular-font-family: var(--font-family-default); /** Font family of the Headline XS Regular text style; use when setting Headline XS Regular text. */
+  --greed-headline-xs-regular-font-weight: var(--font-weight-regular); /** Font weight of the Headline XS Regular text style; use when setting Headline XS Regular text. */
+  --greed-headline-xs-regular-font-size: var(--font-size-md); /** Font size of the Headline XS Regular text style; use when setting Headline XS Regular text. */
+  --greed-headline-xs-regular-line-height: var(--font-line-height-sm); /** Line height of the Headline XS Regular text style; use when setting Headline XS Regular text. */
+  --greed-headline-xxs-bold-font-family: var(--font-family-default); /** Font family of the Headline XXS Bold text style; use when setting Headline XXS Bold text. */
+  --greed-headline-xxs-bold-font-weight: var(--font-weight-semibold); /** Font weight of the Headline XXS Bold text style; use when setting Headline XXS Bold text. */
+  --greed-headline-xxs-bold-font-size: var(--font-size-sm); /** Font size of the Headline XXS Bold text style; use when setting Headline XXS Bold text. */
+  --greed-headline-xxs-bold-line-height: var(--font-line-height-xs); /** Line height of the Headline XXS Bold text style; use when setting Headline XXS Bold text. */
+  --greed-headline-xxs-regular-font-family: var(--font-family-default); /** Font family of the Headline XXS Regular text style; use when setting Headline XXS Regular text. */
+  --greed-headline-xxs-regular-font-weight: var(--font-weight-regular); /** Font weight of the Headline XXS Regular text style; use when setting Headline XXS Regular text. */
+  --greed-headline-xxs-regular-font-size: var(--font-size-sm); /** Font size of the Headline XXS Regular text style; use when setting Headline XXS Regular text. */
+  --greed-headline-xxs-regular-line-height: var(--font-line-height-xs); /** Line height of the Headline XXS Regular text style; use when setting Headline XXS Regular text. */
+  --greed-body-m-bold-font-family: var(--font-family-default); /** Font family of the Body M Bold text style; use when setting Body M Bold text. */
+  --greed-body-m-bold-font-weight: var(--font-weight-semibold); /** Font weight of the Body M Bold text style; use when setting Body M Bold text. */
+  --greed-body-m-bold-font-size: var(--font-size-md); /** Font size of the Body M Bold text style; use when setting Body M Bold text. */
+  --greed-body-m-bold-line-height: var(--font-line-height-md); /** Line height of the Body M Bold text style; use when setting Body M Bold text. */
+  --greed-body-m-regular-font-family: var(--font-family-default); /** Font family of the Body M Regular text style; use when setting Body M Regular text. */
+  --greed-body-m-regular-font-weight: var(--font-weight-regular); /** Font weight of the Body M Regular text style; use when setting Body M Regular text. */
+  --greed-body-m-regular-font-size: var(--font-size-md); /** Font size of the Body M Regular text style; use when setting Body M Regular text. */
+  --greed-body-m-regular-line-height: var(--font-line-height-md); /** Line height of the Body M Regular text style; use when setting Body M Regular text. */
+  --greed-body-s-bold-font-family: var(--font-family-default); /** Font family of the Body S Bold text style; use when setting Body S Bold text. */
+  --greed-body-s-bold-font-weight: var(--font-weight-semibold); /** Font weight of the Body S Bold text style; use when setting Body S Bold text. */
+  --greed-body-s-bold-font-size: var(--font-size-sm); /** Font size of the Body S Bold text style; use when setting Body S Bold text. */
+  --greed-body-s-bold-line-height: var(--font-line-height-sm); /** Line height of the Body S Bold text style; use when setting Body S Bold text. */
+  --greed-body-s-regular-font-family: var(--font-family-default); /** Font family of the Body S Regular text style; use when setting Body S Regular text. */
+  --greed-body-s-regular-font-weight: var(--font-weight-regular); /** Font weight of the Body S Regular text style; use when setting Body S Regular text. */
+  --greed-body-s-regular-font-size: var(--font-size-sm); /** Font size of the Body S Regular text style; use when setting Body S Regular text. */
+  --greed-body-s-regular-line-height: var(--font-line-height-sm); /** Line height of the Body S Regular text style; use when setting Body S Regular text. */
+  --greed-caption-m-bold-font-family: var(--font-family-default); /** Font family of the Caption M Bold text style; use when setting Caption M Bold text. */
+  --greed-caption-m-bold-font-weight: var(--font-weight-semibold); /** Font weight of the Caption M Bold text style; use when setting Caption M Bold text. */
+  --greed-caption-m-bold-font-size: var(--font-size-xs); /** Font size of the Caption M Bold text style; use when setting Caption M Bold text. */
+  --greed-caption-m-bold-line-height: var(--font-line-height-xs); /** Line height of the Caption M Bold text style; use when setting Caption M Bold text. */
+  --greed-caption-m-regular-font-family: var(--font-family-default); /** Font family of the Caption M Regular text style; use when setting Caption M Regular text. */
+  --greed-caption-m-regular-font-weight: var(--font-weight-regular); /** Font weight of the Caption M Regular text style; use when setting Caption M Regular text. */
+  --greed-caption-m-regular-font-size: var(--font-size-xs); /** Font size of the Caption M Regular text style; use when setting Caption M Regular text. */
+  --greed-caption-m-regular-line-height: var(--font-line-height-xs); /** Line height of the Caption M Regular text style; use when setting Caption M Regular text. */
+  --greed-caption-s-bold-font-family: var(--font-family-default); /** Font family of the Caption S Bold text style; use when setting Caption S Bold text. */
+  --greed-caption-s-bold-font-weight: var(--font-weight-semibold); /** Font weight of the Caption S Bold text style; use when setting Caption S Bold text. */
+  --greed-caption-s-bold-font-size: var(--font-size-2xs); /** Font size of the Caption S Bold text style; use when setting Caption S Bold text. */
+  --greed-caption-s-bold-line-height: var(--font-line-height-2xs); /** Line height of the Caption S Bold text style; use when setting Caption S Bold text. */
+  --greed-caption-s-regular-font-family: var(--font-family-default); /** Font family of the Caption S Regular text style; use when setting Caption S Regular text. */
+  --greed-caption-s-regular-font-weight: var(--font-weight-regular); /** Font weight of the Caption S Regular text style; use when setting Caption S Regular text. */
+  --greed-caption-s-regular-font-size: var(--font-size-2xs); /** Font size of the Caption S Regular text style; use when setting Caption S Regular text. */
+  --greed-caption-s-regular-line-height: var(--font-line-height-2xs); /** Line height of the Caption S Regular text style; use when setting Caption S Regular text. */
+  --color-pro-accent: var(--color-pro-bold); /** Legacy alias of pro.bold for PRO badges and upgrade prompts. */
+}

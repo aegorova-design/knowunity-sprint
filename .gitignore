@@ -18,7 +18,14 @@
 /out/
 
 # production
-/build
+# Ignore build/ output, but keep the generated design tokens tracked: the project
+# must still build on a fresh clone without running `npm run tokens` first.
+# Git does not descend into an ignored directory, so the path has to be
+# re-included one level at a time.
+/build/*
+!/build/css/
+/build/css/*
+!/build/css/tokens.css
 
 # misc
 .DS_Store

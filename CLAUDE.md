@@ -1,16 +1,12 @@
 @AGENTS.md
 
-# Explain out loud
-
-A section capstone where the student explains 3 key terms out loud, Knowie replies in text with a pass, a hint ladder, or a reveal, leaving an unaided count that pulls the student back for a spaced revisit — mocked prototype, 390px, dark mode only, Next.js App Router + TypeScript.
-
 ## Hard rules
 
 - Voice in, text out. Knowie never speaks — see design-brief.md.
 - Push-to-talk, explicit send. No auto-endpointing — see design-brief.md, voice-ux.md.
 - Speech recognition, judging, and latency are mocked/hard-coded — see sprint-context.md.
 - Mobile iOS only, 390px canvas, dark mode only — see design-brief.md.
-- Every design value (color, space, type) comes from tokens.json, per the rules in design-system.md.
+- Every design value (color, space, type) comes from tokens/tokens.json, per the rules in design-system.md.
 - App code lives in `src/app` (App Router). Import alias `@/*` → `./src/*` (tsconfig.json).
 - Text fallback must be reachable from every answerable state — see voice-ux.md, design-brief.md.
 - Flow, placement, and per-term-loop decisions are locked in sprint-context.md; don't re-derive them.
@@ -25,7 +21,7 @@ A section capstone where the student explains 3 key terms out loud, Knowie repli
 - Never build real STT or real judging this sprint — see sprint-context.md "Not building".
 - Never invent a token or component, or fork/detach one — see design-system.md "Never do this" and "Gaps waiting for a decision".
 - Never capitalize a label, button, or heading beyond sentence case, except proper nouns (Knowie, PRO) — see design-system.md "Never do this".
-- Never use a CSS fallback value on a token (e.g. `var(--token, #333)`) — a token resolving to nothing is a bug to fix, not hide — see design-system.md "Never do this".
+- Never use a CSS fallback value on a token (e.g. `var(--token, #333)`).
 - Never treat 04-platform-constraints.md or explain-out-loud-sprint-flow.md as present — design-system.md references both but neither exists in this repo.
 
 ## File map
@@ -36,9 +32,11 @@ A section capstone where the student explains 3 key terms out loud, Knowie repli
 - `design-system.md` — component and token usage rules, plus the 8 sprint-built components. Read before building or styling any screen.
 - `sprint-context.md` — locked decisions on placement, session/loop structure, and build specs. Read before touching flow logic, states, or copy.
 - `voice-ux.md` — voice UX principles and the states-to-design priority table. Read before designing recording/processing/permission screens.
-- `tokens.json` — source of truth for every design value. Consult when styling; never hardcode a value it defines.
+- `tokens/tokens.json` — source of truth for every design value. Consult when styling; never hardcode a value it defines.
+- `style-dictionary.config.mjs` — Style Dictionary build: reads `tokens/*.json`, writes `build/css/tokens.css`. Edit when the output format or variable naming needs to change.
+- `build/css/tokens.css` — generated CSS custom properties, tracked in git. Never hand-edit; change the token and run `npm run tokens`.
 - `reference/*.png` — screenshots of the shipped beta and existing app flows referenced in design-brief.md. Check when comparing against what's already live.
-- `package.json` — scripts (`dev`, `build`, `start`, `lint`) and dependencies.
+- `package.json` — scripts (`dev`, `build`, `start`, `lint`, `tokens`) and dependencies.
 - `tsconfig.json` — compiler options and the `@/*` path alias.
 - `next.config.ts` — Next.js config, currently empty.
 - `eslint.config.mjs` — lint rules (next/core-web-vitals + next/typescript).
@@ -47,7 +45,7 @@ A section capstone where the student explains 3 key terms out loud, Knowie repli
 - `public/*.svg` (file, globe, next, vercel, window) — create-next-app placeholder icons, still referenced by the un-rebuilt `page.tsx`. Delete once the homepage is real.
 - `src/app/layout.tsx` — root layout, fonts, metadata.
 - `src/app/page.tsx` — homepage; still create-next-app boilerplate.
-- `src/app/globals.css` — global resets and CSS vars; still boilerplate, not yet mapped to tokens.json.
+- `src/app/globals.css` — global resets and CSS vars; still boilerplate, not yet mapped to tokens/tokens.json.
 - `src/app/page.module.css` — styles scoped to `page.tsx`; still boilerplate.
 - `.claude/launch.json` — dev-server config for browser-preview tooling.
 - `.claude/settings.local.json` — local, machine-specific permission grants.
