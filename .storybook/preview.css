@@ -1,0 +1,12 @@
+/* Applies the app's design tokens inside the Storybook canvas so every
+   story renders on the same dark page background and text color as the
+   real app, instead of Storybook's default white iframe. */
+@import '../build/css/tokens.css';
+
+html,
+body {
+  min-height: 100%;
+  background: var(--color-background-page);
+  color: var(--color-text-primary);
+  color-scheme: dark;
+}

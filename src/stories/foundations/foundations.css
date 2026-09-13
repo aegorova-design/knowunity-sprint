@@ -1,0 +1,244 @@
+/* Chrome for the foundations stories. Every value here comes from
+   tokens/tokens.json through build/css/tokens.css, so these pages are built
+   out of the system they document. */
+
+.fnd-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1200);
+  padding: var(--space-800) var(--space-600) var(--space-2400);
+  background: var(--color-background-page);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-default);
+}
+
+.fnd-pageHeader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+  max-width: 46em;
+}
+
+.fnd-pageTitle {
+  margin: 0;
+  font-family: var(--greed-headline-xl-font-family);
+  font-weight: var(--greed-headline-xl-font-weight);
+  font-size: var(--greed-headline-xl-font-size);
+  line-height: var(--greed-headline-xl-line-height);
+}
+
+.fnd-pageIntro {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-family: var(--greed-body-m-regular-font-family);
+  font-weight: var(--greed-body-m-regular-font-weight);
+  font-size: var(--greed-body-m-regular-font-size);
+  line-height: var(--greed-body-m-regular-line-height);
+}
+
+.fnd-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-600);
+}
+
+.fnd-sectionHeader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-100);
+  padding-bottom: var(--space-300);
+  border-bottom: var(--stroke-border) solid var(--color-border-default);
+}
+
+.fnd-sectionTitle {
+  margin: 0;
+  font-family: var(--greed-headline-s-font-family);
+  font-weight: var(--greed-headline-s-font-weight);
+  font-size: var(--greed-headline-s-font-size);
+  line-height: var(--greed-headline-s-line-height);
+}
+
+.fnd-sectionNote {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-family: var(--greed-body-s-regular-font-family);
+  font-weight: var(--greed-body-s-regular-font-weight);
+  font-size: var(--greed-body-s-regular-font-size);
+  line-height: var(--greed-body-s-regular-line-height);
+}
+
+/* --- one token's name, value and description --- */
+
+.fnd-meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-100);
+}
+
+.fnd-name {
+  font-family: var(--greed-body-s-bold-font-family);
+  font-weight: var(--greed-body-s-bold-font-weight);
+  font-size: var(--greed-body-s-bold-font-size);
+  line-height: var(--greed-body-s-bold-line-height);
+  overflow-wrap: anywhere;
+}
+
+.fnd-value,
+.fnd-alias {
+  color: var(--color-text-secondary);
+  font-family: var(--greed-body-s-regular-font-family);
+  font-weight: var(--greed-body-s-regular-font-weight);
+  font-size: var(--greed-body-s-regular-font-size);
+  line-height: var(--greed-body-s-regular-line-height);
+  overflow-wrap: anywhere;
+}
+
+.fnd-desc {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-family: var(--greed-body-s-regular-font-family);
+  font-weight: var(--greed-body-s-regular-font-weight);
+  font-size: var(--greed-body-s-regular-font-size);
+  line-height: var(--greed-body-s-regular-line-height);
+}
+
+/* A missing $description is a gap in the system, so it is marked rather than
+   left blank. */
+.fnd-desc--missing {
+  color: var(--color-text-warning);
+}
+
+/* --- colours --- */
+
+.fnd-swatchGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17em, 1fr));
+  gap: var(--space-600);
+}
+
+.fnd-swatchCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+}
+
+/* The swatch sits on background.surface so the alpha tokens read as the tints
+   they are, instead of disappearing into the page. */
+.fnd-swatchTrack {
+  overflow: hidden;
+  border: var(--stroke-border) solid var(--color-border-default);
+  border-radius: var(--radius-200);
+  background: var(--color-background-surface);
+}
+
+.fnd-swatch {
+  height: var(--space-1600);
+}
+
+/* --- type --- */
+
+.fnd-typeList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1200);
+}
+
+.fnd-typeItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-400);
+}
+
+.fnd-specimen {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.fnd-metaTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.fnd-metaTable th,
+.fnd-metaTable td {
+  padding: var(--space-200) var(--space-300) var(--space-200) 0;
+  border-bottom: var(--stroke-border) solid var(--color-border-default);
+  vertical-align: top;
+}
+
+.fnd-metaTable th {
+  color: var(--color-text-secondary);
+  font-family: var(--greed-caption-m-bold-font-family);
+  font-weight: var(--greed-caption-m-bold-font-weight);
+  font-size: var(--greed-caption-m-bold-font-size);
+  line-height: var(--greed-caption-m-bold-line-height);
+}
+
+/* --- space --- */
+
+.fnd-spaceList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-600);
+}
+
+.fnd-spaceRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+}
+
+.fnd-spaceHead {
+  display: flex;
+  gap: var(--space-300);
+  align-items: baseline;
+}
+
+/* The rule marks the zero point, so Space.0 still reads as a measurement. */
+.fnd-track {
+  display: flex;
+  align-items: center;
+  min-height: var(--space-400);
+  border-left: var(--stroke-border) solid var(--color-border-strong);
+}
+
+.fnd-track--negative {
+  justify-content: flex-end;
+  border-left: none;
+  border-right: var(--stroke-border) solid var(--color-border-strong);
+}
+
+.fnd-bar {
+  height: var(--space-300);
+  border-radius: var(--radius-100);
+  background: var(--color-accent-brand-bold);
+}
+
+/* Negative space pulls rather than fills, so its bar is drawn as an outline
+   running back towards the zero rule. */
+.fnd-bar--negative {
+  background: none;
+  border: var(--stroke-border) solid var(--color-accent-brand-bold);
+}
+
+/* --- radius --- */
+
+.fnd-radiusGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17em, 1fr));
+  gap: var(--space-600);
+}
+
+.fnd-radiusCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+}
+
+.fnd-radiusBox {
+  width: var(--space-2400);
+  height: var(--space-2400);
+  border: var(--stroke-heavy-border) solid var(--color-highlight-border);
+  background: var(--color-background-surface);
+}
