@@ -1,0 +1,16 @@
+/* Chrome for the verdictHeader stories only. */
+
+.knowieVerdictHeaderDemo {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--space-400);
+  background: var(--color-background-page);
+}
+
+/* The verdict sheet — all five stacked, so the colours and poses can be
+   compared without moving between stories. */
+.knowieVerdictHeaderDemo-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-600);
+}

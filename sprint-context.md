@@ -18,8 +18,6 @@ At the end of a plan section, after that section's last learning step, not at po
 Placement and return
 
 - Capstone at the end of the section, not position 2, because position 2 fires retrieval before the student has encoded enough to retrieve.
-- Section result lives in a Knowie speech bubble beside the stepper, "2 of 3 unaided" or "Section mastered", because the stepper has one completed state and cannot carry a result.
-- No locking, one completed state per step, because that matches the shipped beta and keeps the plan screen to one state.
 - Home changes only when terms are due: exam headline unchanged, one "1 term to revisit" line, Explain out loud primary, Continue studying demoted to a text link, because the return trigger is plan state, not elapsed time.
 
 Session

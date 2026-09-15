@@ -1,0 +1,32 @@
+/* Chrome for the button stories only — the matrix that shows every variant and
+   size for one state. Token values, same as the component. */
+
+.knowieButtonMatrix {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-600);
+  padding: var(--space-400);
+  background: var(--color-background-page);
+}
+
+.knowieButtonMatrix-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+}
+
+.knowieButtonMatrix-title {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-family: var(--greed-caption-m-bold-font-family);
+  font-weight: var(--greed-caption-m-bold-font-weight);
+  font-size: var(--greed-caption-m-bold-font-size);
+  line-height: var(--greed-caption-m-bold-line-height);
+}
+
+.knowieButtonMatrix-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-300);
+  align-items: center;
+}

@@ -1,0 +1,106 @@
+/* recordButton — built from the Figma component set `recordButton` (node
+   13584:6055) in Yummy__Knowie Design Sprint. Every value is a custom property
+   from build/css/tokens.css; there are no raw hex or pixel values here.
+
+   A fixed 96 circle. Figma binds both axes to Space/2400, so unlike the other
+   fixed-shape controls in this system nothing here has to be derived. */
+
+.knowieRecordButton {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--space-2400);
+  height: var(--space-2400);
+  padding: var(--space-0);
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.knowieRecordButton:disabled {
+  cursor: default;
+}
+
+/* --- Idle ---------------------------------------------------------------- */
+
+/* interactive.primary, because this is the screen's one primary action. */
+.knowieRecordButton[data-variant='Idle'] {
+  background-color: var(--color-interactive-primary);
+}
+
+.knowieRecordButton[data-variant='Idle'] .knowieIconSlot {
+  color: var(--color-interactive-on-primary);
+}
+
+/* Idle presses with the Inverse overlay, because its fill is light. Recording
+   presses with the plain one, because brand violet is vivid. The file binds
+   the two separately and they are kept separate here. */
+.knowieRecordButton[data-variant='Idle'][data-state='Pressed'],
+.knowieRecordButton[data-variant='Idle']:not(:disabled):active {
+  background-image: linear-gradient(
+    var(--color-interactive-pressed-inverse),
+    var(--color-interactive-pressed-inverse)
+  );
+}
+
+.knowieRecordButton[data-variant='Idle'][data-state='Disabled'] {
+  background-color: var(--color-interactive-disabled);
+  background-image: none;
+}
+
+.knowieRecordButton[data-variant='Idle'][data-state='Disabled'] .knowieIconSlot {
+  color: var(--color-text-disabled);
+}
+
+/* --- Recording ----------------------------------------------------------- */
+
+/* accent.brand.bold, because brand violet means audio is live and nothing else
+   in this feature may use it that way. */
+.knowieRecordButton[data-variant='Recording'] {
+  background-color: var(--color-accent-brand-bold);
+}
+
+.knowieRecordButton[data-variant='Recording'] .knowieIconSlot {
+  color: var(--color-accent-brand-on-bold);
+}
+
+.knowieRecordButton[data-variant='Recording'][data-state='Pressed'],
+.knowieRecordButton[data-variant='Recording']:not(:disabled):active {
+  background-image: linear-gradient(
+    var(--color-interactive-pressed),
+    var(--color-interactive-pressed)
+  );
+}
+
+/* --- the glyph ----------------------------------------------------------- */
+
+.knowieRecordButton-glyph {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+/* Idle is the mic — start. */
+.knowieRecordButton[data-variant='Idle'] .knowieRecordButton-glyph {
+  -webkit-mask-image: url('/icons/microphone-01.svg');
+  mask-image: url('/icons/microphone-01.svg');
+}
+
+/* Recording is the stop square, so stop lands where start was and the thumb
+   does not move.
+
+   The mask uses the shape's alpha and paints it with currentColor, so stop.svg's
+   own hardcoded fill never reaches the screen — the icon takes
+   accent.brand.onBold from the slot like every other glyph here. */
+.knowieRecordButton[data-variant='Recording'] .knowieRecordButton-glyph {
+  -webkit-mask-image: url('/icons/stop.svg');
+  mask-image: url('/icons/stop.svg');
+}

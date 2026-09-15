@@ -1,0 +1,95 @@
+/* answerBlock — built from the Figma component set `answerBlock` (node
+   13584:6191) in Yummy__Knowie Design Sprint. Every value is a custom property
+   from build/css/tokens.css; there are no raw hex or pixel values here.
+
+   358 wide in Figma, which is the 390 canvas minus the side padding. It is set
+   to FILL there, so it fills its container here rather than carrying a width. */
+
+.knowieAnswerBlock {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: var(--space-200);
+  padding: var(--space-400);
+  border-radius: var(--radius-400);
+}
+
+.knowieAnswerBlock-labelRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-100);
+}
+
+/* The label and the icon are always the same colour, in all three kinds, so the
+   row owns it once and both children take currentColor. iconSlot sets its own
+   colour to text.primary and invites a parent to recolour it in place. */
+.knowieAnswerBlock-labelRow,
+.knowieAnswerBlock-labelRow .knowieIconSlot {
+  color: inherit;
+}
+
+.knowieAnswerBlock-icon {
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+.knowieAnswerBlock-label {
+  margin: 0;
+  color: currentColor;
+  font-family: var(--greed-body-s-bold-font-family);
+  font-weight: var(--greed-body-s-bold-font-weight);
+  font-size: var(--greed-body-s-bold-font-size);
+  line-height: var(--greed-body-s-bold-line-height);
+}
+
+/* The body is text.primary in every kind — only the label and the icon change. */
+.knowieAnswerBlock-body {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-family: var(--greed-body-s-regular-font-family);
+  font-weight: var(--greed-body-s-regular-font-weight);
+  font-size: var(--greed-body-s-regular-font-size);
+  line-height: var(--greed-body-s-regular-line-height);
+}
+
+/* Said — what Knowie heard, quoted back. The only kind with no fill of its own:
+   an outline, so a mishear reads as the app's record rather than as a surface
+   the app is asserting. That border makes it 2 taller than the other two, which
+   is how Figma has it (82 against 80). */
+.knowieAnswerBlock[data-kind='Said'] {
+  border: var(--stroke-border) solid var(--color-border-strong);
+  color: var(--color-text-secondary);
+}
+
+.knowieAnswerBlock[data-kind='Said'] .knowieAnswerBlock-icon {
+  -webkit-mask-image: url('/icons/microphone-01.svg');
+  mask-image: url('/icons/microphone-01.svg');
+}
+
+/* Hint — the nudge, and the loudest of the three because it is the thing to act
+   on. It gets the raised surface and the brand accent on its label. */
+.knowieAnswerBlock[data-kind='Hint'] {
+  background-color: var(--color-background-surface);
+  color: var(--color-accent-brand-bold);
+}
+
+.knowieAnswerBlock[data-kind='Hint'] .knowieAnswerBlock-icon {
+  -webkit-mask-image: url('/icons/lightbulb-02.svg');
+  mask-image: url('/icons/lightbulb-02.svg');
+}
+
+/* Answer — the reveal. The lightest fill of the three, so it sits behind Hint. */
+.knowieAnswerBlock[data-kind='Answer'] {
+  background-color: var(--color-background-stacking);
+  color: var(--color-accent-brand-bold);
+}
+
+.knowieAnswerBlock[data-kind='Answer'] .knowieAnswerBlock-icon {
+  -webkit-mask-image: url('/icons/check.svg');
+  mask-image: url('/icons/check.svg');
+}

@@ -1,0 +1,362 @@
+/* button — built from the Figma component set `button` (node 9003:6667) in
+   Yummy__Knowie Design Sprint. Every value is a custom property from
+   build/css/tokens.css; there are no raw hex or pixel values here, and no
+   fallbacks.
+
+   The anatomy is the one the component's description sets out. An outer box
+   whose height never changes, and inside it a face that moves. At rest the face
+   sits on a lip: a solid edge under it, drawn as an inner shadow. Pressing
+   collapses the lip and drops the face by exactly that much, so the button
+   sinks flush into its own footprint and nothing around it reflows.
+
+   Colour never changes on press, on any variant. The movement is the whole
+   signal.
+
+   Two local aliases keep the rules short. `--knowieButton-lip` is the size's
+   lip token; `--knowieButton-sink` is how far the face drops, which is the lip
+   everywhere except Tertiary, where there is nothing to sink and it is Space/0.
+   Every value behind them is a token. */
+
+.knowieButton {
+  box-sizing: border-box;
+  display: inline-flex;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  --knowieButton-sink: var(--knowieButton-lip);
+}
+
+.knowieButton:disabled,
+.knowieButton[aria-disabled='true'] {
+  cursor: default;
+}
+
+/* --- the outer box -------------------------------------------------------
+   Height comes from Component/button/height and never changes, in any state.
+
+   Primary and Secondary pin their face from the top, so the rest inset is a
+   value of its own; the press then moves the face, not the inset. Tertiary is
+   centred instead, because its face is only ever the label's line box and its
+   insets are not on the Space scale. */
+
+.knowieButton {
+  align-items: center;
+}
+
+.knowieButton:not([data-variant='Tertiary']) {
+  align-items: flex-start;
+}
+
+/* Each size names its lip once. */
+.knowieButton[data-size='XS'] {
+  --knowieButton-lip: var(--component-button-lip-xs);
+}
+
+.knowieButton[data-size='S'] {
+  --knowieButton-lip: var(--component-button-lip-s);
+}
+
+.knowieButton[data-size='M'] {
+  --knowieButton-lip: var(--component-button-lip-m);
+}
+
+.knowieButton[data-size='L'] {
+  --knowieButton-lip: var(--component-button-lip-l);
+}
+
+/* Tertiary has no fill and no lip, so nothing sinks. Saying that once here is
+   what keeps it out of every press rule below. */
+.knowieButton[data-variant='Tertiary'] {
+  --knowieButton-sink: var(--space-0);
+}
+
+.knowieButton:not([data-variant='Tertiary'])[data-size='XS'] {
+  height: var(--component-button-height-xs);
+  padding-top: var(--space-0);
+}
+
+.knowieButton:not([data-variant='Tertiary'])[data-size='S'] {
+  height: var(--component-button-height-s);
+  padding-top: var(--space-200);
+}
+
+.knowieButton:not([data-variant='Tertiary'])[data-size='M'] {
+  height: var(--component-button-height-m);
+  padding-top: var(--space-100);
+}
+
+.knowieButton:not([data-variant='Tertiary'])[data-size='L'] {
+  height: var(--component-button-height-l);
+  padding-top: var(--space-0);
+}
+
+/* Tertiary keeps the family's tap targets at S, M and L. At XS it does not: the
+   box is the label's line box, so XS Tertiary is the one button in the set
+   shorter than a tap-target row. */
+.knowieButton[data-variant='Tertiary'][data-size='S'] {
+  height: var(--component-button-height-s);
+}
+
+.knowieButton[data-variant='Tertiary'][data-size='M'] {
+  height: var(--component-button-height-m);
+}
+
+.knowieButton[data-variant='Tertiary'][data-size='L'] {
+  height: var(--component-button-height-l);
+}
+
+/* --- the face ------------------------------------------------------------ */
+
+.knowieButton-face {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+}
+
+.knowieButton:not([data-variant='Tertiary'])[data-size='XS'] .knowieButton-face,
+.knowieButton:not([data-variant='Tertiary'])[data-size='S'] .knowieButton-face {
+  height: var(--icon-400);
+}
+
+.knowieButton:not([data-variant='Tertiary'])[data-size='M'] .knowieButton-face {
+  height: var(--illustration-500);
+}
+
+/* L's face fills its box. Figma leaves this one height unbound; the box token
+   is the honest name for it, since the two are the same measurement. */
+.knowieButton:not([data-variant='Tertiary'])[data-size='L'] .knowieButton-face,
+.knowieButton[data-variant='Tertiary'][data-size='L'] .knowieButton-face {
+  height: var(--component-button-height-l);
+}
+
+/* At XS, S and M a Tertiary face is exactly the label's line box, so it is left
+   to hug rather than given a height. */
+
+.knowieButton[data-size='XS'] .knowieButton-face,
+.knowieButton[data-size='S'] .knowieButton-face {
+  padding-inline: var(--space-300);
+  gap: var(--space-150);
+}
+
+.knowieButton[data-size='M'] .knowieButton-face {
+  padding-inline: var(--space-400);
+  gap: var(--space-150);
+}
+
+.knowieButton[data-size='L'] .knowieButton-face {
+  padding-inline: var(--space-600);
+  gap: var(--space-200);
+}
+
+/* Tertiary has no fill, so it has no side padding to hold one. */
+.knowieButton[data-variant='Tertiary'] .knowieButton-face {
+  padding-inline: var(--space-0);
+}
+
+/* --- the lip -------------------------------------------------------------
+   Only at rest, and only where there is a face to sit on. Disabled and Loading
+   carry no lip by decision, so they read flat next to Default; scoping this to
+   state=Default is what leaves them out.
+
+   The offset is the one value with arithmetic in it: the effect needs a
+   negative Y and the token is a positive height, so it is negated here rather
+   than stored twice. */
+
+.knowieButton[data-variant='Primary'][data-state='Default'] .knowieButton-face {
+  box-shadow: inset 0 calc(-1 * var(--knowieButton-lip)) 0 0 var(--color-component-button-lip-fill-primary);
+}
+
+.knowieButton[data-variant='Secondary'][data-state='Default'] .knowieButton-face {
+  box-shadow: inset 0 calc(-1 * var(--knowieButton-lip)) 0 0 var(--color-component-button-lip-fill-secondary);
+}
+
+/* --- the press -----------------------------------------------------------
+   The face drops by exactly the lip it was sitting on, and the lip goes. On
+   Tertiary the sink is Space/0, so this same rule leaves it where it is. */
+
+.knowieButton[data-state='Pressed'] .knowieButton-face,
+.knowieButton[data-state='Default']:active .knowieButton-face {
+  transform: translateY(var(--knowieButton-sink));
+  box-shadow: none;
+}
+
+/* Where the face already fills its box — XS and L — it also shrinks by the lip,
+   so the sink stays inside the box instead of overflowing it. At S and M the
+   box has the slack already, so only the offset changes. That is the whole of
+   what Component/button/facePressed is for, and why it only exists at XS and L. */
+
+.knowieButton:not([data-variant='Tertiary'])[data-size='XS'][data-state='Pressed'] .knowieButton-face,
+.knowieButton:not([data-variant='Tertiary'])[data-size='XS'][data-state='Default']:active .knowieButton-face {
+  height: var(--component-button-face-pressed-xs);
+}
+
+.knowieButton:not([data-variant='Tertiary'])[data-size='L'][data-state='Pressed'] .knowieButton-face,
+.knowieButton:not([data-variant='Tertiary'])[data-size='L'][data-state='Default']:active .knowieButton-face {
+  height: var(--component-button-face-pressed-l);
+}
+
+/* Tertiary presses by scaling its label from its own centre. Figma cannot show
+   this without rewriting the font size and breaking the type style, so its
+   Pressed still is identical to Default on purpose — the movement lives here. */
+.knowieButton[data-variant='Tertiary'][data-state='Pressed'] .knowieButton-label,
+.knowieButton[data-variant='Tertiary'][data-state='Default']:active .knowieButton-label {
+  transform: scale(var(--component-button-press-scale));
+}
+
+/* --- motion --------------------------------------------------------------
+   70ms down, 140ms back up. The slower return is what makes the release read
+   as a spring rather than a snap. */
+
+.knowieButton-face,
+.knowieButton-label {
+  transition-duration: var(--motion-duration-press-out);
+  transition-timing-function: var(--motion-easing-press);
+  transition-property: transform, height, box-shadow;
+}
+
+.knowieButton[data-state='Default']:active .knowieButton-face,
+.knowieButton[data-state='Default']:active .knowieButton-label {
+  transition-duration: var(--motion-duration-press-in);
+}
+
+/* The press is the only feedback this button has, so the movement stays and
+   only its timing goes. */
+@media (prefers-reduced-motion: reduce) {
+  .knowieButton-face,
+  .knowieButton-label {
+    transition-duration: 0s;
+  }
+}
+
+/* --- type ---------------------------------------------------------------- */
+
+.knowieButton-label {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.knowieButton[data-size='XS'] .knowieButton-label,
+.knowieButton[data-size='S'] .knowieButton-label,
+.knowieButton[data-size='M'] .knowieButton-label {
+  font-family: var(--greed-body-s-bold-font-family);
+  font-weight: var(--greed-body-s-bold-font-weight);
+  font-size: var(--greed-body-s-bold-font-size);
+  line-height: var(--greed-body-s-bold-line-height);
+}
+
+.knowieButton[data-size='L'] .knowieButton-label {
+  font-family: var(--greed-headline-s-font-family);
+  font-weight: var(--greed-headline-s-font-weight);
+  font-size: var(--greed-headline-s-font-size);
+  line-height: var(--greed-headline-s-line-height);
+}
+
+/* --- icon seams ----------------------------------------------------------
+   Figma fills these with an iconSlot instance. iconSlot is not wired in here
+   yet, so the containers hold their reserved size and nothing else. */
+
+.knowieButton-icon {
+  display: block;
+  flex: none;
+}
+
+.knowieButton[data-size='XS'] .knowieButton-icon,
+.knowieButton[data-size='S'] .knowieButton-icon {
+  width: var(--icon-200);
+  height: var(--icon-200);
+}
+
+.knowieButton[data-size='M'] .knowieButton-icon {
+  width: var(--icon-250);
+  height: var(--icon-250);
+}
+
+.knowieButton[data-size='L'] .knowieButton-icon {
+  width: var(--icon-300);
+  height: var(--icon-300);
+}
+
+/* --- Primary -------------------------------------------------------------- */
+
+.knowieButton[data-variant='Primary'] .knowieButton-face {
+  background-color: var(--color-interactive-primary);
+}
+
+.knowieButton[data-variant='Primary'] .knowieButton-label {
+  color: var(--color-interactive-on-primary);
+}
+
+.knowieButton[data-variant='Primary'][data-state='Disabled'] .knowieButton-face {
+  background-color: var(--color-background-surface);
+}
+
+.knowieButton[data-variant='Primary'][data-state='Disabled'] .knowieButton-label {
+  color: var(--color-text-disabled);
+}
+
+/* --- Secondary ------------------------------------------------------------ */
+
+.knowieButton[data-variant='Secondary'] .knowieButton-face {
+  background-color: var(--color-background-surface);
+}
+
+.knowieButton[data-variant='Secondary'] .knowieButton-label {
+  color: var(--color-text-primary);
+}
+
+.knowieButton[data-variant='Secondary'][data-state='Disabled'] .knowieButton-label {
+  color: var(--color-text-disabled);
+}
+
+/* --- Tertiary ------------------------------------------------------------- */
+
+.knowieButton[data-variant='Tertiary'] .knowieButton-label {
+  color: var(--color-text-primary);
+}
+
+.knowieButton[data-variant='Tertiary'][data-state='Disabled'] .knowieButton-label {
+  color: var(--color-text-disabled);
+}
+
+/* --- focus ---------------------------------------------------------------
+   Not a Figma variant. border.focus and border.focusSecondary name buttons in
+   their own token descriptions, drawn at Stroke/Heavy Border. */
+
+.knowieButton:focus-visible {
+  outline: var(--stroke-heavy-border) solid var(--color-border-focus);
+  outline-offset: var(--space-050);
+  border-radius: var(--radius-full);
+}
+
+.knowieButton[data-variant='Secondary']:focus-visible {
+  outline-color: var(--color-border-focus-secondary);
+}
+
+/* --- the icon slot -------------------------------------------------------
+   Wired in where the reserved containers were. iconSlot sizes itself from the
+   Icon scale and those are the same steps `.knowieButton-icon` already held, so
+   the geometry is unchanged and only the colour rules are new.
+
+   The slot defaults to text.primary, which is right for Secondary and Tertiary
+   and wrong on a Primary fill, so the icon is pointed at the label's colour for
+   each variant and state. It follows the label rather than naming its own
+   colour, because an icon that drifts from the label it sits beside is the bug
+   these rules exist to prevent. */
+
+.knowieButton[data-variant='Primary'] .knowieIconSlot {
+  color: var(--color-interactive-on-primary);
+}
+
+.knowieButton[data-variant='Secondary'] .knowieIconSlot,
+.knowieButton[data-variant='Tertiary'] .knowieIconSlot {
+  color: var(--color-text-primary);
+}
+
+.knowieButton[data-state='Disabled'] .knowieIconSlot {
+  color: var(--color-text-disabled);
+}

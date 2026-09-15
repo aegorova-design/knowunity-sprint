@@ -1,0 +1,63 @@
+/* takePlayer — built from the Figma component set `takePlayer` (node
+   13584:6181) in Yummy__Knowie Design Sprint. Every value is a custom property
+   from build/css/tokens.css; there are no raw hex or pixel values here.
+
+   358x72 in the file. The width is the full-width convention — the 390 canvas
+   minus its side padding — so it fills its container here rather than carrying
+   a number. The 72 height is not set either: it falls out of the buttonIcon's
+   48 tap target plus Space/300 above and below, which is exactly 72. */
+
+.knowieTakePlayer {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  gap: var(--space-300);
+  /* Asymmetric in Figma: Space/300 on three sides, Space/400 on the right, so
+     the duration is not crowded against the edge. */
+  padding: var(--space-300) var(--space-400) var(--space-300) var(--space-300);
+  border-radius: var(--radius-full);
+}
+
+/* Page is the resting surface. Sheet is the lighter stacking layer, so the
+   player stays distinct from the sheet behind it. */
+.knowieTakePlayer[data-surface='Page'] {
+  background-color: var(--color-background-surface);
+}
+
+.knowieTakePlayer[data-surface='Sheet'] {
+  background-color: var(--color-background-stacking);
+}
+
+/* The control's artwork. buttonIcon owns the box and the colour; this only
+   carries the shape, painted with currentColor the way iconSlot expects. */
+.knowieTakePlayer-glyph {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-image: url('/icons/play.svg');
+  mask-image: url('/icons/play.svg');
+}
+
+/* Playing is the only state that offers a stop, so it is the only one showing
+   the pause glyph. */
+.knowieTakePlayer[data-state='Playing'] .knowieTakePlayer-glyph {
+  -webkit-mask-image: url('/icons/pause.svg');
+  mask-image: url('/icons/pause.svg');
+}
+
+.knowieTakePlayer-duration {
+  margin: 0;
+  flex: none;
+  color: var(--color-text-secondary);
+  font-family: var(--greed-caption-m-regular-font-family);
+  font-weight: var(--greed-caption-m-regular-font-weight);
+  font-size: var(--greed-caption-m-regular-font-size);
+  line-height: var(--greed-caption-m-regular-line-height);
+}

@@ -1,0 +1,93 @@
+/* sectionHeader — built from the Figma component set `sectionHeader` (node
+   13584:6360) in Yummy__Knowie Design Sprint. Every value is a custom property
+   from build/css/tokens.css; there are no raw hex or pixel values here.
+
+   358 wide in the file, which is the full-width convention, so it fills its
+   container here. The heights are not set: 50 on Default and 64 on the other
+   two fall out of the content plus Space/300 above and below plus the hairline
+   border, which is why the outlined box is 2 taller than its content box.
+
+   No fill — it is an outline on whatever it sits on. */
+
+.knowieSectionHeader {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  gap: var(--space-300);
+  padding: var(--space-300) var(--space-600);
+  border: var(--stroke-border) solid var(--color-border-strong);
+  border-radius: var(--radius-full);
+}
+
+.knowieSectionHeader-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+  gap: var(--space-050);
+}
+
+.knowieSectionHeader-title {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-family: var(--greed-body-s-bold-font-family);
+  font-weight: var(--greed-body-s-bold-font-weight);
+  font-size: var(--greed-body-s-bold-font-size);
+  line-height: var(--greed-body-s-bold-line-height);
+}
+
+/* The status and the icon always share a colour, so the count and the mark
+   read as one statement about the section. */
+.knowieSectionHeader-status {
+  margin: 0;
+  font-family: var(--greed-caption-m-bold-font-family);
+  font-weight: var(--greed-caption-m-bold-font-weight);
+  font-size: var(--greed-caption-m-bold-font-size);
+  line-height: var(--greed-caption-m-bold-line-height);
+}
+
+.knowieSectionHeader-icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+/* Default — no result yet, so the mark is the neutral one and there is no
+   count to show. */
+.knowieSectionHeader[data-state='Default'] .knowieIconSlot {
+  color: var(--color-text-secondary);
+}
+
+.knowieSectionHeader[data-state='Default'] .knowieSectionHeader-icon {
+  -webkit-mask-image: url('/icons/graduation-hat-01.svg');
+  mask-image: url('/icons/graduation-hat-01.svg');
+}
+
+/* Mastered — every term came back unaided. */
+.knowieSectionHeader[data-state='Mastered'] .knowieSectionHeader-status,
+.knowieSectionHeader[data-state='Mastered'] .knowieIconSlot {
+  color: var(--color-feedback-success-on-subtle);
+}
+
+.knowieSectionHeader[data-state='Mastered'] .knowieSectionHeader-icon {
+  -webkit-mask-image: url('/icons/check-circle.svg');
+  mask-image: url('/icons/check-circle.svg');
+}
+
+/* ToRevisit — some did not, and the count says how many did. */
+.knowieSectionHeader[data-state='ToRevisit'] .knowieSectionHeader-status,
+.knowieSectionHeader[data-state='ToRevisit'] .knowieIconSlot {
+  color: var(--color-feedback-partial-bold);
+}
+
+.knowieSectionHeader[data-state='ToRevisit'] .knowieSectionHeader-icon {
+  -webkit-mask-image: url('/icons/circle-half.svg');
+  mask-image: url('/icons/circle-half.svg');
+}

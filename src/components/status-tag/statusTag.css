@@ -1,0 +1,44 @@
+/* statusTag — built from the Figma component set `statusTag` (node 13610:9718)
+   in Yummy__Knowie Design Sprint. Every value is a custom property from
+   build/css/tokens.css; there are no raw hex or pixel values here.
+
+   Figma pins the tag to 24 tall. That falls out of the label's 16 line height
+   plus 4 of padding top and bottom, so no height token is needed. */
+
+.knowieStatusTag {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-100) var(--space-200);
+  border-radius: var(--radius-200);
+  font-family: var(--greed-caption-m-bold-font-family);
+  font-weight: var(--greed-caption-m-bold-font-weight);
+  font-size: var(--greed-caption-m-bold-font-size);
+  line-height: var(--greed-caption-m-bold-line-height);
+  white-space: nowrap;
+}
+
+/* The four term outcomes. statusTag and termRow share these colours so the two
+   read as a set — changing one means changing both. */
+
+.knowieStatusTag[data-variant='Unaided'] {
+  background-color: var(--color-feedback-success-bold);
+  color: var(--color-feedback-success-on-bold);
+}
+
+.knowieStatusTag[data-variant='Hinted'] {
+  background-color: var(--color-feedback-partial-bold);
+  color: var(--color-feedback-partial-on-bold);
+}
+
+.knowieStatusTag[data-variant='Revealed'] {
+  background-color: var(--color-accent-brand-bold);
+  color: var(--color-accent-brand-on-bold);
+}
+
+/* Skipped is the only outcome with no accent of its own: a neutral fill and
+   reduced-emphasis text, so it recedes next to the three that were attempted. */
+.knowieStatusTag[data-variant='Skipped'] {
+  background-color: var(--color-interactive-secondary);
+  color: var(--color-text-secondary);
+}

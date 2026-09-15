@@ -162,7 +162,20 @@ function asDimensions(entries: TokenEntry[]): DimensionEntry[] {
  * structural scales, which have stories of their own.
  */
 const PRIMITIVE_GROUPS = ['color', 'Homie'];
-const NON_COLOR_GROUPS = ['Space', 'Radius', 'Stroke', 'Icon', 'Illustration', 'font', 'Greed'];
+const NON_COLOR_GROUPS = [
+  'Space',
+  'Radius',
+  'Stroke',
+  'Icon',
+  'Illustration',
+  'font',
+  'Greed',
+  // Component and motion are mixed groups: mostly dimensions and numbers, with
+  // a colour or two inside. Without them here, the Colors page paints
+  // `background: 32px` and renders a section of blank swatches.
+  'Component',
+  'motion',
+];
 
 export type TokenGroupView = { name: string; entries: TokenEntry[] };
 

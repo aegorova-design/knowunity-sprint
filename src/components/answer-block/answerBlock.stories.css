@@ -1,0 +1,15 @@
+/* Chrome for the answerBlock stories only. */
+
+.knowieAnswerBlockDemo {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--space-400);
+  background: var(--color-background-page);
+}
+
+/* The three kinds stacked, the way a verdict sheet shows them. */
+.knowieAnswerBlockDemo-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+}

@@ -1,0 +1,8 @@
+/* Chrome for the textField stories only. */
+
+.knowieTextFieldDemo {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--space-400);
+  background: var(--color-background-page);
+}

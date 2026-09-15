@@ -7,6 +7,8 @@ import './preview.css'
 const MOBILE_VIEWPORT = 'mobile'
 
 const preview: Preview = {
+  tags: ['autodocs'],
+
   parameters: {
     controls: {
       matchers: {

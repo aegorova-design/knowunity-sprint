@@ -64,6 +64,8 @@
   --color-alpha-light-48: rgba(245, 243, 255, 0.4784);
   --color-alpha-light-68: rgba(245, 243, 255, 0.6784);
   --color-alpha-dark-10: rgba(10, 10, 10, 0.102);
+  --color-alpha-dark-15: rgba(10, 10, 10, 0.15);
+  --color-alpha-dark-40: rgba(10, 10, 10, 0.4);
   --color-alpha-dark-50: rgba(10, 10, 10, 0.502);
   --color-alpha-glass-60: rgba(61, 61, 61, 0.6);
   --color-homie-inkwell: #9178e6;
@@ -100,6 +102,7 @@
   --radius-full: 9999px;
   --stroke-border: 1px;
   --stroke-heavy-border: 2px;
+  --stroke-ring: 4px;
   --icon-100: 8px;
   --icon-150: 12px;
   --icon-200: 16px;
@@ -113,6 +116,17 @@
   --illustration-1500: 120px;
   --illustration-2500: 200px;
   --illustration-4000: 320px;
+  --component-button-height-xs: 32px; /** Outer tap target for button size XS. The pressed face moves inside this box, so the box never changes height. */
+  --component-button-height-s: 48px; /** Outer tap target for button size S. The pressed face moves inside this box, so the box never changes height. */
+  --component-button-height-m: 48px; /** Outer tap target for button size M. The pressed face moves inside this box, so the box never changes height. */
+  --component-button-height-l: 56px; /** Outer tap target for button size L. The pressed face moves inside this box, so the box never changes height. */
+  --component-button-lip-xs: 2px; /** Height of the solid edge under the button face at size XS. Present at rest, gone when pressed. */
+  --component-button-lip-s: 2px; /** Height of the solid edge under the button face at size S. Present at rest, gone when pressed. */
+  --component-button-lip-m: 2px; /** Height of the solid edge under the button face at size M. Present at rest, gone when pressed. */
+  --component-button-lip-l: 4px; /** Height of the solid edge under the button face at size L. Present at rest, gone when pressed. */
+  --component-button-face-pressed-xs: 30px; /** Face height while pressed at size XS. Face height minus lip, so the face sinks flush without the outer box growing. */
+  --component-button-face-pressed-l: 52px; /** Face height while pressed at size L. Face height minus lip, so the face sinks flush without the outer box growing. */
+  --component-button-press-scale: 0.94; /** Scale a Tertiary button's label takes while pressed, from its own centre. Tertiary has no fill and no lip, so the label is the only thing that can move. */
   --font-family-display: 'Greed Standard-TRIAL';
   --font-family-default: 'Greed Standard-TRIAL';
   --font-weight-regular: 400;
@@ -144,6 +158,11 @@
   --font-tracking-tight: -1%;
   --font-tracking-none: 0%;
   --font-tracking-loose: 1%;
+  --motion-duration-press-in: 70ms; /** How long a button takes to sink under the finger. Faster than it comes back, so the press feels immediate. */
+  --motion-duration-press-out: 140ms; /** How long a button takes to rise after release. Twice the press, so the release feels like a spring rather than a snap. */
+  --motion-easing-press: cubic-bezier(0.2, 0.9, 0.3, 1); /** Easing for a button press, in and out. */
+  --color-component-button-lip-fill-primary: var(--color-alpha-dark-15); /** Fill of the lip under a Primary button face. The same perceptual step as the Secondary lip, on a much lighter face. */
+  --color-component-button-lip-fill-secondary: var(--color-alpha-dark-40); /** Fill of the lip under a Secondary button face. The same perceptual step as the Primary lip, on a much darker face. */
   --color-background-page: var(--color-navy-950); /** Root canvas behind every screen, with cards and sheets on background.surface instead. */
   --color-background-surface: var(--color-navy-800); /** Elevated container fill for cards, bottom sheets, modals, menus, chat bubbles and toasts. */
   --color-background-inverse: var(--color-violet-50); /** Light block on the dark page for tooltips, toasts and snackbars, paired with text.inverse. */

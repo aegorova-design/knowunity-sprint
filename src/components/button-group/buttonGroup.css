@@ -1,0 +1,72 @@
+/* buttonGroup — built from the Figma component set `buttonGroup` in
+   Yummy__Knowie Design Sprint. Every value is a custom property from
+   build/css/tokens.css; there are no raw hex or pixel values here, and no
+   fallbacks.
+
+   The group is auto layout and nothing else: a direction, a gap, and which
+   child fills. It draws no fill, no border and no radius of its own, because
+   everything visible belongs to the buttons inside it. */
+
+.knowieButtonGroup {
+  box-sizing: border-box;
+  display: flex;
+  /* Fixed width in Figma, filling its parent wherever it is placed — the
+     summary puts it in bottomContent at the full 358. Height hugs. */
+  width: 100%;
+  align-items: stretch;
+}
+
+.knowieButtonGroup[data-variant='Vertical'] {
+  flex-direction: column;
+}
+
+.knowieButtonGroup[data-variant='Horizontal'] {
+  flex-direction: row;
+}
+
+/* --- the gap -------------------------------------------------------------
+   Four values, one per variant and size, all read off the file.
+
+   Vertical at M is the odd one: Space/0. The M buttons already carry a
+   Space/100 top inset inside their own box, so the seam between them is that
+   inset rather than a gap. At L the button fills its box, so the group has to
+   supply the Space/200 itself. */
+
+.knowieButtonGroup[data-variant='Vertical'][data-size='M'] {
+  gap: var(--space-0);
+}
+
+.knowieButtonGroup[data-variant='Vertical'][data-size='L'] {
+  gap: var(--space-200);
+}
+
+.knowieButtonGroup[data-variant='Horizontal'][data-size='M'] {
+  gap: var(--space-100);
+}
+
+.knowieButtonGroup[data-variant='Horizontal'][data-size='L'] {
+  gap: var(--space-200);
+}
+
+/* --- fill and hug --------------------------------------------------------
+   Figma's sizing, straight across: the primary fills, and Horizontal's icon
+   button hugs its square. The wrappers exist because button and buttonIcon are
+   inline-flex and size to their own content; giving them a filling parent is
+   what makes the label centre across the whole width rather than the pill
+   shrinking to the text. */
+
+.knowieButtonGroup-fill {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.knowieButtonGroup-fill > * {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.knowieButtonGroup-hug {
+  display: flex;
+  flex: 0 0 auto;
+}

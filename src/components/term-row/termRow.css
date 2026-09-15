@@ -1,0 +1,116 @@
+/* termRow — built from the Figma component set `termRow` (node 13584:6289) in
+   Yummy__Knowie Design Sprint. Every value is a custom property from
+   build/css/tokens.css; there are no raw hex or pixel values here.
+
+   Figma pins the row to 358 wide, the 390 canvas minus its side padding. A
+   list row has no business fixing its own width, so it fills its container.
+   The 64 minimum height is real and is held, because the whole row is the tap
+   target. */
+
+.knowieTermRow {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--space-300);
+  width: 100%;
+  min-height: var(--space-1600);
+  padding: var(--space-300) var(--space-300) var(--space-300) var(--space-400);
+  border: none;
+  border-radius: var(--radius-400);
+  background-color: var(--color-background-surface);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.knowieTermRow[data-state='Pressed'],
+.knowieTermRow[data-state='Default']:active {
+  background-color: var(--color-interactive-secondary-active);
+}
+
+.knowieTermRow:focus-visible {
+  outline: var(--stroke-heavy-border) solid var(--color-border-focus);
+  outline-offset: var(--space-050);
+}
+
+/* --- badge ---------------------------------------------------------------
+   The outcome's icon, in its own colour, so the four states read apart in
+   greyscale as well as in colour. */
+
+.knowieTermRow-badge {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-500);
+  height: var(--icon-500);
+  border-radius: var(--radius-full);
+}
+
+/* iconSlot paints itself text/primary by default; inside the badge and the
+   chevron it takes the colour of whatever it sits in. */
+.knowieTermRow-badge .knowieIconSlot,
+.knowieTermRow-chevron .knowieIconSlot {
+  color: inherit;
+}
+
+.knowieTermRow[data-variant='Unaided'] .knowieTermRow-badge {
+  background-color: var(--color-feedback-success-bold);
+  color: var(--color-feedback-success-on-bold);
+}
+
+.knowieTermRow[data-variant='Hinted'] .knowieTermRow-badge {
+  background-color: var(--color-feedback-partial-bold);
+  color: var(--color-feedback-partial-on-bold);
+}
+
+/* Figma fills this badge with feedback/error/bold while its icon stays
+   accent/brand/onBold — a pair that does not belong together, and a colour
+   that contradicts statusTag's own Revealed. Built as accent/brand, which the
+   icon's own token points at. See the story docs. */
+.knowieTermRow[data-variant='Revealed'] .knowieTermRow-badge {
+  background-color: var(--color-accent-brand-bold);
+  color: var(--color-accent-brand-on-bold);
+}
+
+.knowieTermRow[data-variant='Skipped'] .knowieTermRow-badge {
+  background-color: var(--color-interactive-secondary-active);
+  color: var(--color-text-secondary);
+}
+
+/* --- text ----------------------------------------------------------------- */
+
+.knowieTermRow-term {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--color-text-primary);
+  font-family: var(--greed-body-s-bold-font-family);
+  font-weight: var(--greed-body-s-bold-font-weight);
+  font-size: var(--greed-body-s-bold-font-size);
+  line-height: var(--greed-body-s-bold-line-height);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The term recedes on the one outcome that was never attempted. */
+.knowieTermRow[data-variant='Skipped'] .knowieTermRow-term {
+  color: var(--color-text-secondary);
+}
+
+.knowieTermRow-xp {
+  flex: none;
+  color: var(--color-text-secondary);
+  font-family: var(--greed-caption-m-bold-font-family);
+  font-weight: var(--greed-caption-m-bold-font-weight);
+  font-size: var(--greed-caption-m-bold-font-size);
+  line-height: var(--greed-caption-m-bold-line-height);
+  white-space: nowrap;
+}
+
+.knowieTermRow-chevron {
+  flex: none;
+  display: flex;
+  align-items: center;
+  color: var(--color-text-tertiary);
+}

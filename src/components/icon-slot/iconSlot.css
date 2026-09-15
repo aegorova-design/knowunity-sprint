@@ -1,0 +1,169 @@
+/* iconSlot — built from the Figma component set `iconSlot` (node 9003:8809) in
+   Yummy__Knowie Design Sprint. Every value is a custom property from
+   build/css/tokens.css; there are no raw hex or pixel values here.
+
+   The six Figma variants are six fixed squares, each bound to an Icon token.
+   The slot owns the box and the colour; the icon itself is passed in. */
+
+.knowieIconSlot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  /* Figma fills the icon vector with text/primary. Exposed as `color` so the
+     icon can use currentColor and a parent can recolour the slot in place —
+     an icon on interactive.primary needs interactive.onPrimary, not this. */
+  color: var(--color-text-primary);
+}
+
+/* The icon fills the square it is given, the way the swapped instance does. */
+.knowieIconSlot > * {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.knowieIconSlot[data-size='100'] {
+  width: var(--icon-100);
+  height: var(--icon-100);
+}
+
+.knowieIconSlot[data-size='150'] {
+  width: var(--icon-150);
+  height: var(--icon-150);
+}
+
+.knowieIconSlot[data-size='200'] {
+  width: var(--icon-200);
+  height: var(--icon-200);
+}
+
+.knowieIconSlot[data-size='250'] {
+  width: var(--icon-250);
+  height: var(--icon-250);
+}
+
+.knowieIconSlot[data-size='300'] {
+  width: var(--icon-300);
+  height: var(--icon-300);
+}
+
+.knowieIconSlot[data-size='400'] {
+  width: var(--icon-400);
+  height: var(--icon-400);
+}
+
+/* --- the icon set --------------------------------------------------------
+   The icons in public/icons are drawn as a mask rather than an <img> so they
+   take the slot's colour, which an <img> cannot do. The file stays the only
+   source of truth: nothing here redraws the artwork.
+
+   A mask uses the source's alpha, so an icon that bakes fill-opacity into its
+   own paths draws at that fraction of the slot's colour. chevron-right does
+   this; the rest are fully opaque. See the story docs. */
+
+.knowieIconSlot[data-icon] {
+  background-color: currentColor;
+  -webkit-mask: var(--knowieIconSlot-src) center / contain no-repeat;
+  mask: var(--knowieIconSlot-src) center / contain no-repeat;
+}
+
+.knowieIconSlot[data-icon='ai-quiz'] {
+  --knowieIconSlot-src: url('/icons/ai-quiz.svg');
+}
+
+.knowieIconSlot[data-icon='arrow-left'] {
+  --knowieIconSlot-src: url('/icons/arrow-left.svg');
+}
+
+.knowieIconSlot[data-icon='arrow-right'] {
+  --knowieIconSlot-src: url('/icons/arrow-right.svg');
+}
+
+.knowieIconSlot[data-icon='arrow-right-alt'] {
+  --knowieIconSlot-src: url('/icons/arrow-right-alt.svg');
+}
+
+.knowieIconSlot[data-icon='check'] {
+  --knowieIconSlot-src: url('/icons/check.svg');
+}
+
+.knowieIconSlot[data-icon='check-circle'] {
+  --knowieIconSlot-src: url('/icons/check-circle.svg');
+}
+
+.knowieIconSlot[data-icon='chevron-right'] {
+  --knowieIconSlot-src: url('/icons/chevron-right.svg');
+}
+
+.knowieIconSlot[data-icon='circle-half'] {
+  --knowieIconSlot-src: url('/icons/circle-half.svg');
+}
+
+.knowieIconSlot[data-icon='corner-up-right'] {
+  --knowieIconSlot-src: url('/icons/corner-up-right.svg');
+}
+
+.knowieIconSlot[data-icon='dots-vertical'] {
+  --knowieIconSlot-src: url('/icons/dots-vertical.svg');
+}
+
+.knowieIconSlot[data-icon='eye'] {
+  --knowieIconSlot-src: url('/icons/eye.svg');
+}
+
+.knowieIconSlot[data-icon='graduation-hat-01'] {
+  --knowieIconSlot-src: url('/icons/graduation-hat-01.svg');
+}
+
+.knowieIconSlot[data-icon='help-circle'] {
+  --knowieIconSlot-src: url('/icons/help-circle.svg');
+}
+
+.knowieIconSlot[data-icon='keyboard-01'] {
+  --knowieIconSlot-src: url('/icons/keyboard-01.svg');
+}
+
+.knowieIconSlot[data-icon='lightbulb-02'] {
+  --knowieIconSlot-src: url('/icons/lightbulb-02.svg');
+}
+
+.knowieIconSlot[data-icon='loading-01'] {
+  --knowieIconSlot-src: url('/icons/loading-01.svg');
+}
+
+.knowieIconSlot[data-icon='microphone-01'] {
+  --knowieIconSlot-src: url('/icons/microphone-01.svg');
+}
+
+.knowieIconSlot[data-icon='pause'] {
+  --knowieIconSlot-src: url('/icons/pause.svg');
+}
+
+.knowieIconSlot[data-icon='play'] {
+  --knowieIconSlot-src: url('/icons/play.svg');
+}
+
+.knowieIconSlot[data-icon='refresh-ccw-01'] {
+  --knowieIconSlot-src: url('/icons/refresh-ccw-01.svg');
+}
+
+.knowieIconSlot[data-icon='share-02'] {
+  --knowieIconSlot-src: url('/icons/share-02.svg');
+}
+
+.knowieIconSlot[data-icon='skip-forward'] {
+  --knowieIconSlot-src: url('/icons/skip-forward.svg');
+}
+
+.knowieIconSlot[data-icon='stop'] {
+  --knowieIconSlot-src: url('/icons/stop.svg');
+}
+
+.knowieIconSlot[data-icon='x-close'] {
+  --knowieIconSlot-src: url('/icons/x-close.svg');
+}
+
+.knowieIconSlot[data-icon='zap'] {
+  --knowieIconSlot-src: url('/icons/zap.svg');
+}

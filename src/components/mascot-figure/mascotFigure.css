@@ -1,0 +1,36 @@
+/* mascotFigure — built from the Figma component set `mascotFigure` (node
+   13638:10184) in Yummy__Knowie Design Sprint. Every value is a custom property
+   from build/css/tokens.css; there are no raw hex or pixel values here.
+
+   Only height is bound in Figma, at three steps on two different scales, and
+   the width follows the artwork's 200:217 ratio — which is what aspect-ratio
+   does here. That ratio is the artwork's own proportion rather than a design
+   value, so it is the one number in this file that is not a token. */
+
+.knowieMascotFigure {
+  display: inline-block;
+  flex: none;
+  aspect-ratio: 200 / 217;
+}
+
+/* contain rather than fill, so Knowie keeps her proportions. The exported SVGs
+   are framed slightly wider than 200:217, so she sits about a pixel short of
+   the box at S rather than being stretched to it. */
+.knowieMascotFigure-pose {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.knowieMascotFigure[data-size='S'] {
+  height: var(--icon-600);
+}
+
+.knowieMascotFigure[data-size='M'] {
+  height: var(--illustration-800);
+}
+
+.knowieMascotFigure[data-size='L'] {
+  height: var(--illustration-1500);
+}

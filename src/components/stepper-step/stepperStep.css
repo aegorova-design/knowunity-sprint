@@ -1,0 +1,146 @@
+/* stepperStep — built from the Figma component set `stepperStep` (node
+   13584:6336) in Yummy__Knowie Design Sprint. Every value is a custom property
+   from build/css/tokens.css; there are no raw hex or pixel values here.
+
+   The step is three stacked circles on the Icon scale — a 48 ring (Icon/600)
+   with a 32 core inside it (Icon/400) and a 20 icon on top (Icon/250) — so the
+   core and icon are centred rather than positioned. Figma places them at 8,8
+   and 14,14, which is exactly centred in both cases. */
+
+.knowieStepperStep {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-400);
+  padding: var(--space-0);
+}
+
+/* The ring stack. Everything inside is centred on this box. */
+.knowieStepperStep-step {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--icon-600);
+  height: var(--icon-600);
+  border-radius: var(--radius-full);
+}
+
+.knowieStepperStep-track,
+.knowieStepperStep-progress {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-full);
+  /* Figma draws this as a 4 INSIDE stroke, which is Stroke/Ring. */
+  border: var(--stroke-ring) solid var(--color-border-default);
+}
+
+/* progress is the brand ring laid over the track. Completed shows all of it,
+   so it reads as done rather than as a proportion. */
+.knowieStepperStep-progress {
+  border-color: var(--color-accent-brand-bold);
+}
+
+/* InProgress shows half of it. Figma draws the arc from 12 o'clock clockwise to
+   6 o'clock — the right half — so the clip keeps the right half and the track
+   stays visible through the left. */
+.knowieStepperStep[data-state='InProgress'] .knowieStepperStep-progress {
+  clip-path: inset(0 0 0 50%);
+}
+
+/* Locked breaks the track into dashes, so it reads as unavailable by shape
+   before colour does any work. Figma's dash pattern is 4 on, 6 off — both are
+   real tokens (stroke-ring, space-150) but a CSS border dash length cannot be
+   set, so the browser picks it. Flagged in the story docs. */
+.knowieStepperStep[data-state='Locked'] .knowieStepperStep-track {
+  border-style: dashed;
+}
+
+.knowieStepperStep-core {
+  position: relative;
+  width: var(--icon-400);
+  height: var(--icon-400);
+  border-radius: var(--radius-full);
+  background-color: var(--color-background-surface);
+}
+
+/* The icon sits above the core, which is itself above the rings. Targeted by
+   descendant selector rather than a className on the instance: iconSlot spreads
+   its rest props after its own className, so passing one replaces knowieIconSlot
+   instead of joining it. */
+.knowieStepperStep-step .knowieIconSlot {
+  position: absolute;
+  color: var(--color-accent-brand-bold);
+}
+
+.knowieStepperStep-glyph {
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+/* Learning bundles reading and quiz; Voice is the capstone. The icons match
+   the ones in the live app. */
+.knowieStepperStep[data-type='Learning'] .knowieStepperStep-glyph {
+  -webkit-mask-image: url('/icons/ai-quiz.svg');
+  mask-image: url('/icons/ai-quiz.svg');
+}
+
+.knowieStepperStep[data-type='Voice'] .knowieStepperStep-glyph {
+  -webkit-mask-image: url('/icons/microphone-01.svg');
+  mask-image: url('/icons/microphone-01.svg');
+}
+
+/* Completed — the ring fills and the core takes the brand, so the icon flips
+   to text.primary to stay readable on it. */
+.knowieStepperStep[data-state='Completed'] .knowieStepperStep-core {
+  background-color: var(--color-accent-brand-bold);
+}
+
+.knowieStepperStep[data-state='Completed'] .knowieIconSlot {
+  color: var(--color-text-primary);
+}
+
+/* Locked — the core stays surface and everything that carries meaning drops to
+   text.disabled together: the icon, the label and the caption.
+
+   text.disabled is 3.79:1 on the page, under the 4.5:1 AA minimum. Matching the
+   file is the call here; the dashed ring is what carries the state, so Locked
+   still reads without the text. Known and accepted, not an oversight — the a11y
+   note in the story docs has the numbers. */
+.knowieStepperStep[data-state='Locked'] .knowieIconSlot {
+  color: var(--color-text-disabled);
+}
+
+.knowieStepperStep[data-state='Locked'] .knowieStepperStep-label,
+.knowieStepperStep[data-state='Locked'] .knowieStepperStep-caption {
+  color: var(--color-text-disabled);
+}
+
+.knowieStepperStep-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-050);
+}
+
+.knowieStepperStep-label {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-family: var(--greed-body-s-bold-font-family);
+  font-weight: var(--greed-body-s-bold-font-weight);
+  font-size: var(--greed-body-s-bold-font-size);
+  line-height: var(--greed-body-s-bold-line-height);
+}
+
+.knowieStepperStep-caption {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-family: var(--greed-caption-m-regular-font-family);
+  font-weight: var(--greed-caption-m-regular-font-weight);
+  font-size: var(--greed-caption-m-regular-font-size);
+  line-height: var(--greed-caption-m-regular-line-height);
+}

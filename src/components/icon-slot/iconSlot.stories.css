@@ -1,0 +1,31 @@
+/* Chrome for the iconSlot stories only. */
+
+.knowieIconSlotDemo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-400);
+  padding: var(--space-400);
+  background: var(--color-background-page);
+}
+
+.knowieIconSlotDemo-caption {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-family: var(--greed-body-s-regular-font-family);
+  font-weight: var(--greed-body-s-regular-font-weight);
+  font-size: var(--greed-body-s-regular-font-size);
+  line-height: var(--greed-body-s-regular-line-height);
+}
+
+.knowieIconSlotDemo--wrap {
+  flex-wrap: wrap;
+  gap: var(--space-600);
+}
+
+.knowieIconSlotDemo-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-100);
+  color: var(--color-text-primary);
+}

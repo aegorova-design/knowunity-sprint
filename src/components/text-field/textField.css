@@ -1,0 +1,48 @@
+/* textField — built from the Figma component set `textField` (node 13584:6294)
+   in Yummy__Knowie Design Sprint. Every value is a custom property from
+   build/css/tokens.css; there are no raw hex or pixel values here.
+
+   358x160 in the file. The width is the full-width convention — the 390 canvas
+   minus its side padding — so it fills its container here rather than carrying
+   a number. The height is a real token, Space/4000.
+
+   Empty and Filled differ in exactly two things: the border colour and the text
+   colour. The text colour is the placeholder-versus-value distinction, which
+   CSS already draws, so `state` only has to carry the border. */
+
+.knowieTextField {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  height: var(--space-4000);
+  padding: var(--space-400);
+  border-radius: var(--radius-400);
+  background-color: var(--color-background-input);
+  border: var(--stroke-border) solid var(--color-border-default);
+  /* Figma fixes the box, so the field scrolls rather than growing, and the
+     drag handle would let a student break the 390 canvas. */
+  resize: none;
+  color: var(--color-text-primary);
+  font-family: var(--greed-body-m-regular-font-family);
+  font-weight: var(--greed-body-m-regular-font-weight);
+  font-size: var(--greed-body-m-regular-font-size);
+  line-height: var(--greed-body-m-regular-line-height);
+}
+
+/* The prompt before anything is typed. Figma draws this as the value layer in
+   text.tertiary; here it is the placeholder, which is the same picture. */
+.knowieTextField::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+/* Filled takes border.focus, which is how the file has it. The component's own
+   description says "Focus state uses border/focus", so the real focus ring uses
+   the same token — see the story docs, where the overlap is flagged. */
+.knowieTextField[data-state='Filled'] {
+  border-color: var(--color-border-focus);
+}
+
+.knowieTextField:focus-visible {
+  border-color: var(--color-border-focus);
+  outline: none;
+}

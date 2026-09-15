@@ -1,0 +1,87 @@
+/* mascotMessage — built from the Figma component set `mascotMessage` (node
+   13641:15299) in Yummy__Knowie Design Sprint. Every value is a custom property
+   from build/css/tokens.css; there are no raw hex or pixel values here.
+
+   358 wide in the file, which is the full-width convention, so it fills its
+   container here. Knowie sits at the top rather than centred, so the bubble can
+   grow as the helper and the action appear without moving her. */
+
+.knowieMascotMessage {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 100%;
+  gap: var(--space-300);
+}
+
+.knowieMascotMessage-bubble {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+  gap: var(--space-200);
+  padding: var(--space-400);
+  border-radius: var(--radius-600);
+  background-color: var(--color-background-surface);
+}
+
+/* The tail is a triangle pointing at Knowie, in the bubble's own fill, so the
+   two read as one shape. Figma draws it as a 3-point polygon rotated 90, which
+   lands as 16 wide by 12 tall; the border trick draws exactly that box without
+   a transform.
+
+   Its centre sits Space/700 down the bubble, so the offset here is that centre
+   less half the triangle's height. */
+.knowieMascotMessage-tail {
+  position: absolute;
+  left: calc(var(--space-150) * -1);
+  top: calc(var(--space-700) - var(--space-150));
+  width: 0;
+  height: 0;
+  border-right: var(--space-400) solid var(--color-background-surface);
+  border-top: var(--space-150) solid transparent;
+  border-bottom: var(--space-150) solid transparent;
+}
+
+/* --- the two lines ------------------------------------------------------- */
+
+/* The message is the only thing the state recolours. */
+.knowieMascotMessage-message {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-family: var(--greed-caption-m-bold-font-family);
+  font-weight: var(--greed-caption-m-bold-font-weight);
+  font-size: var(--greed-caption-m-bold-font-size);
+  line-height: var(--greed-caption-m-bold-line-height);
+}
+
+.knowieMascotMessage[data-state='ToRevisit'] .knowieMascotMessage-message {
+  color: var(--color-feedback-partial-bold);
+}
+
+.knowieMascotMessage[data-state='Mastered'] .knowieMascotMessage-message {
+  color: var(--color-feedback-success-on-subtle);
+}
+
+.knowieMascotMessage[data-state='Relearn'] .knowieMascotMessage-message {
+  color: var(--color-feedback-error-on-subtle);
+}
+
+/* The scheduling line, the same in every state. */
+.knowieMascotMessage-helper {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-family: var(--greed-caption-m-regular-font-family);
+  font-weight: var(--greed-caption-m-regular-font-weight);
+  font-size: var(--greed-caption-m-regular-font-size);
+  line-height: var(--greed-caption-m-regular-line-height);
+}
+
+/* Figma's action frame hugs its child rather than stretching it, which is a
+   change from the slot this component used to have. */
+.knowieMascotMessage-action {
+  display: flex;
+}

@@ -1,0 +1,110 @@
+/* chips — built from the Figma component set `chips` (node 9003:8679) in
+   Yummy__Knowie Design Sprint. Every value is a custom property from
+   build/css/tokens.css; there are no raw hex or pixel values here.
+
+   Every size is a fixed-height pill that hugs its content. The vertical padding
+   is Space/0 in the file — the height comes from the size token alone, with the
+   content centred in it. */
+
+.knowieChips {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  flex: none;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.knowieChips-label {
+  white-space: nowrap;
+}
+
+/* --- sizes --------------------------------------------------------------- */
+
+/* XXS and XS share a text style and an icon size; only the box changes. */
+
+.knowieChips[data-size='XXS'] {
+  height: var(--icon-250);
+  padding-inline: var(--space-150);
+  gap: var(--space-050);
+}
+
+.knowieChips[data-size='XS'] {
+  height: var(--icon-300);
+  padding-inline: var(--space-200);
+  gap: var(--space-100);
+}
+
+.knowieChips[data-size='S'] {
+  height: var(--icon-400);
+  padding-inline: var(--space-300);
+  gap: var(--space-100);
+}
+
+.knowieChips[data-size='M'] {
+  height: var(--illustration-500);
+  padding-inline: var(--space-400);
+  gap: var(--space-150);
+}
+
+/* --- type ---------------------------------------------------------------- */
+
+.knowieChips[data-size='XXS'] .knowieChips-label,
+.knowieChips[data-size='XS'] .knowieChips-label {
+  font-family: var(--greed-caption-s-bold-font-family);
+  font-weight: var(--greed-caption-s-bold-font-weight);
+  font-size: var(--greed-caption-s-bold-font-size);
+  line-height: var(--greed-caption-s-bold-line-height);
+}
+
+.knowieChips[data-size='S'] .knowieChips-label {
+  font-family: var(--greed-caption-m-bold-font-family);
+  font-weight: var(--greed-caption-m-bold-font-weight);
+  font-size: var(--greed-caption-m-bold-font-size);
+  line-height: var(--greed-caption-m-bold-line-height);
+}
+
+.knowieChips[data-size='M'] .knowieChips-label {
+  font-family: var(--greed-body-s-bold-font-family);
+  font-weight: var(--greed-body-s-bold-font-weight);
+  font-size: var(--greed-body-s-bold-font-size);
+  line-height: var(--greed-body-s-bold-line-height);
+}
+
+/* --- colour -------------------------------------------------------------- */
+
+/* Unselected is identical for both colours — the colour axis only does anything
+   once active is True. */
+.knowieChips[data-active='False'] {
+  background-color: var(--color-background-surface);
+  color: var(--color-text-primary);
+}
+
+.knowieChips[data-active='False'] .knowieIconSlot {
+  color: var(--color-text-primary);
+}
+
+/* Primary selected. Figma gives the label interactive.onPrimary and the icons
+   text.inverse — two tokens for the same role, which happen to resolve to the
+   same colour. Both are kept as the file binds them; see the story docs. */
+.knowieChips[data-color='Primary'][data-active='True'] {
+  background-color: var(--color-interactive-primary);
+  color: var(--color-interactive-on-primary);
+}
+
+.knowieChips[data-color='Primary'][data-active='True'] .knowieIconSlot {
+  color: var(--color-text-inverse);
+}
+
+/* pro selected. Used only for PRO content. */
+.knowieChips[data-color='pro'][data-active='True'] {
+  background-color: var(--color-pro-bold);
+  color: var(--color-pro-on-bold);
+}
+
+.knowieChips[data-color='pro'][data-active='True'] .knowieIconSlot {
+  color: var(--color-pro-on-bold);
+}

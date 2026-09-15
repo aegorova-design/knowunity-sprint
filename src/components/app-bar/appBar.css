@@ -1,0 +1,92 @@
+/* appBar — built from the Figma component set `appBar` (node 9003:8606) in
+   Yummy__Knowie Design Sprint. Every value is a custom property from
+   build/css/tokens.css; there are no raw hex or pixel values here.
+
+   Figma pins the bar to 375 wide and 56 tall. It fills its container here, and
+   the 56 comes from its 48-tall content plus the bottom padding, so no 56px
+   token is needed — the system has none.
+
+   Background: Figma paints two identical linear gradients, each running from
+   background/page down to the same colour at zero alpha. One is drawn here;
+   stacking the duplicate only steepens the fade and reads as a copy-paste. */
+
+.knowieAppBar {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--space-100);
+  width: 100%;
+  padding-top: var(--space-0);
+  padding-bottom: var(--space-200);
+  background-image: linear-gradient(var(--color-background-page), transparent);
+}
+
+/* Side padding tightens when an icon button sits at that edge, because the
+   button carries its own padding inside a 48 square. */
+.knowieAppBar[data-variant='default'] {
+  padding-left: var(--space-400);
+  padding-right: var(--space-400);
+}
+
+.knowieAppBar[data-variant='leftIconButtonOnly'],
+.knowieAppBar[data-variant='leftAndRightButton'] {
+  padding-left: var(--space-100);
+  padding-right: var(--space-400);
+}
+
+.knowieAppBar[data-variant='leftAndRightIconButton'],
+.knowieAppBar[data-variant='leftAndTwoRightIconButtons'] {
+  padding-left: var(--space-100);
+  padding-right: var(--space-100);
+}
+
+.knowieAppBar[data-variant='leftAnd2RightButtons'] {
+  padding-left: var(--space-100);
+  padding-right: var(--space-300);
+}
+
+/* The action regions hold their 48 row height whether or not they are filled,
+   so the bar does not change height with its content. */
+.knowieAppBar-left,
+.knowieAppBar-right {
+  box-sizing: border-box;
+  display: flex;
+  flex: none;
+  align-items: center;
+  min-height: var(--space-1200);
+}
+
+/* Figma's two right-hand text-button variants inset the button differently,
+   and the inset belongs to the action, not to the bar:
+
+   - leftAndRightButton puts the `App Bar Button` instance straight into the
+     bar, 42 wide around a 30 button — a 12 left padding of its own. With the
+     bar's 16 right padding the label sits 12 clear of the slot and 16 clear of
+     the edge.
+   - leftAnd2RightButtons groups the two actions in a `Right buttons` frame
+     instead. There the button is a bare 30 and the group carries a 4 right
+     padding, which lands the same 16 total inset against the bar's 12.
+
+   Both are applied to the region rather than the action so the caller still
+   passes a plain button. */
+.knowieAppBar[data-variant='leftAndRightButton'] .knowieAppBar-right {
+  padding-left: var(--space-300);
+}
+
+.knowieAppBar[data-variant='leftAnd2RightButtons'] .knowieAppBar-right {
+  padding-right: var(--space-100);
+}
+
+/* The centre slot takes the remaining width. Its padding sits inside the 48
+   row rather than adding to it, the way the Figma slot frame is built. */
+.knowieAppBar-slot {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: var(--space-1200);
+  padding-top: var(--space-250);
+  padding-bottom: var(--space-250);
+}

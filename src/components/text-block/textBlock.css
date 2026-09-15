@@ -1,0 +1,93 @@
+/* textBlock — built from the Figma component set `textBlock` (node 9003:9039)
+   in Yummy__Knowie Design Sprint. Every value is a custom property from
+   build/css/tokens.css; there are no raw hex or pixel values here.
+
+   The block fills its container rather than hugging: every instance in the
+   Figma file is set to FILL (358 in middleContent, 282 inside a prompt), and
+   the two text layers are FILL inside it. That is what makes the XL and L
+   centring do any work. */
+
+.knowieTextBlock {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.knowieTextBlock-title {
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.knowieTextBlock-caption {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+/* XL and L — screen-level headings. Centred, and set on the 4px gap step. */
+
+.knowieTextBlock[data-variant='XL'],
+.knowieTextBlock[data-variant='L'] {
+  gap: var(--space-100);
+  text-align: center;
+}
+
+.knowieTextBlock[data-variant='XL'] .knowieTextBlock-title {
+  font-family: var(--greed-display-m-font-family);
+  font-weight: var(--greed-display-m-font-weight);
+  font-size: var(--greed-display-m-font-size);
+  line-height: var(--greed-display-m-line-height);
+}
+
+.knowieTextBlock[data-variant='L'] .knowieTextBlock-title {
+  font-family: var(--greed-headline-xl-font-family);
+  font-weight: var(--greed-headline-xl-font-weight);
+  font-size: var(--greed-headline-xl-font-size);
+  line-height: var(--greed-headline-xl-line-height);
+}
+
+/* Both screen-level steps share one caption style, so the caption stays the
+   same size whether the title is 76 or 44. */
+.knowieTextBlock[data-variant='XL'] .knowieTextBlock-caption,
+.knowieTextBlock[data-variant='L'] .knowieTextBlock-caption {
+  font-family: var(--greed-headline-xs-regular-font-family);
+  font-weight: var(--greed-headline-xs-regular-font-weight);
+  font-size: var(--greed-headline-xs-regular-font-size);
+  line-height: var(--greed-headline-xs-regular-line-height);
+}
+
+/* M and S — section headings. Left-aligned, and tighter on the 2px gap step. */
+
+.knowieTextBlock[data-variant='M'],
+.knowieTextBlock[data-variant='S'] {
+  gap: var(--space-050);
+  text-align: left;
+}
+
+.knowieTextBlock[data-variant='M'] .knowieTextBlock-title {
+  font-family: var(--greed-body-m-bold-font-family);
+  font-weight: var(--greed-body-m-bold-font-weight);
+  font-size: var(--greed-body-m-bold-font-size);
+  line-height: var(--greed-body-m-bold-line-height);
+}
+
+.knowieTextBlock[data-variant='M'] .knowieTextBlock-caption {
+  font-family: var(--greed-caption-m-regular-font-family);
+  font-weight: var(--greed-caption-m-regular-font-weight);
+  font-size: var(--greed-caption-m-regular-font-size);
+  line-height: var(--greed-caption-m-regular-line-height);
+}
+
+.knowieTextBlock[data-variant='S'] .knowieTextBlock-title {
+  font-family: var(--greed-body-s-bold-font-family);
+  font-weight: var(--greed-body-s-bold-font-weight);
+  font-size: var(--greed-body-s-bold-font-size);
+  line-height: var(--greed-body-s-bold-line-height);
+}
+
+.knowieTextBlock[data-variant='S'] .knowieTextBlock-caption {
+  font-family: var(--greed-caption-s-regular-font-family);
+  font-weight: var(--greed-caption-s-regular-font-weight);
+  font-size: var(--greed-caption-s-regular-font-size);
+  line-height: var(--greed-caption-s-regular-line-height);
+}

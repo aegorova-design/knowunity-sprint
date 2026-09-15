@@ -1,0 +1,7 @@
+/* Chrome for the appBar stories only. The bar fades to transparent, so the
+   stories sit it on the page colour with content beneath to show the fade. */
+
+.knowieAppBarDemo {
+  min-height: var(--space-4000);
+  background: var(--color-background-page);
+}

@@ -1,0 +1,15 @@
+/* Chrome for the mascotFigure stories only. */
+
+.knowieMascotFigureDemo {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--space-400);
+  background: var(--color-background-page);
+}
+
+.knowieMascotFigureDemo-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-400);
+  align-items: flex-end;
+}

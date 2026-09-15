@@ -1,0 +1,25 @@
+/* Chrome for the skeleton stories only.
+
+   Side padding is Space/400, the canvas padding, so the block inside sits at
+   the same 358 it does on the Processing screen. */
+
+.knowieSkeletonDemo {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--space-400);
+  background: var(--color-background-page);
+}
+
+.knowieSkeletonDemo-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-800);
+}
+
+/* The Processing screen's own stack: verdictHeader, then the block, at
+   Space/600 apart. */
+.knowieSkeletonDemo-checking {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-600);
+}

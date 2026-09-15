@@ -1,0 +1,50 @@
+/* skeleton — built from the Figma component set `skeleton` (node 13654:8800) in
+   Yummy__Knowie Design Sprint. Every value here is a custom property from
+   build/css/tokens.css except the three line widths, which have no token; they
+   are set inline from the component's own variant map, and the gap is reported
+   in the stories.
+
+   The block is auto layout and three painted bars. It draws no fill of its own:
+   everything visible is a line. */
+
+.knowieSkeleton {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  /* Fixed 358 in Figma — the canvas minus its side padding — which is what
+     filling the parent comes to wherever this is placed. Height hugs. */
+  width: 100%;
+  /* The lines are centred, not left-aligned, because the block sits under a
+     centred verdictHeader on the Processing screen. */
+  align-items: center;
+  gap: var(--space-300);
+}
+
+/* --- a line --------------------------------------------------------------
+   16 tall, Radius/100, background/stacking. The height is the one measurement
+   Figma leaves unbound; Space/400 is the same 16 and is what waveform already
+   uses for a drawn height, so it is the closest honest name for it.
+
+   max-width keeps a line inside the block if this is ever placed somewhere
+   narrower than the 390 canvas, which the fixed widths could otherwise
+   overflow. */
+
+.knowieSkeleton-line {
+  display: block;
+  flex: none;
+  height: var(--space-400);
+  max-width: 100%;
+  border-radius: var(--radius-100);
+  background-color: var(--color-background-stacking);
+}
+
+/* --- no motion -----------------------------------------------------------
+   Deliberate, and stated in the component's description: "Neutral fill, no
+   motion: the Processing screen already has Knowie rolling, so the skeleton
+   stays quiet."
+
+   There is nothing to switch off under prefers-reduced-motion, which is the
+   point — the one moving thing on that screen is the mascot, and the wait is
+   named in text above it. If a shimmer is ever wanted it needs a duration and
+   an easing in tokens/tokens.json first; the Motion family currently holds
+   only the button press. */

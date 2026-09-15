@@ -1,0 +1,61 @@
+/* waveform — built from the Figma component set `waveform` (node 13584:6119)
+   in Yummy__Knowie Design Sprint. Every value is a custom property from
+   build/css/tokens.css; there are no raw hex or pixel values here.
+
+   24 bars on a Space/150 gap, each Space/100 wide and pill-shaped. The row is
+   236 wide in the file but set to FILL, so it fills its container here. */
+
+.knowieWaveform {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  height: var(--space-800);
+  gap: var(--space-150);
+  padding: var(--space-0);
+}
+
+.knowieWaveform-bar {
+  flex: none;
+  width: var(--space-100);
+  border-radius: var(--radius-full);
+  /* Unplayed, and the whole row on Idle at 0 and on Silent. */
+  background-color: var(--color-text-tertiary);
+}
+
+/* The bar heights run on a repeating four-step figure — 8, 12, 16, 24 — so the
+   row reads as levels rather than as a pattern of two. */
+.knowieWaveform-bar:nth-child(4n + 1) {
+  height: var(--space-200);
+}
+
+.knowieWaveform-bar:nth-child(4n + 2) {
+  height: var(--space-300);
+}
+
+.knowieWaveform-bar:nth-child(4n + 3) {
+  height: var(--space-400);
+}
+
+.knowieWaveform-bar:nth-child(4n + 4) {
+  height: var(--space-600);
+}
+
+/* Live — audio is being captured, so every bar takes the brand. Nothing else in
+   this feature may use accent.brand.bold to mean live audio. */
+.knowieWaveform[data-state='Live'] .knowieWaveform-bar {
+  background-color: var(--color-accent-brand-bold);
+}
+
+/* Idle — a take at rest. Progress fills the bars left to right as it plays, the
+   same way progressIndicator fills. */
+.knowieWaveform[data-state='Idle'] .knowieWaveform-bar[data-filled='true'] {
+  background-color: var(--color-accent-brand-bold);
+}
+
+/* Silent — nothing was captured, so every bar flattens to Space/100 and the row
+   reads as a dotted line rather than as levels. */
+.knowieWaveform[data-state='Silent'] .knowieWaveform-bar {
+  height: var(--space-100);
+}

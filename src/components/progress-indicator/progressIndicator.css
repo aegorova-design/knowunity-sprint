@@ -1,0 +1,72 @@
+/* progressIndicator — built from the Figma component set `progressIndicator`
+   (node 9003:8923) in Yummy__Knowie Design Sprint. Every value is a custom
+   property from build/css/tokens.css; there are no raw hex or pixel values.
+
+   Figma pins the track to 350 wide. A progress bar has no business fixing its
+   own width, so it fills its container here and the fill's percentage is taken
+   from that — which reproduces the Figma proportions at any width.
+
+   Not built: the track's 1px border. This project does not need it. Figma
+   binds it to `border/subtle` anyway, a variable deleted from the Semantic
+   color token collection, so it reaches neither tokens.json nor the generated
+   CSS — that binding is still worth repointing in the file. */
+
+.knowieProgressIndicator {
+  box-sizing: border-box;
+  width: 100%;
+  background-color: var(--color-background-stacking);
+  border-radius: var(--radius-300);
+}
+
+/* The bar's own height doubles as its minimum width, so progress=0 reads as a
+   dot rather than as nothing at all — the way the Figma 0 variants are drawn. */
+.knowieProgressIndicator[data-thickness='24'] {
+  height: var(--icon-300);
+  padding: var(--space-050);
+  --knowieProgress-bar: var(--icon-250);
+}
+
+/* The 16 track has no inset: its fill is the full height of the track. */
+.knowieProgressIndicator[data-thickness='16'] {
+  height: var(--icon-200);
+  padding: var(--space-0);
+  --knowieProgress-bar: var(--icon-200);
+}
+
+.knowieProgressIndicator-fill {
+  height: var(--knowieProgress-bar);
+  width: max(var(--knowieProgress-bar), var(--knowieProgress-pct));
+  border-radius: var(--radius-full);
+}
+
+/* --- progress ------------------------------------------------------------- */
+
+.knowieProgressIndicator[data-progress='0'] {
+  --knowieProgress-pct: 0%;
+}
+
+.knowieProgressIndicator[data-progress='25'] {
+  --knowieProgress-pct: 25%;
+}
+
+.knowieProgressIndicator[data-progress='50'] {
+  --knowieProgress-pct: 50%;
+}
+
+.knowieProgressIndicator[data-progress='75'] {
+  --knowieProgress-pct: 75%;
+}
+
+.knowieProgressIndicator[data-progress='100'] {
+  --knowieProgress-pct: 100%;
+}
+
+/* --- variant -------------------------------------------------------------- */
+
+.knowieProgressIndicator[data-variant='Primary'] .knowieProgressIndicator-fill {
+  background-color: var(--color-accent-brand-bold);
+}
+
+.knowieProgressIndicator[data-variant='Coral'] .knowieProgressIndicator-fill {
+  background-color: var(--color-accent-coral-bold);
+}

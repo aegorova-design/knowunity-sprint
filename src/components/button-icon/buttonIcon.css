@@ -1,0 +1,169 @@
+/* buttonIcon — built from the Figma component set `buttonIcon` (node 9003:8235)
+   in Yummy__Knowie Design Sprint. Every value is a custom property from
+   build/css/tokens.css; there are no raw hex or pixel values here.
+
+   Structure mirrors Figma: a transparent tap-target wrapper (.knowieButtonIcon)
+   around the visible pill (.knowieButtonIcon-pill).
+
+   Figma pins the L pill to 56x56 and binds nothing to it — the system has no 56
+   step in any family. As button already does for its own 56 pill, L is built as
+   token padding around the icon instead: Icon/300 plus Space/400 either side
+   lands on 56 without inventing a token. S and M use the tokens Figma actually
+   binds, Icon/400 and Illustration/500. */
+
+.knowieButtonIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  /* The tap target is at least 48 square at every size. L's pill is larger than
+     that, so the wrapper grows to it — which reproduces every outer box in the
+     set, including Tertiary L's 48x56. */
+  min-width: var(--space-1200);
+  min-height: var(--space-1200);
+  padding: var(--space-0);
+  border: none;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.knowieButtonIcon:disabled,
+.knowieButtonIcon[aria-disabled='true'] {
+  cursor: default;
+}
+
+.knowieButtonIcon-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  flex: none;
+}
+
+/* --- geometry ------------------------------------------------------------ */
+
+/* The filled variants are fixed squares; Tertiary hugs its icon instead. */
+.knowieButtonIcon:not([data-variant='Tertiary']) .knowieButtonIcon-pill {
+  border-radius: var(--radius-full);
+}
+
+.knowieButtonIcon:not([data-variant='Tertiary'])[data-size='S'] .knowieButtonIcon-pill {
+  width: var(--icon-400);
+  height: var(--icon-400);
+}
+
+.knowieButtonIcon:not([data-variant='Tertiary'])[data-size='M'] .knowieButtonIcon-pill {
+  width: var(--illustration-500);
+  height: var(--illustration-500);
+}
+
+/* L has no size token to bind, so it is built from the icon plus padding. */
+.knowieButtonIcon:not([data-variant='Tertiary'])[data-size='L'] .knowieButtonIcon-pill {
+  padding: var(--space-400);
+}
+
+/* Tertiary carries no fill and no shape — just the icon — except at L, where
+   Figma still gives it the full 56 height. Same padding trick, vertical only. */
+.knowieButtonIcon[data-variant='Tertiary'][data-size='L'] .knowieButtonIcon-pill {
+  padding-block: var(--space-400);
+}
+
+/* --- fills --------------------------------------------------------------- */
+
+/* Primary and Brand carry a hairline edge; Secondary and Tertiary do not. */
+.knowieButtonIcon[data-variant='Primary'] .knowieButtonIcon-pill,
+.knowieButtonIcon[data-variant='Brand'] .knowieButtonIcon-pill {
+  border: var(--stroke-border) solid var(--color-border-default);
+}
+
+.knowieButtonIcon[data-variant='Primary'] .knowieButtonIcon-pill {
+  background-color: var(--color-interactive-primary);
+}
+
+.knowieButtonIcon[data-variant='Secondary'] .knowieButtonIcon-pill {
+  background-color: var(--color-background-surface);
+}
+
+.knowieButtonIcon[data-variant='Brand'] .knowieButtonIcon-pill {
+  background-color: var(--color-accent-brand-bold);
+}
+
+/* --- pressed ------------------------------------------------------------- */
+
+/* Figma layers a press overlay over the resting fill rather than replacing it.
+   Primary and Brand take interactive.pressed; Secondary takes
+   background.stacking. Both resolve to the same 10% white, but the file binds
+   them separately, so they are kept separate here. */
+.knowieButtonIcon[data-variant='Primary'][data-state='Pressed'] .knowieButtonIcon-pill,
+.knowieButtonIcon[data-variant='Primary']:not([data-state='Disabled']):active
+  .knowieButtonIcon-pill,
+.knowieButtonIcon[data-variant='Brand'][data-state='Pressed'] .knowieButtonIcon-pill,
+.knowieButtonIcon[data-variant='Brand']:not([data-state='Disabled']):active
+  .knowieButtonIcon-pill {
+  background-image: linear-gradient(
+    var(--color-interactive-pressed),
+    var(--color-interactive-pressed)
+  );
+}
+
+.knowieButtonIcon[data-variant='Secondary'][data-state='Pressed'] .knowieButtonIcon-pill,
+.knowieButtonIcon[data-variant='Secondary']:not([data-state='Disabled']):active
+  .knowieButtonIcon-pill {
+  background-image: linear-gradient(
+    var(--color-background-stacking),
+    var(--color-background-stacking)
+  );
+}
+
+/* --- disabled ------------------------------------------------------------ */
+
+/* Every filled variant collapses to the same flat surface with no edge, so a
+   disabled Primary and a disabled Brand are indistinguishable — which is how
+   the file has it. */
+.knowieButtonIcon[data-state='Disabled'] .knowieButtonIcon-pill {
+  background-color: var(--color-background-surface);
+  background-image: none;
+  border: none;
+}
+
+.knowieButtonIcon[data-variant='Tertiary'][data-state='Disabled'] .knowieButtonIcon-pill {
+  background-color: transparent;
+}
+
+/* --- the icon ------------------------------------------------------------ */
+
+/* iconSlot sets its own colour to text.primary and invites a parent to recolour
+   it in place, which is what each variant does here. Targeted by descendant
+   selector rather than a className on the instance. */
+.knowieButtonIcon[data-variant='Primary'] .knowieIconSlot {
+  color: var(--color-interactive-on-primary);
+}
+
+.knowieButtonIcon[data-variant='Secondary'] .knowieIconSlot,
+.knowieButtonIcon[data-variant='Tertiary'] .knowieIconSlot {
+  color: var(--color-text-primary);
+}
+
+.knowieButtonIcon[data-variant='Brand'] .knowieIconSlot {
+  color: var(--color-accent-brand-on-bold);
+}
+
+/* Disabled overrides all four, so the icon reads as unavailable whatever the
+   variant was. */
+.knowieButtonIcon[data-state='Disabled'] .knowieIconSlot {
+  color: var(--color-text-disabled);
+}
+
+.knowieButtonIcon-loading {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: currentColor;
+  -webkit-mask-image: url('/icons/loading-01.svg');
+  mask-image: url('/icons/loading-01.svg');
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}

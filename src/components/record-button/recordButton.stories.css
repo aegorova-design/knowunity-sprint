@@ -1,0 +1,16 @@
+/* Chrome for the recordButton stories only. */
+
+.knowieRecordButtonDemo {
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: var(--space-400);
+  background: var(--color-background-page);
+}
+
+.knowieRecordButtonDemo-pair {
+  display: flex;
+  gap: var(--space-600);
+  align-items: center;
+}
