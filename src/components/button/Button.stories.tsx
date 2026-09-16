@@ -537,3 +537,63 @@ export const AsALink: Story = {
     await expect(canvas.queryByRole('link', { name: 'Disabled link' })).toBeNull();
   },
 };
+
+/**
+ * Not a Figma variant — the two sizing modes, which the button picks between
+ * on its own. A stretched button fills; an unstretched one hugs. There is no
+ * prop: the face takes whatever width the outer box is given, so a parent
+ * that stretches the button gets a full-width pill and a parent that does not
+ * gets one the size of its label.
+ *
+ * The pair of secondaries is the grouping the session screens use under a
+ * primary — "I don't know" and "Type instead" on 06 Idle, "Have a go" and
+ * "Type instead" on the hint screen. They fill.
+ */
+export const FillAndHug: Story = {
+  args: { onClick: fn() },
+  render: () => (
+    <div className="knowieButtonMatrix">
+      <div className="knowieButtonSizing">
+        <div className="knowieButtonSizing-fill">
+          <Button variant="Primary" size="L" CTA="Show me the answer" showRightIcon rightIcon="arrow-right" />
+        </div>
+        <div className="knowieButtonSizing-fill">
+          <Button variant="Secondary" size="M" CTA="I don’t know" showLeftIcon leftIcon="help-circle" />
+          <Button variant="Secondary" size="M" CTA="Type instead" showLeftIcon leftIcon="keyboard-01" />
+        </div>
+        <div className="knowieButtonSizing-hug">
+          <Button variant="Secondary" size="M" CTA="I don’t know" showLeftIcon leftIcon="help-circle" />
+          <Button variant="Secondary" size="M" CTA="Type instead" showLeftIcon leftIcon="keyboard-01" />
+        </div>
+      </div>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const faceOf = (b: Element) =>
+      (b.querySelector('.knowieButton-face') as HTMLElement).getBoundingClientRect().width;
+
+    const [single] = [...canvasElement.querySelectorAll('.knowieButtonSizing-fill')];
+    const [wide] = [...single.querySelectorAll('.knowieButton')];
+    // Alone in a stretching row, the pill is the whole 358.
+    await expect(Math.round(faceOf(wide))).toBe(358);
+
+    const pair = canvasElement.querySelectorAll('.knowieButtonSizing-fill')[1];
+    const filled = [...pair.querySelectorAll('.knowieButton')];
+    await expect(filled).toHaveLength(2);
+    for (const b of filled) {
+      // Two halves of 358 with a Space/200 gap between them.
+      await expect(Math.round(faceOf(b))).toBe(175);
+      // The visible pill is the whole flex item, not a smaller one inside it.
+      await expect(Math.round(faceOf(b))).toBe(Math.round(b.getBoundingClientRect().width));
+    }
+
+    const hugRow = canvasElement.querySelector('.knowieButtonSizing-hug') as HTMLElement;
+    const hugged = [...hugRow.querySelectorAll('.knowieButton')];
+    for (const b of hugged) {
+      // Nothing stretches these, so they stay at their label's width.
+      await expect(faceOf(b)).toBeLessThan(175);
+    }
+    // And the two hugged labels differ, which a filled pair never would.
+    await expect(faceOf(hugged[0])).not.toBe(faceOf(hugged[1]));
+  },
+};

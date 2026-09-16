@@ -30,3 +30,32 @@
   gap: var(--space-300);
   align-items: center;
 }
+
+/* Fill and hug — a 358 column, the app's content width, holding one row that
+   stretches its buttons and one that does not. */
+
+.knowieButtonSizing {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-400);
+  width: 358px;
+}
+
+.knowieButtonSizing-fill {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-200);
+}
+
+.knowieButtonSizing-fill > * {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.knowieButtonSizing-hug {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-200);
+  align-items: flex-start;
+  justify-content: flex-start;
+}

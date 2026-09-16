@@ -121,6 +121,18 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-full);
+  /* Fill when there is room, hug when there is not — Figma's two sizing modes,
+     and the button does not need a prop to choose between them. The outer box
+     is inline-flex, so left alone it shrink-wraps and `auto` resolves to the
+     content width: the pill hugs. The moment a parent stretches the outer box
+     — buttonGroup's fill slot, or a screen's own row of actions — the face
+     grows into it instead of sitting as a small centred pill inside a wide
+     invisible one. The label stays centred either way, by justify-content
+     above.
+
+     Without this, nothing that asked for a filling button ever got one:
+     buttonGroup stretched the anchor and the face kept hugging. */
+  flex: 1 1 auto;
 }
 
 .knowieButton:not([data-variant='Tertiary'])[data-size='XS'] .knowieButton-face,
