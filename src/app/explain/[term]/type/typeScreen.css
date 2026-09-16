@@ -4,7 +4,7 @@
 .typeScreen-body {
   display: flex;
   flex-direction: column;
-  gap: var(--space-500);
+  gap: var(--space-600);
 }
 
 /* The helper sits with the field, not adrift below it, so the gap between them
