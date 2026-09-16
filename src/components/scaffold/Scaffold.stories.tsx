@@ -81,9 +81,15 @@ The other eight are defined, appear in Figma's instance panel, and do nothing:
   "hide empty slots" rule does anyway.
 - **The size axis has one option.** design-system.md says to "check the XS -
   iPhone SE variant"; that variant no longer exists in the file.
-- **The status bar is reserved, not drawn.** Figma fills it with a Status Bar
-  instance from a library this file cannot reach. Its 48 height is held and
-  left empty, which is also correct on a real device, where the OS draws it.
+- **The status bar is a picture, not a rebuild.** Figma fills it with a Status
+  Bar instance from a library this file cannot reach — design-system.md lists
+  Status Bar among the components no local library provides. The scaffold
+  draws the strip exported from its own \`Panel Header\` frame (node 4794:5829)
+  as a background image instead, 390x48 at 3x with a transparent ground, on
+  the same grounds the home and plan screens show their chrome as flat
+  exports. It is inert and \`aria-hidden\`: a picture of a status bar has
+  nothing to announce, and on a real device the OS would be drawing here
+  anyway. The height is still the reserved 48.
 - **The frame is fluid.** Figma pins 390x844; a screen container fills the
   viewport instead.
 - **Three dead layers are not built:** a \`Scrim\` gradient inside

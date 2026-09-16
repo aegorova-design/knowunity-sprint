@@ -20,11 +20,29 @@
 }
 
 /* The status bar row. Fixed, and nothing of the app's goes in it — on a real
-   device the OS draws here. Figma fills it with a Status Bar instance from a
-   library this file cannot reach, so the height is reserved and left empty. */
+   device the OS draws here.
+
+   Figma fills it with a Status Bar instance from a library this file cannot
+   reach: design-system.md lists Status Bar among the components no local
+   library provides. So it is drawn as the flat PNG exported from the scaffold
+   component's own Panel Header frame (node 4794:5829), on the same grounds
+   ChromeStrip gives for the rest of the app chrome — show it as a picture
+   rather than pretend to rebuild something unreachable. The strip is 390x48
+   at 3x, transparent behind, so the page colour shows through.
+
+   auto 100% rather than a stretch: at the 390 canvas it lands pixel for
+   pixel, and anywhere wider it stays its own width and centres instead of
+   distorting the clock and the icons. */
 .knowieScaffold-panelHeader {
   flex: none;
   height: var(--space-1200);
+  background-image: url('/chrome/status-bar.png');
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: auto 100%;
+  /* Inert: it is a picture of the OS, not the OS. */
+  pointer-events: none;
+  user-select: none;
 }
 
 /* Hugs its content: one appBar, nothing else. */

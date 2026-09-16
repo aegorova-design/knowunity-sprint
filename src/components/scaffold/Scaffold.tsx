@@ -51,7 +51,11 @@ export function Scaffold({
 }: ScaffoldProps) {
   return (
     <div className="knowieScaffold" data-size={size} {...rest}>
-      {/* Reserved, never filled by the app — the OS draws here. */}
+      {/* The OS's row, never the app's. Drawn as the Panel Header strip
+          exported from the scaffold component, because the Status Bar it
+          holds comes from a library this project cannot reach — see
+          scaffold.css. Hidden from the accessibility tree: a picture of a
+          status bar has nothing to announce. */}
       <div className="knowieScaffold-panelHeader" aria-hidden="true" />
 
       {showTopNavSlot ? (
