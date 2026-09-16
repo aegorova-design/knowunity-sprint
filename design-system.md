@@ -171,7 +171,7 @@ Values are not repeated here. Every fill, padding, radius, gap and text style co
 >
 > type says what the step asks for. Learning carries the quiz icon and bundles reading and quiz together. Voice carries the mic and is the Explain out loud capstone, which sits after the section's last learning step and never in the middle.
 >
-> state runs Locked, NotStarted, InProgress, Completed, and every one of them is a shape before it is a colour: Locked is a dashed ring with the icon and label at text/disabled, NotStarted is a solid empty ring, InProgress fills half the ring, Completed fills the ring and the core. Learning uses NotStarted, InProgress and Completed. Voice uses Locked, NotStarted and Completed, where NotStarted is what available looks like: a voice step stays Locked until every learning step in its section is Completed. Learning/Locked and Voice/InProgress exist so the matrix is square; neither is used in the sprint flow.
+> state runs Locked, NotStarted, InProgress, Completed, and every one of them is a shape before it is a colour: Locked is a dashed ring with the icon and label at text/disabled, NotStarted is a solid empty ring, InProgress fills half the ring, Completed fills the ring and the core. Learning uses NotStarted, InProgress and Completed. Voice uses the same three: the voice step is available from the moment its section exists and is never gated on the learning steps, so NotStarted is what available looks like and the step is tappable from the start. Learning/Locked and Voice/Locked are kept for a plan that does gate a step; neither is used in this sprint flow.
 >
 > Only Locked is untappable. Never fake a locked step by dimming an instance, use the Locked variant. Never carry the section's unaided count here; that read belongs to sectionHeader and mascotMessage. The caption is off by default and earns its place on Locked, where it should say what unlocks the step.
 
@@ -181,8 +181,8 @@ Values are not repeated here. Every fill, padding, radius, gap and text style co
 - **caption:** text, default "Study and quiz" / **showCaption:** boolean, default false
 - 8 variants, 171x56 at the default label. Built from a `step` frame (track, core and iconSlot) plus a `text` frame.
 - Learning uses ai-quiz, Voice uses microphone-01, matching the icons in the live app.
-- There is no Default. The resting value is NotStarted, and the sprint flow never shows Learning/Locked or Voice/InProgress.
-- An earlier version of this component ruled out locking entirely, and sprint-context.md carried the matching decision. Both were replaced. The description above is the current one.
+- There is no Default. The resting value is NotStarted. The sprint flow never shows Learning/Locked or Voice/Locked. Voice/InProgress is used, on the Plan, voice in progress mockup.
+- An earlier version of this component ruled out locking entirely, and sprint-context.md carried the matching decision. Both were replaced by a gated voice step, and that gate has since been reversed: the voice step is available at all times again, and Locked stays on the component unused. The description above is the current one.
 
 ### sectionHeader
 
@@ -313,7 +313,7 @@ These are known violations. Don't copy them.
 - **Example screens detach components.** They build the app bar and main buttons from detached frames instead of appBar and button instances.
 - **Caption S may be too small.** It was recorded as below the minimum caption size in 04-platform-constraints.md, and chips XXS, progressIndicator and textBlock S all use it. The threshold can't be checked while that file is missing.
 - **Body line height may be too tight.** Body M and Body S were recorded as below the platform line-height range. Same missing file, same unverifiable threshold.
-- **Font family mismatch.** tokens/tokens.json holds Greed Standard-TRIAL, and the platform constraints were recorded as requiring Inter Variable for prototypes. Inter Variable isn't in tokens/tokens.json. The requirement can't be confirmed while that file is missing.
+- ~~**Font family mismatch.**~~ Resolved. Greed Standard-TRIAL is the family this project uses, on purpose. The Inter Variable requirement recorded against the missing 04-platform-constraints.md is overridden: this is a private project and the design was drawn in Greed. The faces live in `src/fonts/greed`, the app loads them with next/font/local (`src/app/fonts.ts`) and Storybook declares the same four weights as @font-face in `.storybook/preview.css`. `font.family.default` and `font.family.display` both resolve through `var(--font-greed)` with a system fallback stack.
 - **Progress fill conflicts with the token description.** interactive.primary's description claims progress bar fills, but progressIndicator uses accent.brand.bold.
 - **Inconsistent naming.**
   - chips is plural and every other component is singular.
@@ -332,15 +332,15 @@ Open decisions first, then proposed names. A proposed name doesn't exist yet.
 
 **Decisions waiting on someone**
 
-- **A Relearn state on sectionHeader.** mascotMessage has four states and sectionHeader has three. Both descriptions say the two pair, and for Default, ToRevisit and Mastered they do. When none of a section's terms come back unaided, Knowie says to read the section again while the header above still reads Default, as though nothing happened. Either sectionHeader gains a fourth state or Relearn sections show a ToRevisit header and the two stop being a matched set. Nothing in the mockups exercises this yet.
-- **A fifth Knowie pose.** mascotMessage's Relearn borrows Standby because none of the five poses fits a gentle setback. The component's own description calls a fifth pose the proper fix and a decision rather than a variant.
+- ~~**A Relearn state on sectionHeader.**~~ Decided: mascotMessage drops Relearn instead. A 0-of-3 section reads ToRevisit on both, so the two pair across every value again. Not yet applied in Figma — mascotMessage still ships four states.
+- ~~**A fifth Knowie pose.**~~ Moot once Relearn goes: no state needs a pose for a gentle setback, so nothing borrows Standby any more.
 - **An icon property on button.** See the known violations above. Without an instance swap per container, "every button carries an icon" can't be set in Figma.
 - **Deleting scaffold's eight superseded properties.** Every screen depends on that component, so this is a decision before it is an edit.
 - **The role axis name.** answerBlock's `kind` and stepperStep's `type` against `variant` everywhere else. See "Open on naming".
 
 **Proposed names**
 
-- **bottomSheet.** The scaffold has a sheet slot but no sheet component. Every sheet in the file is a plain frame. Why? and verdict content need one.
+- **bottomSheet.** Decided: build it as a real component set. The scaffold has a sheet slot but no sheet component, and every sheet in the file is a plain frame. Three surfaces need it — the leave-session confirm, the summary term sheet and verdict content — so it stops being hand-built each time. Not built yet; this is the next component to make.
 - **verdictSheet.** Got it, partial and missed as a whole sheet. verdictHeader now covers the top of one, so what's left is the sheet around it.
 - **listItem.** Example screens build lists from raw frames.
 - **checkbox.** It's currently an external instance.

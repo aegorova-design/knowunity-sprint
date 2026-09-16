@@ -64,18 +64,25 @@
   text-align: left;
 }
 
+/* M's title is Headline S and its caption Body S Regular — 21 over 15, which
+   is what the Figma text styles set and what this file had wrong. It used to
+   read Body M Bold over Caption M Regular, 18 over 12: a heading set in body
+   type, with a caption a step below the smallest thing a student should have
+   to read. Changing it here rather than on a screen is the point — M is the
+   step every screen-level prompt uses, so no screen has to correct it. */
+
 .knowieTextBlock[data-variant='M'] .knowieTextBlock-title {
-  font-family: var(--greed-body-m-bold-font-family);
-  font-weight: var(--greed-body-m-bold-font-weight);
-  font-size: var(--greed-body-m-bold-font-size);
-  line-height: var(--greed-body-m-bold-line-height);
+  font-family: var(--greed-headline-s-font-family);
+  font-weight: var(--greed-headline-s-font-weight);
+  font-size: var(--greed-headline-s-font-size);
+  line-height: var(--greed-headline-s-line-height);
 }
 
 .knowieTextBlock[data-variant='M'] .knowieTextBlock-caption {
-  font-family: var(--greed-caption-m-regular-font-family);
-  font-weight: var(--greed-caption-m-regular-font-weight);
-  font-size: var(--greed-caption-m-regular-font-size);
-  line-height: var(--greed-caption-m-regular-line-height);
+  font-family: var(--greed-body-s-regular-font-family);
+  font-weight: var(--greed-body-s-regular-font-weight);
+  font-size: var(--greed-body-s-regular-font-size);
+  line-height: var(--greed-body-s-regular-line-height);
 }
 
 .knowieTextBlock[data-variant='S'] .knowieTextBlock-title {

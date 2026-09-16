@@ -1,0 +1,32 @@
+/* The "I don't know" hint's own layout. Every value is a token from
+   build/css/tokens.css — see design-system.md, "Never invent a value". */
+
+.hintScreen-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-500);
+}
+
+/* --- thumb zone ----------------------------------------------------------
+   No padding of its own: scaffold.css owns the thumb zone's inset. The gap
+   matches 06 Idle's bottom stack, so the two screens sit still under the
+   thumb when the student moves between them. */
+
+.hintScreen-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-400);
+}
+
+/* Two equal halves, the same split 06 Idle uses for its pair of ways out. */
+
+.hintScreen-attempts {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-200);
+}
+
+.hintScreen-attempts > * {
+  flex: 1 1 0;
+  min-width: 0;
+}

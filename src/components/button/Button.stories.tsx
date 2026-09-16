@@ -496,3 +496,44 @@ export const WithIcons: Story = {
     await expect(record.querySelector('.knowieIconSlot')).toHaveAttribute('aria-hidden', 'true');
   },
 };
+
+/**
+ * Not a Figma variant — `href` exists in code only. A prototype whose buttons
+ * cannot navigate is not a prototype, and Figma has no way to express a
+ * destination. With one the control is a real anchor carrying the same classes
+ * and data attributes, so it looks identical and behaves like a link.
+ */
+export const AsALink: Story = {
+  name: 'href — renders a link',
+  render: () => (
+    <div className="knowieButtonMatrix">
+      <div className="knowieButtonMatrix-group">
+        <div className="knowieButtonMatrix-row">
+          <Button variant="Primary" size="L" CTA="Continue studying" href="/plan" />
+          <Button variant="Secondary" size="M" CTA="Not a link" />
+          <Button variant="Primary" size="M" CTA="Disabled link" href="/plan" state="Disabled" />
+        </div>
+      </div>
+    </div>
+  ),
+  play: async ({ canvas, canvasElement }) => {
+    // With an href it is an anchor, not a button, and it keeps the skin.
+    const link = canvas.getByRole('link', { name: 'Continue studying' });
+    await expect(link.tagName).toBe('A');
+    await expect(link).toHaveAttribute('href', '/plan');
+    await expect(link).toHaveClass('knowieButton');
+    await expect(link).toHaveAttribute('data-variant', 'Primary');
+    await expect(link).toHaveAttribute('data-size', 'L');
+
+    // Without one, nothing changes: still a button.
+    await expect(canvas.getByRole('button', { name: 'Not a link' }).tagName).toBe('BUTTON');
+
+    // A disabled link is not a thing, so it renders as an inert span with no
+    // href — nothing for the keyboard to land on.
+    const disabled = canvasElement.querySelector('span.knowieButton') as HTMLElement;
+    await expect(disabled).toBeTruthy();
+    await expect(disabled).toHaveAttribute('aria-disabled', 'true');
+    await expect(disabled).not.toHaveAttribute('href');
+    await expect(canvas.queryByRole('link', { name: 'Disabled link' })).toBeNull();
+  },
+};

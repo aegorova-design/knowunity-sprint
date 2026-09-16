@@ -53,7 +53,8 @@ design-system.md is more specific about how to use it:
 > height and scrolls. Its padding and gap are already bound to Space tokens,
 > so don't add outer margins inside it.
 > **bottomContent.** Actions and input. It hugs its content. This is the thumb
-> zone.
+> zone. Its padding is bound to Space tokens the same way, so don't add outer
+> padding inside it to reach for more.
 > **bottomSheetOnly.** Sheet content. Turn on showBottomSheetBackground with it
 > so the sheet gets its backing surface. Only one sheet at a time.
 

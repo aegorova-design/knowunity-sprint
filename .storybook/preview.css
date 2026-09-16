@@ -3,10 +3,61 @@
    real app, instead of Storybook's default white iframe. */
 @import '../build/css/tokens.css';
 
+/* Greed Standard-TRIAL, declared by hand rather than through next/font.
+   The app loads this family with next/font/local (src/app/fonts.ts), but
+   .storybook/main.ts uses @storybook/nextjs-vite, which exposes no next/font
+   entry — so the catalog needs its own @font-face rules pointing at the same
+   files. Keep the four weights here in step with src/app/fonts.ts.
+
+   One family, four weights. The trial release ships SemiBold and Heavy under
+   their own internal family names, so a bare family reference would miss them
+   and the browser would synthesise a fake bold. Naming the family ourselves
+   and mapping each file to a weight is what avoids that. */
+
+@font-face {
+  font-family: 'Greed Standard';
+  src: url('../src/fonts/greed/GreedStandard-TRIAL-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Greed Standard';
+  src: url('../src/fonts/greed/GreedStandard-TRIAL-SemiBold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Greed Standard';
+  src: url('../src/fonts/greed/GreedStandard-TRIAL-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Greed Standard';
+  src: url('../src/fonts/greed/GreedStandard-TRIAL-Heavy.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* The tokens resolve --font-family-default through var(--font-greed), which
+   next/font sets on <html> in the app. Storybook has no next/font, so point
+   the same variable at the family declared above. */
+html {
+  --font-greed: 'Greed Standard';
+}
+
 html,
 body {
   min-height: 100%;
   background: var(--color-background-page);
   color: var(--color-text-primary);
   color-scheme: dark;
+  font-family: var(--font-family-default);
 }

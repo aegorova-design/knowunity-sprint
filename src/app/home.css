@@ -1,0 +1,18 @@
+/* 01 Home. Every value is a token from build/css/tokens.css. */
+
+.home {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* The card sits centred in the space the chrome leaves, the way the Figma
+     frame pads it with a spacer above and below. */
+  flex: 1;
+}
+
+.home-examCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-600);
+}

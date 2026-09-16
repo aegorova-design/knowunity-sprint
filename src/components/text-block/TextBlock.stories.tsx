@@ -25,7 +25,12 @@ description, so treat it as observed behaviour, not as stated intent:
   XL and L do any work.
 - **XL and L share one caption style** (Headline XS Regular), so the caption
   stays put while the title drops from 76 to 44. M and S each take their own
-  smaller caption (Caption M and Caption S Regular).
+  smaller caption: **Body S Regular** on M, Caption S Regular on S.
+- **The four steps are Display M, Headline XL, Headline S and Body S Bold** —
+  76, 44, 21 and 15. M is the step every screen-level prompt uses, and it read
+  Body M Bold over Caption M Regular here until that was corrected: 18 over 12,
+  a heading set in body type. The px in \`TYPE\` below are the Figma text
+  styles, and the play function fails if a token stops resolving to them.
 - **The gap tightens with the step:** Space/100 on XL and L, Space/050 on M
   and S.
 
@@ -85,7 +90,7 @@ type Story = StoryObj<typeof meta>;
 const TYPE: Record<TextBlockVariant, { title: number; caption: number; gap: number }> = {
   XL: { title: 76, caption: 18, gap: 4 },
   L: { title: 44, caption: 18, gap: 4 },
-  M: { title: 18, caption: 12, gap: 2 },
+  M: { title: 21, caption: 15, gap: 2 },
   S: { title: 15, caption: 9, gap: 2 },
 };
 

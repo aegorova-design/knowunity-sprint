@@ -72,7 +72,7 @@ export const Scale: Story = {
   render: () => (
     <Page
       title="Type"
-      intro="The Greed text styles in scale order, each specimen set with its own four tokens from build/css/tokens.css. The style group itself carries no $description, so each of its four tokens shows its own. font.family.default names Greed Standard-TRIAL, which this repo does not ship: the specimens render in it only on a machine where it is installed, and fall back to the browser default anywhere else."
+      intro="The Greed text styles in scale order, each specimen set with its own four tokens from build/css/tokens.css. The style group itself carries no $description, so each of its four tokens shows its own. font.family.default resolves through var(--font-greed) to Greed Standard-TRIAL, which this repo now ships in src/fonts/greed: the app loads it with next/font/local and this catalog declares the same four weights as @font-face in .storybook/preview.css, so the specimens render in the real face."
     >
       <div className="fnd-typeList">
         {TEXT_STYLES.map((style) => (

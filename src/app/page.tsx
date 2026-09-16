@@ -1,69 +1,41 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+/**
+ * 01 Home, first session — the entry point.
+ *
+ * There is deliberately no Explain out loud entry here. On a first session the
+ * only thing that introduces the step is its own caption in the plan; home only
+ * surfaces it once terms are due, which is the /home/revisit screen.
+ * See sprint-context.md, "Placement and return".
+ *
+ * The top strip and everything below the exam card are placeholder chrome.
+ */
 
-export default function Home() {
+import { Button } from '@/components/button/Button';
+import { MascotFigure } from '@/components/mascot-figure/MascotFigure';
+import { Scaffold } from '@/components/scaffold/Scaffold';
+import { TextBlock } from '@/components/text-block/TextBlock';
+
+import { ChromeStrip } from './_chrome/ChromeStrip';
+import './home.css';
+
+export default function HomePage() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.tsx</code> file.
-          </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
+    <Scaffold
+      topNavigation={<ChromeStrip src="/chrome/home-topnav.png" height={56} />}
+      middleContent={
+        <div className="home">
+          <div className="home-examCard">
+            <MascotFigure size="L" pose="Standby" />
+            <TextBlock
+              variant="M"
+              titleAs="h1"
+              title="Your History exam is in 1 week"
+              showCaption={false}
             />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <Button variant="Primary" size="M" CTA="Continue studying" href="/plan" />
+          </div>
         </div>
-      </main>
-    </div>
+      }
+      bottomContent={<ChromeStrip src="/chrome/home-bottom.png" height={185} />}
+    />
   );
 }

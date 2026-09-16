@@ -41,25 +41,21 @@
 
 /* --- progress ------------------------------------------------------------- */
 
-.knowieProgressIndicator[data-progress='0'] {
+/* The percentage arrives as `--knowieProgress-pct` in the element's own style
+   attribute, set from the computed value in ProgressIndicator.tsx. It used to
+   be five attribute selectors, one per Figma quarter, which capped the bar at
+   steps of 25 — a three-term session could not be drawn. The fallback below
+   only covers a bar rendered without that property at all. */
+.knowieProgressIndicator {
   --knowieProgress-pct: 0%;
 }
 
-.knowieProgressIndicator[data-progress='25'] {
-  --knowieProgress-pct: 25%;
-}
-
-.knowieProgressIndicator[data-progress='50'] {
-  --knowieProgress-pct: 50%;
-}
-
-.knowieProgressIndicator[data-progress='75'] {
-  --knowieProgress-pct: 75%;
-}
-
-.knowieProgressIndicator[data-progress='100'] {
-  --knowieProgress-pct: 100%;
-}
+/* The fill does not animate. There is no motion token for a progress fill —
+   tokens.json carries press-in and press-out only — and each term is its own
+   route, so the bar remounts between values and has no previous width to
+   travel from. If it ever animates, it animates from the value it is showing;
+   a CSS width transition already does that, and going back to 0 first would
+   be a lie about where the student is. */
 
 /* --- variant -------------------------------------------------------------- */
 

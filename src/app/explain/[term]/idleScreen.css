@@ -1,0 +1,69 @@
+/* 06 Idle's own layout. Every value is a token from build/css/tokens.css —
+   see design-system.md, "Never invent a value". */
+
+/* --- prompt --------------------------------------------------------------
+   Knowie beside the question, not above it: at size S she is a speaker mark on
+   the line, which is what the frame draws. */
+
+.idleScreen-prompt {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--space-300);
+}
+
+/* --- thumb zone ----------------------------------------------------------
+   No padding of its own: scaffold.css owns the thumb zone's inset. */
+
+.idleScreen-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-400);
+}
+
+.idleScreen-micZone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-300);
+  padding-top: var(--space-200);
+}
+
+.idleScreen-micCopy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-100);
+  text-align: center;
+}
+
+.idleScreen-micLabel {
+  font-family: var(--greed-body-m-bold-font-family);
+  font-size: var(--greed-body-m-bold-font-size);
+  font-weight: var(--greed-body-m-bold-font-weight);
+  line-height: var(--greed-body-m-bold-line-height);
+  color: var(--color-text-primary);
+}
+
+.idleScreen-micHelper {
+  font-family: var(--greed-caption-m-regular-font-family);
+  font-size: var(--greed-caption-m-regular-font-size);
+  font-weight: var(--greed-caption-m-regular-font-weight);
+  line-height: var(--greed-caption-m-regular-line-height);
+  color: var(--color-text-secondary);
+}
+
+/* --- ways out ------------------------------------------------------------
+   Two equal halves, matching the frame's 175 + 8 + 175 across the 358 content
+   width. Neither is Primary: the mic is the primary action on this screen. */
+
+.idleScreen-actions {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-200);
+}
+
+.idleScreen-actions > * {
+  flex: 1 1 0;
+  min-width: 0;
+}

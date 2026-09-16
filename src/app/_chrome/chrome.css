@@ -1,0 +1,10 @@
+/* Placeholder chrome. See ChromeStrip.tsx — not part of the design system. */
+
+.chromeStrip {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Inert: it is a picture of chrome, not chrome. */
+  pointer-events: none;
+  user-select: none;
+}

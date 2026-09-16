@@ -10,7 +10,8 @@
  * place a raw icon."
  */
 
-import type { HTMLAttributes } from 'react';
+import Link from 'next/link';
+import type { AnchorHTMLAttributes, HTMLAttributes } from 'react';
 
 import { IconSlot } from '../icon-slot/IconSlot';
 
@@ -38,6 +39,16 @@ export type StepperStepProps = Omit<HTMLAttributes<HTMLDivElement>, 'children'> 
   caption?: string;
   /** Whether the caption shows. Matches the Figma boolean, which defaults to true. */
   showCaption?: boolean;
+  /**
+   * Where the step goes. With an href a non-Locked step renders as a Next
+   * `Link` carrying the same classes and data attributes, so the whole row is
+   * one focusable target with a focus ring and a pressed state.
+   *
+   * This is what the component's own description already claims — "Only Locked
+   * is untappable" — and Locked keeps ignoring it, because a locked step is not
+   * a target. Figma cannot express a destination, so it lives in code only.
+   */
+  href?: string;
 };
 
 export function StepperStep({
@@ -46,10 +57,14 @@ export function StepperStep({
   label = 'Explain out loud',
   caption = 'Study and quiz',
   showCaption = true,
+  href,
   ...rest
 }: StepperStepProps) {
-  return (
-    <div className="knowieStepperStep" data-type={type} data-state={state} {...rest}>
+  // Locked ignores href. Everything else with one becomes a real link.
+  const isLink = href !== undefined && state !== 'Locked';
+
+  const body = (
+    <>
       <div className="knowieStepperStep-step">
         {/* track is the unfilled ring and shows in every state — dashed on
             Locked. progress lays the brand ring over it: half of it on
@@ -73,6 +88,31 @@ export function StepperStep({
         <p className="knowieStepperStep-label">{label}</p>
         {showCaption ? <p className="knowieStepperStep-caption">{caption}</p> : null}
       </div>
+    </>
+  );
+
+  /** The look is carried by the class and the data attributes, not the tag. */
+  const skin = {
+    className: 'knowieStepperStep',
+    'data-type': type,
+    'data-state': state,
+  } as const;
+
+  if (isLink) {
+    // rest is typed for a div because that is what this component usually is.
+    // On the link path the same handful of props belong to an anchor instead.
+    const anchorRest = rest as AnchorHTMLAttributes<HTMLAnchorElement>;
+
+    return (
+      <Link href={href} {...skin} data-interactive="true" {...anchorRest}>
+        {body}
+      </Link>
+    );
+  }
+
+  return (
+    <div {...skin} {...rest}>
+      {body}
     </div>
   );
 }

@@ -127,8 +127,8 @@
   --component-button-face-pressed-xs: 30px; /** Face height while pressed at size XS. Face height minus lip, so the face sinks flush without the outer box growing. */
   --component-button-face-pressed-l: 52px; /** Face height while pressed at size L. Face height minus lip, so the face sinks flush without the outer box growing. */
   --component-button-press-scale: 0.94; /** Scale a Tertiary button's label takes while pressed, from its own centre. Tertiary has no fill and no lip, so the label is the only thing that can move. */
-  --font-family-display: 'Greed Standard-TRIAL';
-  --font-family-default: 'Greed Standard-TRIAL';
+  --font-family-display: var(--font-greed), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-family-default: var(--font-greed), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-weight-regular: 400;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;

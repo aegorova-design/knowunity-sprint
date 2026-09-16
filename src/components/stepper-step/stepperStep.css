@@ -16,6 +16,30 @@
   padding: var(--space-0);
 }
 
+/* With an href a non-Locked step renders as an anchor instead of a div. The
+   geometry above is unchanged; these rules only undo what a user agent gives
+   anchors and add the states a target needs. Locked never gets this attribute,
+   so a locked step stays inert. */
+
+.knowieStepperStep[data-interactive='true'] {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.knowieStepperStep[data-interactive='true']:focus-visible {
+  outline: var(--stroke-heavy-border) solid var(--color-border-focus);
+  outline-offset: var(--space-100);
+  border-radius: var(--radius-400);
+}
+
+/* The press signal is the core dimming, matching how the other tappable rows
+   in this system respond rather than inventing a new one. */
+.knowieStepperStep[data-interactive='true']:active .knowieStepperStep-core {
+  background-color: var(--color-interactive-secondary-active);
+}
+
 /* The ring stack. Everything inside is centred on this box. */
 .knowieStepperStep-step {
   position: relative;

@@ -1,0 +1,66 @@
+/* The plan screen's own layout. Every value is a token from
+   build/css/tokens.css — see design-system.md, "Never invent a value". */
+
+.planScreen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-400);
+}
+
+/* --- subject -------------------------------------------------------------
+   The icon sits over the subject, matching the Figma plan header: a vertical
+   stack at Space/200 with the icon at Icon/400. */
+
+.planScreen-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-200);
+}
+
+.planScreen-subject {
+  font-family: var(--greed-headline-m-font-family);
+  font-size: var(--greed-headline-m-font-size);
+  font-weight: var(--greed-headline-m-font-weight);
+  line-height: var(--greed-headline-m-line-height);
+  color: var(--color-text-primary);
+}
+
+/* --- tabs ----------------------------------------------------------------
+   Two equal halves. The active one is carried by weight and colour, which is
+   how Figma draws it — there is no underline. */
+
+.planScreen-tabs {
+  display: flex;
+  flex-direction: row;
+}
+
+.planScreen-tab {
+  flex: 1;
+  padding-block: var(--space-200);
+  text-align: center;
+  font-family: var(--greed-body-s-regular-font-family);
+  font-size: var(--greed-body-s-regular-font-size);
+  font-weight: var(--greed-body-s-regular-font-weight);
+  line-height: var(--greed-body-s-regular-line-height);
+  color: var(--color-text-secondary);
+}
+
+.planScreen-tab[data-active='true'] {
+  font-weight: var(--greed-body-s-bold-font-weight);
+  color: var(--color-text-primary);
+}
+
+/* --- sections ------------------------------------------------------------ */
+
+.planScreen-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-400);
+}
+
+.planScreen-stepper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-400);
+}

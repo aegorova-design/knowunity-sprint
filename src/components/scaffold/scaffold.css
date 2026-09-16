@@ -47,13 +47,15 @@
   padding: var(--space-200) var(--space-400);
 }
 
-/* Hugs its content. The thumb zone. */
+/* Hugs its content. The thumb zone. Space/800 top and bottom, Space/400 at the
+   sides, matching the Figma scaffold. Its padding is the screen's, so content
+   inside must not add outer margins to reach for more. */
 .knowieScaffold-bottomContent {
   flex: none;
   display: flex;
   flex-direction: column;
   gap: var(--space-100);
-  padding: var(--space-400);
+  padding: var(--space-800) var(--space-400);
 }
 
 /* Overlays everything, including the status bar row. */

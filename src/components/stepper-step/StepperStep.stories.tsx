@@ -19,10 +19,11 @@ The component's description in Figma, verbatim:
 > a shape before it is a colour: Locked is a dashed ring with the icon and label
 > at text/disabled, NotStarted is a solid empty ring, InProgress fills half the
 > ring, Completed fills the ring and the core. Learning uses NotStarted,
-> InProgress and Completed. Voice uses Locked, NotStarted and Completed, where
-> NotStarted is what available looks like: a voice step stays Locked until every
-> learning step in its section is Completed. Learning/Locked and Voice/InProgress
-> exist so the matrix is square; neither is used in the sprint flow.
+> InProgress and Completed. Voice uses the same three: the voice step is
+> available from the moment its section exists and is never gated on the
+> learning steps, so NotStarted is what available looks like and the step is
+> tappable from the start. Learning/Locked and Voice/Locked are kept for a plan
+> that does gate a step; neither is used in this sprint flow.
 >
 > Only Locked is untappable. Never fake a locked step by dimming an instance, use
 > the Locked variant. Never carry the section's unaided count here; that read
@@ -55,12 +56,15 @@ so it reads as done rather than as a proportion.
   sectionHeader and mascotMessage.
 - **Only Locked is untappable.** Every other state is a live target.
 - **Locked's caption says what unlocks the step.** It is the one state where the
-  caption carries the whole point, so pass one — "Finish the steps above to
-  unlock. 3 terms, about 2 min" is the shape of it in the sprint flow. The
-  component does not default to that line, and should not: half of it is per-
-  section data. The property default stays the generic "Study and quiz", and the
-  caller supplies the real one. (The term count here is not the section's unaided
-  count, which still belongs to sectionHeader and mascotMessage.)
+  caption carries the whole point, so pass one. No step in this sprint flow is
+  Locked — the voice step is available at all times — so the rule is here for a
+  plan that does gate a step, not for a screen you will build now. The component
+  does not default to such a line, and should not: half of it is per-section
+  data. The property default stays the generic "Study and quiz", and the caller
+  supplies the real one. (The term count here is not the section's unaided count,
+  which still belongs to sectionHeader and mascotMessage.)
+- **A Voice step is never Locked in this flow.** It does not wait on the
+  learning steps above it. Pass NotStarted from the moment the section exists.
 
 ### Built from
 
@@ -280,7 +284,9 @@ export const WithoutCaption: Story = {
 /**
  * Not a Figma variant — a section's plan, which is the only place the order and
  * the state machine read: learning steps first, the Voice capstone last and
- * never in the middle, and Locked until every learning step is Completed.
+ * never in the middle. The capstone is its section's last step by position
+ * only: it is available from the start, whatever the learning steps above it
+ * are doing.
  */
 export const APlan: Story = {
   name: 'A section plan',
@@ -303,9 +309,9 @@ export const APlan: Story = {
         <StepperStep type="Learning" state="NotStarted" label="Synapses" showCaption={false} />
         <StepperStep
           type="Voice"
-          state="Locked"
+          state="NotStarted"
           label="Explain out loud"
-          caption="Finish the steps above to unlock. 3 terms, about 2 min"
+          caption="Explain 3 terms from this section out loud, ~2 min"
         />
       </div>
     </div>
@@ -317,11 +323,69 @@ export const APlan: Story = {
     const voice = canvasElement.querySelectorAll('[data-type="Voice"]');
     await expect(voice).toHaveLength(1);
     await expect(steps[steps.length - 1]).toBe(voice[0]);
-    // It stays Locked while a learning step is short of Completed, and the
-    // caption is where the step says what unlocks it.
-    await expect(voice[0]).toHaveAttribute('data-state', 'Locked');
+    // It is available even though two learning steps above it are unfinished:
+    // the capstone is last by position, not gated on what comes before it.
+    await expect(voice[0]).toHaveAttribute('data-state', 'NotStarted');
     await expect(
       voice[0].querySelector('.knowieStepperStep-caption')?.textContent,
-    ).toContain('unlock');
+    ).toContain('3 terms');
+  },
+};
+
+/**
+ * Not a Figma variant — `href` exists in code only, because Figma cannot
+ * express a destination. It is what makes the component's own rule true:
+ * "Only Locked is untappable." With an href a non-Locked step is one focusable
+ * target for the whole row, and Locked keeps ignoring it.
+ */
+export const Tappable: Story = {
+  name: 'href — the step is a target',
+  render: () => (
+    <div className="knowieStepperStepDemo">
+      <div className="knowieStepperStepDemo-plan">
+        <StepperStep
+          type="Voice"
+          state="NotStarted"
+          label="Explain out loud"
+          caption="Explain 3 terms from this section out loud, ~2 min"
+          href="/explain/intro"
+        />
+        <StepperStep
+          type="Voice"
+          state="Locked"
+          label="Explain out loud"
+          caption="Finish the steps above first"
+          href="/explain/intro"
+        />
+        <StepperStep type="Learning" state="NotStarted" label="Synapses" showCaption={false} />
+      </div>
+    </div>
+  ),
+  play: async ({ canvas, canvasElement }) => {
+    const steps = canvasElement.querySelectorAll('.knowieStepperStep');
+
+    // A non-Locked step with an href is a real anchor, keeping the same skin.
+    const open = steps[0] as HTMLElement;
+    await expect(open.tagName).toBe('A');
+    await expect(open).toHaveAttribute('href', '/explain/intro');
+    await expect(open).toHaveAttribute('data-interactive', 'true');
+    await expect(open).toHaveAttribute('data-type', 'Voice');
+
+    // The whole row is one target, not just the label.
+    const link = canvas.getByRole('link', { name: /Explain out loud/ });
+    await expect(link).toBe(open);
+
+    // Locked ignores the href — a locked step is not a target.
+    const locked = steps[1] as HTMLElement;
+    await expect(locked.tagName).toBe('DIV');
+    await expect(locked).not.toHaveAttribute('href');
+    await expect(locked).not.toHaveAttribute('data-interactive');
+
+    // And a step with no href is unchanged: still a plain div.
+    await expect((steps[2] as HTMLElement).tagName).toBe('DIV');
+
+    // It takes keyboard focus, which the old div never could.
+    open.focus();
+    await expect(open).toHaveFocus();
   },
 };

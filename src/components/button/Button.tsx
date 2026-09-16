@@ -13,7 +13,8 @@
  * variant.
  */
 
-import type { ButtonHTMLAttributes } from 'react';
+import Link from 'next/link';
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes } from 'react';
 
 import { IconSlot, type IconName, type IconSlotSize } from '../icon-slot/IconSlot';
 
@@ -62,6 +63,20 @@ export type ButtonProps = Omit<
   rightIcon?: IconName;
   /** The button's label. Keep it to one or two words. */
   CTA?: string;
+  /**
+   * Where the action goes. With an href the control renders as a Next `Link`
+   * carrying the same classes and data attributes, so it is a real anchor: it
+   * prefetches, it opens in a new tab, and the page around it can stay a
+   * Server Component instead of taking 'use client' just to push a route.
+   *
+   * Figma has no way to express this — a prototype whose buttons cannot
+   * navigate is not a prototype, so it lives in code only. Without an href
+   * nothing changes and this is still a `button`.
+   *
+   * `state="Disabled"` with an href renders a plain span: a disabled link is
+   * not a thing, and an anchor with no href is not focusable anyway.
+   */
+  href?: string;
 };
 
 export function Button({
@@ -73,6 +88,7 @@ export function Button({
   leftIcon,
   rightIcon,
   CTA = '1/2 words',
+  href,
   type = 'button',
   onClick,
   ...rest
@@ -97,13 +113,65 @@ export function Button({
       <span className="knowieButton-icon" aria-hidden="true" />
     );
 
+  const face = (
+    <span className="knowieButton-face">
+      {showLeftIcon ? iconBox(leftIcon) : null}
+      {/* Loading drops the label and shows the centre icon in its place, so
+          the control shrinks the way the Figma Loading variants do. Like
+          Disabled, it carries no lip, so it reads flat next to Default. */}
+      {isLoading ? (
+        <span className="knowieButton-icon" aria-hidden="true" />
+      ) : (
+        <span className="knowieButton-label">{CTA}</span>
+      )}
+      {showRightIcon ? iconBox(rightIcon) : null}
+    </span>
+  );
+
+  /** The look is carried by the class and the data attributes, not the tag. */
+  const skin = {
+    className: 'knowieButton',
+    'data-variant': variant,
+    'data-size': size,
+    'data-state': state,
+  } as const;
+
+  if (href !== undefined) {
+    // rest is typed for a button because that is what this component usually
+    // is. On the link path the same handful of props — id, style, aria-*,
+    // data-* — belong to an anchor instead, so it is re-typed here rather
+    // than splitting ButtonProps into a union the callers would have to know
+    // about.
+    const anchorRest = rest as AnchorHTMLAttributes<HTMLAnchorElement>;
+    const anchorClick = onClick as AnchorHTMLAttributes<HTMLAnchorElement>['onClick'];
+
+    if (isDisabled) {
+      return (
+        <span {...skin} aria-disabled="true" {...anchorRest}>
+          {face}
+        </span>
+      );
+    }
+
+    return (
+      <Link
+        href={href}
+        {...skin}
+        aria-busy={isLoading || undefined}
+        aria-disabled={isLoading || undefined}
+        aria-label={isLoading ? CTA : undefined}
+        onClick={isLoading ? undefined : anchorClick}
+        {...anchorRest}
+      >
+        {face}
+      </Link>
+    );
+  }
+
   return (
     <button
       type={type}
-      className="knowieButton"
-      data-variant={variant}
-      data-size={size}
-      data-state={state}
+      {...skin}
       disabled={isDisabled}
       // Loading stays focusable and keeps its name, so the press that started
       // the request is still announced while it is in flight.
@@ -113,18 +181,7 @@ export function Button({
       onClick={isLoading ? undefined : onClick}
       {...rest}
     >
-      <span className="knowieButton-face">
-        {showLeftIcon ? iconBox(leftIcon) : null}
-        {/* Loading drops the label and shows the centre icon in its place, so
-            the control shrinks the way the Figma Loading variants do. Like
-            Disabled, it carries no lip, so it reads flat next to Default. */}
-        {isLoading ? (
-          <span className="knowieButton-icon" aria-hidden="true" />
-        ) : (
-          <span className="knowieButton-label">{CTA}</span>
-        )}
-        {showRightIcon ? iconBox(rightIcon) : null}
-      </span>
+      {face}
     </button>
   );
 }

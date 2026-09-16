@@ -35,6 +35,7 @@ When working on UI, use the storybook tools to read the component library before
 - `README.md` — stock create-next-app instructions, not project-specific.
 - `design-brief.md` — the problem, hard constraints, and mandate. Read before designing any flow or screen.
 - `design-system.md` — component and token usage rules, plus the 8 sprint-built components. Read before building or styling any screen.
+- `component-gaps.md` — running list of things built inline during a screen build because no component existed, with the screen each was for. Read before building a new screen; if something on it is needed again, build it as a real component instead.
 - `sprint-context.md` — locked decisions on placement, session/loop structure, and build specs. Read before touching flow logic, states, or copy.
 - `voice-ux.md` — voice UX principles and the states-to-design priority table. Read before designing recording/processing/permission screens.
 - `tokens/tokens.json` — source of truth for every design value. Consult when styling; never hardcode a value it defines.

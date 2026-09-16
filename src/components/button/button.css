@@ -27,6 +27,11 @@
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   --knowieButton-sink: var(--knowieButton-lip);
+  /* With an href this renders as an anchor rather than a button, so the two
+     things a user agent gives anchors for free are turned off here. Both are
+     no-ops on the button path. */
+  text-decoration: none;
+  color: inherit;
 }
 
 .knowieButton:disabled,
