@@ -1,0 +1,49 @@
+/* The text fallback's own layout. Every value is a token from
+   build/css/tokens.css — see design-system.md, "Never invent a value". */
+
+.typeScreen-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-500);
+}
+
+/* The helper sits with the field, not adrift below it, so the gap between them
+   is the tight step the other label-over-body pairs use. */
+
+.typeScreen-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+}
+
+.typeScreen-helper {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-family: var(--greed-caption-m-regular-font-family);
+  font-size: var(--greed-caption-m-regular-font-size);
+  font-weight: var(--greed-caption-m-regular-font-weight);
+  line-height: var(--greed-caption-m-regular-line-height);
+}
+
+/* --- thumb zone ----------------------------------------------------------
+   No padding of its own: scaffold.css owns the thumb zone's inset. The same
+   Space/400 stack 06 Idle and the hint screen use, so the two actions do not
+   move as the student crosses between them. */
+
+.typeScreen-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-400);
+}
+
+/* Both actions fill the content width — a single action per row, stretched,
+   the way button's face fills whatever box it is given. */
+
+.typeScreen-send {
+  display: flex;
+}
+
+.typeScreen-send > * {
+  flex: 1 1 auto;
+  min-width: 0;
+}

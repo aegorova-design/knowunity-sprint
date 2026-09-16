@@ -12,12 +12,11 @@
 import { notFound } from 'next/navigation';
 
 import { Button } from '@/components/button/Button';
-import { MascotFigure } from '@/components/mascot-figure/MascotFigure';
 import { Scaffold } from '@/components/scaffold/Scaffold';
-import { TextBlock } from '@/components/text-block/TextBlock';
 
-import { TERMS, TERM_PROMPT_CAPTION, isTermPosition, nextTermHref } from '../session';
+import { TERMS, isTermPosition, nextTermHref } from '../session';
 import { SessionAppBar } from './SessionAppBar';
+import { TermPrompt } from './TermPrompt';
 import { StartRecordingButton } from './navigation';
 
 import './idleScreen.css';
@@ -32,18 +31,7 @@ export default async function IdlePage({ params }: { params: Promise<{ term: str
     <Scaffold
       size="iPhone 13"
       topNavigation={<SessionAppBar term={term} skipHref={nextTermHref(term)} />}
-      middleContent={
-        <div className="idleScreen-prompt">
-          <MascotFigure size="S" pose="Standby" />
-          <TextBlock
-            variant="M"
-            title={current.prompt}
-            caption={TERM_PROMPT_CAPTION}
-            showCaption
-            titleAs="h1"
-          />
-        </div>
-      }
+      middleContent={<TermPrompt term={current} />}
       bottomContent={
         <div className="idleScreen-bottom">
           <div className="idleScreen-micZone">

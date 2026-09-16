@@ -1,17 +1,6 @@
 /* 06 Idle's own layout. Every value is a token from build/css/tokens.css —
    see design-system.md, "Never invent a value". */
 
-/* --- prompt --------------------------------------------------------------
-   Knowie beside the question, not above it: at size S she is a speaker mark on
-   the line, which is what the frame draws. */
-
-.idleScreen-prompt {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: var(--space-300);
-}
-
 /* --- thumb zone ----------------------------------------------------------
    No padding of its own: scaffold.css owns the thumb zone's inset. */
 

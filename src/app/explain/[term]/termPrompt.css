@@ -1,0 +1,11 @@
+/* The term prompt's layout. Every value is a token from build/css/tokens.css.
+
+   Knowie beside the question, not above it: at size S she is a speaker mark on
+   the line, which is what the 06 Idle frame draws. */
+
+.termPrompt {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--space-300);
+}
