@@ -90,7 +90,7 @@ type Story = StoryObj<typeof meta>;
 const TYPE: Record<TextBlockVariant, { title: number; caption: number; gap: number }> = {
   XL: { title: 76, caption: 18, gap: 4 },
   L: { title: 44, caption: 18, gap: 4 },
-  M: { title: 21, caption: 15, gap: 2 },
+  M: { title: 21, caption: 15, gap: 8 },
   S: { title: 15, caption: 9, gap: 2 },
 };
 

@@ -1,20 +1,29 @@
-/* The text fallback's own layout. Every value is a token from
-   build/css/tokens.css — see design-system.md, "Never invent a value". */
+/* The text fallback's own layout, read off the Mockups v2 frames "15 Text
+   fallback, empty" (13662:14539) and "16 Text fallback, typed" (13662:14540).
+   Every gap below is the Space variable the frame binds, not a guess.
 
-.typeScreen-body {
+   middleContent carries the prompt and nothing else, so it needs no rule here:
+   the scaffold's own Space/200 gap and Space/200 / Space/400 padding are
+   already what the frame sets. The field is not under the question — it is in
+   the thumb zone with the buttons. */
+
+/* Figma "bottom stack" — the field group over the action group. */
+
+.typeScreen-bottom {
   display: flex;
   flex-direction: column;
-  gap: var(--space-600);
+  gap: var(--space-400);
 }
 
-/* The helper sits with the field, not adrift below it, so the gap between them
-   is the tight step the other label-over-body pairs use. */
+/* Figma "field" — the input with its helper tucked under it. */
 
 .typeScreen-field {
   display: flex;
   flex-direction: column;
   gap: var(--space-200);
 }
+
+/* Greed/Caption M Regular, left aligned, from the frame's `helper` layer. */
 
 .typeScreen-helper {
   margin: 0;
@@ -25,25 +34,12 @@
   line-height: var(--greed-caption-m-regular-line-height);
 }
 
-/* --- thumb zone ----------------------------------------------------------
-   No padding of its own: scaffold.css owns the thumb zone's inset. The same
-   Space/400 stack 06 Idle and the hint screen use, so the two actions do not
-   move as the student crosses between them. */
+/* Figma "actions" — Send answer over Switch to voice. Both are FILL at 358 in
+   the frame; a column flex stretches them, and button's face now fills the box
+   it is given rather than sitting as a small pill inside it. */
 
 .typeScreen-actions {
   display: flex;
   flex-direction: column;
-  gap: var(--space-400);
-}
-
-/* Both actions fill the content width — a single action per row, stretched,
-   the way button's face fills whatever box it is given. */
-
-.typeScreen-send {
-  display: flex;
-}
-
-.typeScreen-send > * {
-  flex: 1 1 auto;
-  min-width: 0;
+  gap: var(--space-200);
 }

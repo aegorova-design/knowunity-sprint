@@ -43,9 +43,13 @@ export function TypeScreen({
     <Scaffold
       size="iPhone 13"
       topNavigation={appBar}
-      middleContent={
-        <div className="typeScreen-body">
-          {prompt}
+      // Figma puts the prompt alone in middleContent — the field lives down in
+      // the thumb zone with the buttons, not under the question.
+      middleContent={prompt}
+      bottomContent={
+        // Figma's "bottom stack": the field group over the action group at
+        // Space/400. scaffold.css owns the zone's own inset.
+        <div className="typeScreen-bottom">
           <div className="typeScreen-field">
             <TextField
               label="Your explanation"
@@ -57,18 +61,15 @@ export function TypeScreen({
             />
             {/* A helper line under a field. Not a Storybook component —
                 textField carries no helper of its own. Logged in
-                component-gaps.md. It is tied to the field by aria-describedby
-                so a screen reader reads the reassurance with the field, not
-                after it. */}
+                component-gaps.md. Tied to the field by aria-describedby so a
+                screen reader reads the reassurance with the field, not after
+                it. Caption M Regular, left aligned, straight off the frame. */}
             <p className="typeScreen-helper" id={helperId}>
               Typed answers are judged the same way and count the same.
             </p>
           </div>
-        </div>
-      }
-      bottomContent={
-        <div className="typeScreen-actions">
-          <div className="typeScreen-send">
+
+          <div className="typeScreen-actions">
             <Button
               variant="Primary"
               size="L"
@@ -78,12 +79,12 @@ export function TypeScreen({
               state={isEmpty ? 'Disabled' : 'Default'}
               href={isEmpty ? undefined : sendHref}
             />
-          </div>
-          {/* The way back to voice stays on the screen in both states: text is
-              the fallback, not a one-way door. */}
-          <div className="typeScreen-send">
+            {/* Tertiary, not the Secondary SPEC.md names — the frame draws it
+                Tertiary, and the frame wins on visual detail. The way back to
+                voice stays on screen in both states: text is the fallback, not
+                a one-way door. */}
             <Button
-              variant="Secondary"
+              variant="Tertiary"
               size="M"
               CTA="Switch to voice"
               showLeftIcon

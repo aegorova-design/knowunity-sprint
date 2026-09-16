@@ -60,8 +60,20 @@
 
 .knowieTextBlock[data-variant='M'],
 .knowieTextBlock[data-variant='S'] {
-  gap: var(--space-050);
   text-align: left;
+}
+
+/* M sets Space/200, the gap the textBlock instances on the Mockups v2 screen
+   frames bind. The component set in Figma still says Space/050, the same way
+   it still says Body M Bold over Caption M Regular — the set is behind its own
+   instances on both counts. S keeps Space/050; no frame contradicts it. */
+
+.knowieTextBlock[data-variant='M'] {
+  gap: var(--space-200);
+}
+
+.knowieTextBlock[data-variant='S'] {
+  gap: var(--space-050);
 }
 
 /* M's title is Headline S and its caption Body S Regular — 21 over 15, which
