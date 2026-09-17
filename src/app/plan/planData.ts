@@ -34,10 +34,12 @@ export const SUBJECT = 'World History';
 const VOICE_CAPTION = 'Explain 3 terms from this section out loud, ~2 min';
 
 /**
- * A learning step. The caption is the frame's own text, not something derived
- * from the state: `03` leaves its Completed step reading "Study and quiz"
- * while `19` and `21` change theirs to "Done", so there is no rule to derive
- * it from. Pass the frame's words when they differ from the default.
+ * A learning step. The caption is the frame's own text rather than something
+ * derived from the state, because the two types do not agree on what a state
+ * reads: a Completed learning step says "Done" on `03`, `19` and `21`, but a
+ * Completed Voice step says "Done" where a NotStarted one carries the whole
+ * `VOICE_CAPTION` line. Pass the frame's words when they differ from the
+ * default.
  */
 const learning = (
   label: string,
@@ -82,7 +84,7 @@ export const PLAN_IN_PROGRESS: PlanSection[] = [
   {
     ...PLAN_NOTHING_STARTED[0],
     learning: [
-      learning('What feudalism was', 'Completed'),
+      learning('What feudalism was', 'Completed', 'Done'),
       learning('Lords, vassals and fiefs', 'InProgress', 'Study and quiz, in progress'),
       learning('Life on the manor', 'InProgress', 'Study and quiz, in progress'),
     ],
@@ -115,10 +117,11 @@ export type PlanResult = {
 };
 
 /**
- * A completed section's steps. Every step reads Done on `19` and `21` —
- * including the learning ones, which `03` leaves reading "Study and quiz".
- * The frames are the source for both, which is why `learning()` takes the
- * caption rather than deriving it from the state.
+ * A completed section's steps. Every step reads Done on `19` and `21`,
+ * including the Voice one — which is the difference from `03`, where the
+ * Completed learning step reads Done but the Voice step has not run yet and
+ * still carries `VOICE_CAPTION`. See `learning()` for why the caption is
+ * passed rather than derived.
  */
 const DONE_SECTION = (result: PlanResult): PlanSection => ({
   ...PLAN_NOTHING_STARTED[0],
