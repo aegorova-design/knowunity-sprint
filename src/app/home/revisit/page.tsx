@@ -27,6 +27,7 @@ import { Button } from '@/components/button/Button';
 import { Scaffold } from '@/components/scaffold/Scaffold';
 import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
 
+import { PLAN_TO_REVISIT_HREF } from '../../plan/planHref';
 import { ChromeStrip } from '../../_chrome/ChromeStrip';
 
 import '../../home.css';
@@ -64,13 +65,16 @@ export default function HomeRevisitPage() {
                 leftIcon="microphone-01"
                 href="/explain/revisit-done"
               />
+              {/* The plan as this student left it — `19`, where the last
+                  session put the section — not `02`, which would claim
+                  nothing had started. */}
               <Button
                 variant="Tertiary"
                 size="S"
                 CTA="Continue studying"
                 showRightIcon
                 rightIcon="arrow-right"
-                href="/plan"
+                href={PLAN_TO_REVISIT_HREF}
               />
             </div>
           </div>
@@ -81,7 +85,14 @@ export default function HomeRevisitPage() {
           {/* Same pair as 01 Home: the tool row and "Ask anything" as a strip,
               the bar itself as a component. */}
           <ChromeStrip src="/chrome/bottomContent.png" width={358} height={100} />
-          <BottomNav Active="home-chat" homeChatHref="/" studyPlanHref="/plan" />
+          {/* Home is this screen, not `01 Home`: the student has a session
+              behind them, and `01` would send Continue studying back to `02`.
+              The plan tab lands on the stage they reached. */}
+          <BottomNav
+            Active="home-chat"
+            homeChatHref="/home/revisit"
+            studyPlanHref={PLAN_TO_REVISIT_HREF}
+          />
         </>
       }
     />

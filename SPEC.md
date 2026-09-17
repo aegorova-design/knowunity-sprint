@@ -111,12 +111,16 @@ It carries `href`, which makes the whole row one focusable link. `StepperStep` i
 
 **The learning steps are a sprint shortcut.** Study and quiz is out of scope, so tapping one of section 1's steps moves the section along to `03` instead of opening it. The progress `03` shows is the frame's, not a record of which step was tapped — nothing tracks that. Section 2's steps stay inert, and so do `03`'s: the connection is one-way, from `02` into `03`.
 
+**The plan's four stages are four routes, and every way back names the stage reached.** The study-plan tab lands on the route rendering it; `20 Home, revisit` returns to `19`; Leave and `05b Resume` return to `03`. Nothing is stored to do it — each stage is a pure function of its URL, so a reload gives the same stage back and a second student starting at `/` gets `02`. `21`'s home tab is the one remaining way back to `02`, which doubles as the reset between runs. See `src/app/plan/planHref.ts`.
+
 ### 2. 03 Plan, section 1 in progress — `/plan/in-progress`
 
 - **States:** one.
 - **Components:** as above, with section 1's learning steps at `state="Completed"` and `state="InProgress"`.
 - **Can do:** tap the Voice step of either section. The learning steps are inert here — this is where `02`'s go, and there is nowhere further for them to lead.
-- **Leads to:** `/explain/1`. Not a first run, so the Voice step skips the primer.
+- **Leads to:** `/explain/1`. Not a first run, so the Voice step skips the primer. With `?resume=`, `/explain/resume` instead.
+
+This is where a started session returns to: **Leave** and `05b Resume`'s close both land here, not on `02`, which would claim nothing had started. It reads `?resume=` the way `/plan` does.
 
 ### 3. 01 Home, first session — `/`
 
@@ -132,7 +136,7 @@ No Explain out loud entry here. Entry on a first session is the step's caption i
 - **States:** one. Shown only when terms are due.
 - **Components:** same chrome, plus `VerdictHeader verdict="Neutral" titleAs="h1"` reading "Your History exam is in 5 days" with `caption="1 term to revisit"` — the frame draws that line as the header's own caption rather than as a separate block — `Button variant="Primary" size="M" CTA="Explain out loud" showLeftIcon leftIcon="microphone-01"`, and Continue studying demoted to `Button variant="Tertiary" size="S" showRightIcon rightIcon="arrow-right"`. Both buttons hug and sit centred under the header.
 - **Can do:** Explain out loud; Continue studying.
-- **Leads to:** Explain out loud → `/explain/revisit-done`; Continue studying → `/plan`.
+- **Leads to:** Explain out loud → `/explain/revisit-done`; Continue studying → `/plan/to-revisit`. Home in the bottom bar is this screen, not `/`.
 
 **Explain out loud is stubbed.** It goes straight to `20b Revisit complete`, skipping the revisit session at `/explain/1` that earns it. A second pass of the recall loop is not built this sprint, so the stakeholder walkthrough jumps the middle.
 
@@ -431,7 +435,7 @@ Start at `/` and never type a URL again.
 - **Silence:** on any term, tap record and stop immediately. After the wait, "Didn't catch that" — headline in the neutral colour, not the miss colour — and the hint ladder has not advanced.
 - **Denied permission:** clear the site's mic permission, restart at `/explain/intro`, tap **Allow mic**, deny. `/explain/denied` offers Type my answers. Take it; the text screen offers **Turn on voice**, not Switch to voice.
 - **Text mode is sticky:** type an answer for term 1 and send. Term 2 opens on the text screen, not on Idle, with Switch to voice present.
-- **Leaving:** tap the close icon mid-session. The confirm sheet appears. **Keep going** returns to the same screen. **Leave** goes to the plan.
+- **Leaving:** tap the close icon mid-session. The confirm sheet appears. **Keep going** returns to the same screen. **Leave** goes to `/plan/in-progress`, the stage a started session leaves the plan on.
 - **Resuming:** leave mid-session, then tap the Voice step again. `/explain/resume` names which terms are done. **Continue** returns to the term you left; **Start over** clears it.
 - **Impatience:** tap the screen repeatedly during a wait. Nothing breaks and nothing double-sends, but Knowie reacts.
 - **Saying you don't know:** tap **I don't know** on `06 Idle`, and again on the text screen. Both land on `/explain/[term]/hint` — one hint, headline in the neutral colour — and **Show me the answer** resolves the term as Revealed at 0 XP, with no take quoted back and no attempt credited. The row of ways out reads in the mode the student came from: from Idle it offers **Have a go** at the mic and **Type instead**; from the text screen it offers **Have a go** at the field and **Switch to voice**.

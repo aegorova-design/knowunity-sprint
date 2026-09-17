@@ -39,6 +39,7 @@ import { Button } from '@/components/button/Button';
 import { Scaffold } from '@/components/scaffold/Scaffold';
 import { TextBlock } from '@/components/text-block/TextBlock';
 
+import { PLAN_IN_PROGRESS_HREF } from '../../../plan/planHref';
 import { ActionStack } from '../../ActionStack';
 import { ButtonPair } from '../../ButtonPair';
 import { SheetPanel } from '../../SheetPanel';
@@ -69,9 +70,15 @@ function keepGoingHref(term: TermPosition, raw: string | string[] | undefined): 
  * Where Leave goes. The plan, per SPEC.md — carrying the term the session
  * stopped on, which is what turns the plan's Voice step into `05b Resume`.
  * Term 1 has nothing behind it, so there is nothing to resume.
+ *
+ * `03`, not `02`: a session has been started, so the plan that says nothing
+ * has started would undo what the student just did. Both stages read
+ * `?resume=` — see `planHref.ts`.
  */
 function leaveHref(term: TermPosition): string {
-  return term === '1' ? '/plan' : `/plan?resume=${term}`;
+  return term === '1'
+    ? PLAN_IN_PROGRESS_HREF
+    : `${PLAN_IN_PROGRESS_HREF}?resume=${term}`;
 }
 
 export default async function LeaveSessionPage({

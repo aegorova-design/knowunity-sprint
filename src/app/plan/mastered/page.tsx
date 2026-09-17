@@ -16,7 +16,18 @@
 
 import { PlanScreen } from '../PlanScreen';
 import { PLAN_MASTERED } from '../planData';
+import { PLAN_MASTERED_HREF } from '../planHref';
 
 export default function PlanMasteredPage() {
-  return <PlanScreen sections={PLAN_MASTERED} voiceHref="/explain/1" />;
+  return (
+    <PlanScreen
+      sections={PLAN_MASTERED}
+      voiceHref="/explain/1"
+      planHref={PLAN_MASTERED_HREF}
+      /* Home stays `01 Home`, which is the one remaining way back to `02`.
+         There is no "home, all done" frame, and `20 Home, revisit` still
+         claims a term is due — untrue once the section is mastered. It
+         doubles as the reset for the next run through. */
+    />
+  );
 }

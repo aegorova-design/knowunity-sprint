@@ -29,6 +29,7 @@
 
 import { PlanScreen } from '../PlanScreen';
 import { PLAN_TO_REVISIT } from '../planData';
+import { PLAN_TO_REVISIT_HREF } from '../planHref';
 
 export default function PlanToRevisitPage() {
   return (
@@ -36,6 +37,7 @@ export default function PlanToRevisitPage() {
       sections={PLAN_TO_REVISIT}
       voiceHref="/explain/1"
       homeHref="/home/revisit"
+      planHref={PLAN_TO_REVISIT_HREF}
       /* Stubbed: straight to 20b, skipping the loop. See the note above. */
       resultActionHref="/explain/revisit-done"
     />

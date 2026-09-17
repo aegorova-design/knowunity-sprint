@@ -30,6 +30,7 @@ import { AppBar } from '@/components/app-bar/AppBar';
 import { Button } from '@/components/button/Button';
 import { Scaffold } from '@/components/scaffold/Scaffold';
 
+import { PLAN_IN_PROGRESS_HREF } from '../../plan/planHref';
 import { ActionStack } from '../ActionStack';
 import { ButtonPair } from '../ButtonPair';
 import { MascotHeading } from '../MascotHeading';
@@ -42,8 +43,12 @@ import {
   type TermPosition,
 } from '../session';
 
-/** Close leaves the session for the plan, as the primer and `14` both do. */
-const RESUME_CLOSE_HREF = '/plan';
+/**
+ * Close leaves the session for the plan, as the primer and `14` both do — for
+ * `03`, the stage a started session left it on, which is where Leave put the
+ * student to reach this screen in the first place.
+ */
+const RESUME_CLOSE_HREF = PLAN_IN_PROGRESS_HREF;
 
 /** Start over: a fresh link is a fresh session. */
 const START_OVER_HREF = '/explain/1';

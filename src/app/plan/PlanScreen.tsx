@@ -23,6 +23,7 @@ import { SectionHeader } from '@/components/section-header/SectionHeader';
 import { StepperStep } from '@/components/stepper-step/StepperStep';
 
 import { SUBJECT, type PlanSection } from './planData';
+import { PLAN_HREF } from './planHref';
 
 import './planScreen.css';
 
@@ -68,6 +69,17 @@ export type PlanScreenProps = {
    * overrides it — see the note there.
    */
   resultActionHref?: string;
+  /**
+   * This screen's own route, which is where the study-plan tab in the bottom
+   * bar goes.
+   *
+   * The plan has four stages and each is its own route, so the tab that says
+   * "study plan" should land on the stage the student has reached rather than
+   * always on `02`. Nothing is stored to do it — the stage is whichever route
+   * is rendering, so a reload gives the same one back and a second student
+   * starting at `/` still gets `02`. See `planHref.ts`.
+   */
+  planHref?: string;
 };
 
 export function PlanScreen({
@@ -76,6 +88,7 @@ export function PlanScreen({
   learningHref,
   homeHref = '/',
   resultActionHref,
+  planHref = PLAN_HREF,
 }: PlanScreenProps) {
   return (
     <Scaffold
@@ -169,7 +182,7 @@ export function PlanScreen({
         </div>
       }
       bottomContent={
-        <BottomNav Active="study-plan" homeChatHref={homeHref} studyPlanHref="/plan" />
+        <BottomNav Active="study-plan" homeChatHref={homeHref} studyPlanHref={planHref} />
       }
     />
   );
