@@ -18,9 +18,11 @@
  * alternative. Only this screen makes that offer — see sprint-context.md,
  * "Placement and return", and `01 Home`, which deliberately makes none.
  *
- * The top strip and everything below the actions are placeholder chrome.
+ * The top strip and the tool row are placeholder chrome. The bottom bar is
+ * not: it is a `bottomNav` instance, the same one `01 Home` carries.
  */
 
+import { BottomNav } from '@/components/bottom-nav/BottomNav';
 import { Button } from '@/components/button/Button';
 import { Scaffold } from '@/components/scaffold/Scaffold';
 import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
@@ -68,7 +70,14 @@ export default function HomeRevisitPage() {
           </div>
         </div>
       }
-      bottomContent={<ChromeStrip src="/chrome/home-bottom.png" height={185} />}
+      bottomContent={
+        <>
+          {/* Same pair as 01 Home: the tool row and "Ask anything" as a strip,
+              the bar itself as a component. */}
+          <ChromeStrip src="/chrome/bottomContent.png" width={358} height={100} />
+          <BottomNav Active="home-chat" homeChatHref="/" studyPlanHref="/plan" />
+        </>
+      }
     />
   );
 }

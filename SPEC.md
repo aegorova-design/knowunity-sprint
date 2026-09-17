@@ -118,7 +118,7 @@ It carries `href`, which makes the whole row one focusable link. `StepperStep` i
 ### 3. 01 Home, first session — `/`
 
 - **States:** one.
-- **Components:** `VerdictHeader verdict="Neutral" titleAs="h1"` reading "Your History exam is in 1 week", with its caption switched off — Knowie is the size L Standby figure nested inside the header, not a separate `MascotFigure` — and `Button variant="Primary" size="M" CTA="Continue studying" href="/plan"`. Everything else on the screen — the top bar, the tool row, "Ask anything" and the bottom navigation — is placeholder chrome (see Out of scope).
+- **Components:** `VerdictHeader verdict="Neutral" titleAs="h1"` reading "Your History exam is in 1 week", with its caption switched off — Knowie is the size L Standby figure nested inside the header, not a separate `MascotFigure` — and `Button variant="Primary" size="M" CTA="Continue studying" href="/plan"`. The top bar and the tool row / "Ask anything" strip are placeholder chrome (see Out of scope); the bottom bar is `BottomNav Active="home-chat" homeChatHref="/" studyPlanHref="/plan"`, a real component whose two live tabs navigate.
 - **Can do:** Continue studying.
 - **Leads to:** `/plan`.
 
@@ -350,6 +350,7 @@ Not built, on purpose. Anything here that shows on a screen is a static placehol
 - **Leaderboard interstitial, XP for revisit sessions, the all-mastered home state, same-day or multiple exams.**
 - **Light mode, tablet, desktop, Android.** 390px, dark mode, iOS-shaped only.
 - **The app chrome on home and plan** — Status Bar, Navbar, Navigation Button, Avatar come from a library this file cannot reach. Decided: it ships as flat PNGs exported from Mockups v2 into `public/chrome/`, rendered by `src/app/_chrome/ChromeStrip.tsx` and inert. Nothing on it is in the click path and none of it is announced. `ChromeStrip` is not a design-system component and never enters Storybook.
+  - **The bottom bar is no longer part of this.** `bottomNav` is a real component set in Figma now, so home and plan carry a `BottomNav` instance instead of a strip: two live tabs — home-chat to `/`, study-plan to `/plan` — and search, trophy and the avatar drawn inert, which is the component's own rule. The strip on the home screens is now `bottomContent.png`, the tool row and "Ask anything" alone. `home-bottom.png` and `plan-bottom.png` are unreferenced and kept only as a record of what the bar used to be.
 - **`Allow in Settings` actually opening settings.** A web app on iOS Safari cannot deep-link to microphone permissions. The button is present because the student needs to be told where to go; it does not navigate.
 
 ---

@@ -7,10 +7,14 @@
  *
  * The subject heading and the tabs are page-local markup rather than exported
  * chrome, because the subject is this screen's h1 and a picture of a heading is
- * not a heading. The bottom navigation is a ChromeStrip — it is out of scope
- * for the sprint and nothing on it is in the click path.
+ * not a heading. The bottom navigation is a `bottomNav` instance with
+ * study-plan lit, because a bar that marks where you are is the only reason
+ * that variant exists. It replaces the ChromeStrip this screen used to carry:
+ * the exported `plan-bottom.png` had home-chat lit, which reads as a
+ * duplicated frame rather than intent.
  */
 
+import { BottomNav } from '@/components/bottom-nav/BottomNav';
 import { Button } from '@/components/button/Button';
 import { IconSlot } from '@/components/icon-slot/IconSlot';
 import { MascotMessage } from '@/components/mascot-message/MascotMessage';
@@ -18,7 +22,6 @@ import { Scaffold } from '@/components/scaffold/Scaffold';
 import { SectionHeader } from '@/components/section-header/SectionHeader';
 import { StepperStep } from '@/components/stepper-step/StepperStep';
 
-import { ChromeStrip } from '../_chrome/ChromeStrip';
 import { SUBJECT, type PlanSection } from './planData';
 
 import './planScreen.css';
@@ -120,7 +123,7 @@ export function PlanScreen({ sections, voiceHref }: PlanScreenProps) {
           ))}
         </div>
       }
-      bottomContent={<ChromeStrip src="/chrome/plan-bottom.png" height={96} />}
+      bottomContent={<BottomNav Active="study-plan" homeChatHref="/" studyPlanHref="/plan" />}
     />
   );
 }

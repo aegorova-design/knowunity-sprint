@@ -17,9 +17,13 @@
  * surfaces it once terms are due, which is 20 Home, revisit.
  * See sprint-context.md, "Placement and return".
  *
- * The top strip and everything below the exam card are placeholder chrome.
+ * The top strip and the tool row are placeholder chrome. The bottom bar is
+ * not: `bottomNav` is a real component now, so the strip under the exam card
+ * stops at the "Ask anything" row and the bar below it is an instance with
+ * home-chat lit.
  */
 
+import { BottomNav } from '@/components/bottom-nav/BottomNav';
 import { Button } from '@/components/button/Button';
 import { Scaffold } from '@/components/scaffold/Scaffold';
 import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
@@ -47,7 +51,14 @@ export default function HomePage() {
           </div>
         </div>
       }
-      bottomContent={<ChromeStrip src="/chrome/home-bottom.png" height={185} />}
+      bottomContent={
+        <>
+          {/* The tool row and "Ask anything" only. 358 wide, which is the
+              content box inside bottomContent's own side padding. */}
+          <ChromeStrip src="/chrome/bottomContent.png" width={358} height={100} />
+          <BottomNav Active="home-chat" homeChatHref="/" studyPlanHref="/plan" />
+        </>
+      }
     />
   );
 }
