@@ -115,12 +115,12 @@ export default async function AnswerPage({
               })}
             />
           }
-          /* Secondary, on the design owner's call. SPEC.md and the frame both
-             draw it Tertiary — moving on is allowed but not encouraged — and
-             the intent is unchanged here, only the step down from the Primary:
-             Tertiary put the one way forward at the lowest emphasis on the
-             screen, below even the ways out on the hint screens above it.
-             `13b` promotes it to Primary once the saying-back is done. */
+          /* Secondary, per SPEC.md. The frame draws it Tertiary — moving on is
+             allowed but not encouraged — and the intent is unchanged here, only
+             the step down from the Primary: Tertiary put the one way forward at
+             the lowest emphasis on the screen, below even the ways out on the
+             hint screens above it. `13b` promotes it to Primary once the
+             saying-back is done. */
           secondary={
             <Button
               variant="Secondary"

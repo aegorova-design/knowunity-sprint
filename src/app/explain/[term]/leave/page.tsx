@@ -125,9 +125,8 @@ export default async function LeaveSessionPage({
               primary={<Button variant="Primary" size="L" CTA="Keep going" href={back} />}
               below={
                 <ButtonPair>
-                  {/* Tertiary, per the frame — the way out is available
-                     without being invited. SPEC.md says Secondary; reported
-                     with the build. */}
+                  {/* Tertiary, per the frame and SPEC.md — the way out is
+                     available without being invited. */}
                   <Button variant="Tertiary" size="M" CTA="Leave" href={leaveHref(term)} />
                 </ButtonPair>
               }

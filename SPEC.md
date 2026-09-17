@@ -229,11 +229,13 @@ The ladder has nowhere else to go, but the student taps through to the answer ra
 ### 15. 13 Answer revealed — `/explain/[term]/answer`
 
 - **States:** one.
-- **Components:** `VerdictHeader verdict="Neutral" title="Here's the idea"`, with a caption that credits the attempt only if there was one; `AnswerBlock kind="Answer"` carrying the term's four key ideas inside it, under "The key ideas" and unticked; `Button variant="Primary" size="L" CTA="Say it back" showLeftIcon leftIcon="microphone-01"`; `Button variant="Tertiary" size="M" CTA="Next term" showRightIcon rightIcon="arrow-right"`.
+- **Components:** `VerdictHeader verdict="Neutral" title="Here's the idea"`, with a caption that credits the attempt only if there was one; `AnswerBlock kind="Answer"` carrying the term's four key ideas inside it, under "The key ideas" and unticked; `Button variant="Primary" size="L" CTA="Say it back" showLeftIcon leftIcon="microphone-01"`; `Button variant="Secondary" size="M" CTA="Next term" showRightIcon rightIcon="arrow-right"`.
 - **Can do:** Say it back; Next term.
 - **Leads to:** `/explain/[term]/recording` then `/explain/[term]/answer/said-back`; next term or `/explain/summary`.
 
 The outcome line reads **`+0 XP · revealed`**, in the same shape and the same slot as a pass's `+15 XP · unaided`. The outcome is Revealed at 0 XP and nothing on this screen can change that — the number says so, and the word says why.
+
+Next term is **Secondary**, not Tertiary as the frame draws it. Tertiary put the one way forward at the lowest emphasis on the screen — below even the ways out on the hint screens above it — and moving on after a reveal is allowed, not discouraged. The step down from the Primary is all that carries the discouragement. `13b` promotes it to Primary once the saying-back is done.
 
 ### 16. 13b Answer revealed, said back — `/explain/[term]/answer/said-back`
 
@@ -313,9 +315,11 @@ Text is **sticky** for the rest of the session once chosen — term 2 opens here
 ### 25. 06b Leave session, confirm — `/explain/[term]/leave`
 
 - **States:** one. The current screen behind a sheet.
-- **Components:** `Scaffold showBottomSheetBackground={true}` with a sheet in `bottomSheetOnly`: "Leave Explain out loud?", "Your progress is saved…", `Button variant="Primary" size="L" CTA="Keep going"`, `Button variant="Secondary" size="M" CTA="Leave"`.
+- **Components:** `Scaffold showBottomSheetBackground={true}` with a sheet in `bottomSheetOnly`: "Leave Explain out loud?", "Your progress is saved…", `Button variant="Primary" size="L" CTA="Keep going"`, `Button variant="Tertiary" size="M" CTA="Leave"`.
 - **Can do:** Keep going; Leave.
 - **Leads to:** back to the screen underneath; `/plan`.
+
+Leave is **Tertiary**, per the frame: the way out stays available without being invited, and the screen's one Primary is the *staying* one — a confirm should make the reversible choice the easy one.
 
 The sheet is currently hand-built. `bottomSheet` is a decided component that does not exist yet — see `design-system.md`, "Gaps waiting for a decision". When it is built, this sheet, 05's and 18's all re-point at it.
 
@@ -324,7 +328,9 @@ The sheet is currently hand-built. `bottomSheet` is a decided component that doe
 - **States:** one.
 - **Components:** the claim headline — for a scripted run, **"You explained 1 of 3 without help."**; an XP total of **25 XP**; `TermRow` ×3 — `Feudalism` Unaided `+15 XP`, `Serfdom` Revealed `+0 XP`, `Manorialism` Hinted `+10 XP`; a "Tap any term…" line; `Button variant="Primary" size="L" CTA="Continue"`; `Button variant="Secondary" size="M" CTA="Redo 2 terms"`.
 - **Can do:** tap a row; Continue; Redo 2 terms.
-- **Leads to:** `/explain/summary/[term]`; `/plan/to-revisit` or `/plan/mastered`; `/explain/1` for a fresh run.
+- **Leads to:** `/explain/summary/[term]`; Continue → `/plan/to-revisit` when terms are coming back, `/plan/mastered` when none are — on the scripted run, always `/plan/to-revisit`; Redo → `/explain/1` for a fresh run.
+
+Continue's destination is derived from the outcomes, not written down, so it can never name a different state from the one the rows report. The scripted run finishes 1 of 3, so it always resolves to `/plan/to-revisit`; `/plan/mastered` is reached by clicking through `20b`'s Done — see screen 28.
 
 `TermRow variant` stays the four values. A Hinted term reads `+10 XP` or `+5 XP` and the XP value is what tells the two apart — there is no fifth outcome. Redo awards full XP.
 
@@ -342,9 +348,11 @@ The sheet is currently hand-built. `bottomSheet` is a decided component that doe
 - **States:** one. The end of a revisit session, in place of the full summary.
 - **Components:** `MascotFigure size="L" pose="Excited"`; `TextBlock variant="L"` naming the terms that came back and the next check; `Button variant="Primary" size="L" CTA="Done"`.
 - **Can do:** Done.
-- **Leads to:** `/plan/to-revisit` or `/plan/mastered`.
+- **Leads to:** `/plan/mastered`. The close icon goes to the same place.
 
 A revisit awards no XP, and does not warrant a per-term breakdown.
+
+**Done has one destination, not two.** The terms that were outstanding came back unaided, so the section's latest session is now all-unaided — which is what `sectionHeader` reports and what Mastered means. This is also the only click path to `21` in the whole flow: the scripted run always finishes 1 of 3, so `17 Summary`'s Continue always lands on `/plan/to-revisit` instead.
 
 **It reports both terms the first session left behind**, not one. The scripted run ends 1 of 3 — Serfdom revealed, Manorialism hinted — and both come back unaided here, which is what makes `21`'s "You got all 3 terms right" true on the other side of Done. The recall itself is not built.
 
