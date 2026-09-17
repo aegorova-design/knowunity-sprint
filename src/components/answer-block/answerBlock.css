@@ -146,3 +146,25 @@
   padding: var(--space-0);
   list-style: none;
 }
+
+/* The four chips are `chips` at size=S, color=Primary, active=False — but they
+   are not the colour that variant draws. Figma overrides every one of them:
+   fill to interactive/secondary, label to interactive/onSecondary, in place of
+   the background/surface + text/primary the resting chip carries everywhere
+   else. So the override lives here, on the block, rather than in chips.css —
+   the component set itself is untouched, and every other chip in the app keeps
+   the colour its variant gives it.
+
+   It is also what makes the group legible. Answer's own fill is
+   background/stacking, and a resting chip is background/surface — two flat
+   opaque-ish layers that sit at nearly the same lightness once the block is on
+   a sheet. interactive/secondary is additive white, so each chip lifts off
+   whatever the block is sitting on, the same way the block lifts off the page.
+
+   Only active=False is touched. Nothing here renders a ticked chip — the
+   selected colours are `CoveredIdeas`' business — so the True variant is left
+   exactly as chips.css binds it. */
+.knowieAnswerBlock-chips .knowieChips[data-active='False'] {
+  background-color: var(--color-interactive-secondary);
+  color: var(--color-interactive-on-secondary);
+}

@@ -20,6 +20,12 @@
  * rather than recording what they covered, and that is true on the say-back
  * and on the summary too. Ticked chips are `CoveredIdeas`' business, on the
  * two pass screens.
+ *
+ * They are also not the colour that unticked state draws. Figma overrides all
+ * four instances to interactive/secondary with interactive/onSecondary labels,
+ * in place of background/surface and text/primary. The recolour lives in
+ * answerBlock.css, scoped to this block, because `chips` has no variant that
+ * offers it — see component-gaps.md.
  */
 
 import type { HTMLAttributes } from 'react';
