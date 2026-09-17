@@ -35,9 +35,25 @@ export type PlanScreenProps = {
    * sooner" start the recall loop now rather than on the date Knowie named.
    */
   voiceHref: string;
+  /**
+   * Where a **learning** step goes, on the first section only.
+   *
+   * A sprint shortcut, not the product: `02 Plan, nothing started` is the one
+   * screen that passes it, so tapping any of section 1's three steps lands on
+   * `03 Plan, section 1 in progress` and the two frames are connected without
+   * a Study and quiz flow to walk through. The progress it lands on is the
+   * frame's, not a record of what was tapped — nothing here tracks that, and
+   * nothing is meant to.
+   *
+   * The first section because that is the section `03` moves. Left off, every
+   * learning step stays the non-interactive `div` `stepperStep` draws without
+   * an href, which is what `03` and the two result screens want — there is
+   * nowhere further to go from them.
+   */
+  learningHref?: string;
 };
 
-export function PlanScreen({ sections, voiceHref }: PlanScreenProps) {
+export function PlanScreen({ sections, voiceHref, learningHref }: PlanScreenProps) {
   return (
     <Scaffold
       showTopNavSlot={false}
@@ -61,7 +77,7 @@ export function PlanScreen({ sections, voiceHref }: PlanScreenProps) {
             <span className="planScreen-tab">Materials</span>
           </div>
 
-          {sections.map((section) => (
+          {sections.map((section, index) => (
             <section className="planScreen-section" key={section.title}>
               <SectionHeader
                 /* Default carries no status layer at all, which is why a
@@ -79,6 +95,12 @@ export function PlanScreen({ sections, voiceHref }: PlanScreenProps) {
                     state={step.state}
                     label={step.label}
                     caption={step.caption}
+                    /* Undefined on every section but the first, and on every
+                       screen that does not pass one — `stepperStep` renders a
+                       plain div then, so the row keeps its press and focus
+                       states off rather than offering a target that goes
+                       nowhere. */
+                    href={index === 0 ? learningHref : undefined}
                   />
                 ))}
                 <StepperStep

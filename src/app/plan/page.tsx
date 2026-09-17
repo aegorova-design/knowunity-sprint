@@ -28,5 +28,15 @@ export default async function PlanPage({
 }) {
   const { resume } = await searchParams;
 
-  return <PlanScreen sections={PLAN_NOTHING_STARTED} voiceHref={voiceHrefFor(resume)} />;
+  return (
+    <PlanScreen
+      sections={PLAN_NOTHING_STARTED}
+      voiceHref={voiceHrefFor(resume)}
+      /* Section 1's three learning steps go to `03 Plan, section 1 in
+         progress`. This screen is the only one that passes it — see the prop.
+         Study and quiz is out of scope, so a tap moves the section along
+         rather than opening it, which is what connects the two frames. */
+      learningHref="/plan/in-progress"
+    />
+  );
 }

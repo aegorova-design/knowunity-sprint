@@ -102,18 +102,21 @@ Every screen is a `Scaffold` (`size="iPhone 13"`), inside the app's own 390px fr
 
 - **States:** one.
 - **Components:** `SectionHeader state="Default"` per section; `StepperStep type="Learning" state="NotStarted"` ×3 per section; `StepperStep type="Voice" state="NotStarted"` with `caption="Explain 3 terms from this section out loud, ~2 min"` per section.
-- **Can do:** tap the Voice step of either section.
-- **Leads to:** `/explain/intro` on a first run, `/explain/1` after that.
+- **Can do:** tap the Voice step of either section, or any of section 1's three learning steps.
+- **Leads to:** the Voice step → `/explain/intro` on a first run, `/explain/1` after that. A section 1 learning step → `/plan/in-progress`.
 
 The Voice step is **never** `state="Locked"`. It is available from the moment the section exists.
 
 It carries `href`, which makes the whole row one focusable link. `StepperStep` is a non-interactive `<div>` without it — Figma cannot express a destination, so the prop exists in code only.
 
+**The learning steps are a sprint shortcut.** Study and quiz is out of scope, so tapping one of section 1's steps moves the section along to `03` instead of opening it. The progress `03` shows is the frame's, not a record of which step was tapped — nothing tracks that. Section 2's steps stay inert, and so do `03`'s: the connection is one-way, from `02` into `03`.
+
 ### 2. 03 Plan, section 1 in progress — `/plan/in-progress`
 
 - **States:** one.
 - **Components:** as above, with section 1's learning steps at `state="Completed"` and `state="InProgress"`.
-- **Can do / leads to:** as `/plan`.
+- **Can do:** tap the Voice step of either section. The learning steps are inert here — this is where `02`'s go, and there is nowhere further for them to lead.
+- **Leads to:** `/explain/1`. Not a first run, so the Voice step skips the primer.
 
 ### 3. 01 Home, first session — `/`
 
