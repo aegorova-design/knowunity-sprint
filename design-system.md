@@ -13,7 +13,7 @@ Source: Figma file Yummy__Knowie Design Sprint (key 2wQS1QXnRuDtXMJESRpeQh), ren
 
 ## Which component, when
 
-**scaffold.** Every screen starts here. It handles the status bar, the home indicator and the page background. Build inside it, never around it. Use the size=iPhone 13 variant, and check the XS - iPhone SE variant for anything that could break at a narrow width.
+**scaffold.** Every screen starts here. It handles the status bar and the page background. Build inside it, never around it. ~~and the home indicator~~ — **it does not.** The component set holds a Panel Header with a Status Bar instance in it, then the four slots, and nothing else; no layer in it draws a home indicator. Every mockup that has one draws it at bottomContent / Navbar / Home Indicator, so it belongs to the bottom bar, and bottomNav carries it. Use the size=iPhone 13 variant, and check the XS - iPhone SE variant for anything that could break at a narrow width.
 
 **appBar.** Top navigation inside the scaffold's topNavigation slot.
 - leftIconButtonOnly: a back or close action with nothing else.
@@ -49,7 +49,7 @@ Source: Figma file Yummy__Knowie Design Sprint (key 2wQS1QXnRuDtXMJESRpeQh), ren
 
 **textBlock.** A title with an optional caption. Use XL and L for screen-level headings, and M and S for section headings.
 
-**Sprint components.** recordButton, waveform, takePlayer, answerBlock, mascotMessage, statusTag, termRow, stepperStep, sectionHeader, mascotFigure, verdictHeader and textField were built for Explain out loud. See the Sprint components section below.
+**Sprint components.** recordButton, waveform, takePlayer, answerBlock, mascotMessage, statusTag, termRow, stepperStep, sectionHeader, mascotFigure, verdictHeader, textField and bottomNav were built for Explain out loud. See the Sprint components section below.
 
 **Not in this system.** Chat Input and checkbox are instances from an external library. That library isn't connected to this file. Treat them as missing, not as available.
 
@@ -61,7 +61,7 @@ The app chrome on the home and plan mockups comes from the same unreachable libr
 
 The scaffold stacks top to bottom: the status bar header, then topNavigation, then middleContent, then bottomContent. bottomSheetOnly overlays them.
 
-**Status bar header.** Fixed. Put nothing here.
+**Status bar header.** Fixed. Put nothing here. There is no matching footer: scaffold draws no home indicator, and the screens that show one get it from bottomNav.
 
 **topNavigation.** One appBar, nothing else. It hugs its content. Hide it with showTopNavSlot only on screens that genuinely have no navigation, such as a full-screen mascot moment.
 
@@ -77,7 +77,7 @@ It carries two generations of properties at once. The seven camelCase ones above
 
 ## Sprint components
 
-Twelve component sets built for Explain out loud, one per section on the **Sprint components** page (page id 13605:12223). The same page also holds the restored scaffold and the private .mascotFigureBase. They are part of this system now: use them, don't fork them, and report gaps the same way as for anything else.
+Thirteen component sets built for Explain out loud, one per section on the **Sprint components** page (page id 13605:12223). The same page also holds the restored scaffold and the private .mascotFigureBase. They are part of this system now: use them, don't fork them, and report gaps the same way as for anything else.
 
 Every one of them is an addition made on purpose during the sprint, not a base-library component. They are built out of base components where one exists (iconSlot, buttonIcon, mascotFigure) rather than redrawn.
 
@@ -222,6 +222,20 @@ Values are not repeated here. Every fill, padding, radius, gap and text style co
 - 2 variants, 358x160.
 - Empty and Filled differ in the border and the text colour only. Everything else is shared, so a real field moves between them on its own as the student types.
 - This closed the textField gap. The "Not in this system" line that called Text Field an external instance is gone with it.
+
+### bottomNav
+
+> Sprint bottom nav. Prototype uses two tabs: home-chat and study-plan. search, trophy and avatar are present for app fidelity and are not interactive.
+
+- **Active:** home-chat, study-plan
+- **Other properties:** none
+- 2 variants, 358x82. A `tabs` row of five plus a `Home Indicator` frame.
+- Only two of the five do anything. search, trophy and the avatar are drawn and inert, which is the component's own rule, not a screen's choice.
+- Built from Navigation Button and Avatar, both from the unreachable library. Nothing local draws a tab, so the React component composes it from iconSlot instead and the four icons — myai-chat, search-md, target-04, trophy-02 — were exported into `public/icons`.
+- The active tab is told apart by colour alone, and a tab's box is 40x40 against the 64 working floor. Both are in the gaps list.
+- The Home Indicator is part of it, which is where the mockups put it too. Only the pill's fill is bound, to background/inverse; its 34 of height and 131 of width are hand-set and have no token, and stay that way — iPhone geometry is not a design value, the same call scaffold.css already makes for the 390x844 canvas.
+- The pill's width is 131 here and on the four plan mockups, and 119 on both home mockups and on the Navbar this was cut from. One of the two is wrong. See the gaps list.
+- This does not close the **navBar** gap below, which is about the home and plan mockups' app chrome.
 
 ## Conventions for a new component
 

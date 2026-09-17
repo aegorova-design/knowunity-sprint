@@ -136,6 +136,10 @@
   --knowieIconSlot-src: url('/icons/microphone-01.svg');
 }
 
+.knowieIconSlot[data-icon='myai-chat'] {
+  --knowieIconSlot-src: url('/icons/myai-chat.svg');
+}
+
 .knowieIconSlot[data-icon='pause'] {
   --knowieIconSlot-src: url('/icons/pause.svg');
 }
@@ -148,6 +152,10 @@
   --knowieIconSlot-src: url('/icons/refresh-ccw-01.svg');
 }
 
+.knowieIconSlot[data-icon='search-md'] {
+  --knowieIconSlot-src: url('/icons/search-md.svg');
+}
+
 .knowieIconSlot[data-icon='share-02'] {
   --knowieIconSlot-src: url('/icons/share-02.svg');
 }
@@ -158,6 +166,14 @@
 
 .knowieIconSlot[data-icon='stop'] {
   --knowieIconSlot-src: url('/icons/stop.svg');
+}
+
+.knowieIconSlot[data-icon='target-04'] {
+  --knowieIconSlot-src: url('/icons/target-04.svg');
+}
+
+.knowieIconSlot[data-icon='trophy-02'] {
+  --knowieIconSlot-src: url('/icons/trophy-02.svg');
 }
 
 .knowieIconSlot[data-icon='x-close'] {

@@ -22,8 +22,9 @@ const ICON_NAMES: IconName[] = [
   'ai-quiz', 'arrow-left', 'arrow-right', 'arrow-right-alt', 'check',
   'check-circle', 'chevron-right', 'circle-half', 'corner-up-right',
   'dots-vertical', 'eye', 'graduation-hat-01', 'help-circle', 'keyboard-01',
-  'lightbulb-02', 'loading-01', 'microphone-01', 'pause', 'play',
-  'refresh-ccw-01', 'share-02', 'skip-forward', 'stop', 'x-close', 'zap',
+  'lightbulb-02', 'loading-01', 'microphone-01', 'myai-chat', 'pause', 'play',
+  'refresh-ccw-01', 'search-md', 'share-02', 'skip-forward', 'stop',
+  'target-04', 'trophy-02', 'x-close', 'zap',
 ];
 
 /** The px each Figma variant resolves to through the Icon token scale. */

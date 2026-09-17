@@ -1,0 +1,12 @@
+/* Chrome for the bottomNav stories only.
+
+   The bar is 358 in Figma, which is the 390 canvas minus scaffold's Space/400
+   side padding. It fills its container instead of fixing that width, so the
+   demo supplies the padding the way bottomContent does. */
+
+.knowieBottomNavDemo {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--space-800) var(--space-400);
+  background: var(--color-background-page);
+}

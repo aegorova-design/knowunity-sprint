@@ -42,12 +42,16 @@ export type IconName =
   | 'lightbulb-02'
   | 'loading-01'
   | 'microphone-01'
+  | 'myai-chat'
   | 'pause'
   | 'play'
   | 'refresh-ccw-01'
+  | 'search-md'
   | 'share-02'
   | 'skip-forward'
   | 'stop'
+  | 'target-04'
+  | 'trophy-02'
   | 'x-close'
   | 'zap';
 

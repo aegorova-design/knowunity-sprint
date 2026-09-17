@@ -1,0 +1,143 @@
+/* bottomNav — built from the Figma component set `bottomNav` (node 13709:4117)
+   in Yummy__Knowie Design Sprint. Every value is a custom property from
+   build/css/tokens.css; there are no raw hex or pixel values here.
+
+   Figma pins the bar to 358 wide, the 390 canvas minus its side padding. A bar
+   that sits in scaffold's bottomContent has no business fixing its own width,
+   so it fills its container the way termRow does. Its own height is not set
+   either: 48 falls out of the 24 icon plus the tab's Space/200 padding plus
+   the row's Space/100, so no height token is needed.
+
+   The bar draws no fill. Figma gives it none, so the page colour shows
+   through. */
+
+.knowieBottomNav {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+}
+
+/* The five, spread across the row. Space/100 top and bottom, nothing at the
+   sides — the sides are scaffold's padding. */
+.knowieBottomNav-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-100) var(--space-0);
+}
+
+/* --- a tab ----------------------------------------------------------------
+   Figma's Navigation Button with its label switched off: a 24 icon in
+   Space/200 of padding, which is the 40 square it hugs to. The Space/050 gap
+   is the one between the icon and that hidden label; it is kept so the box
+   stays the size Figma gives it once a label is ever switched back on. */
+
+.knowieBottomNav-tab {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-050);
+  padding: var(--space-200);
+  border: none;
+  border-radius: var(--radius-full);
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Resting: the icon recedes. The active tab is the only violet thing in the
+   bar, which is what says where the student is. Colour is not the only signal
+   — aria-current carries it too — but the bar has no room for a second one,
+   so this is worth knowing about. See the story docs. */
+.knowieBottomNav-tab .knowieIconSlot {
+  color: var(--color-text-secondary);
+}
+
+.knowieBottomNav-tab[aria-current='page'] .knowieIconSlot {
+  color: var(--color-accent-brand-bold);
+}
+
+/* Not in Figma, which has no press state on this component. Built from the
+   same interactive.pressed overlay and press timing the rest of the system
+   uses, because a tap with no acknowledgement reads as a dropped tap. */
+.knowieBottomNav-tab:active:not([data-fidelity]) {
+  background-color: var(--color-interactive-pressed);
+  transition-duration: var(--motion-duration-press-in);
+  transition-property: background-color;
+  transition-timing-function: var(--motion-easing-press);
+}
+
+.knowieBottomNav-tab:focus-visible {
+  outline: var(--stroke-heavy-border) solid var(--color-border-focus);
+  outline-offset: var(--space-050);
+}
+
+/* The three that are there for app fidelity. Inert: not focusable, not
+   announced, and not in the click path either. */
+.knowieBottomNav-tab[data-fidelity],
+.knowieBottomNav-avatar {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* --- the avatar -----------------------------------------------------------
+   Figma's Avatar at Icon/300, Radius/Full, with a border/default edge. The
+   artwork is an image fill, so it is an <img> rather than an iconSlot: it is
+   not a one-colour icon and must not take the slot's colour. */
+
+.knowieBottomNav-avatar {
+  box-sizing: border-box;
+  display: block;
+  flex: none;
+  width: var(--icon-300);
+  height: var(--icon-300);
+  overflow: hidden;
+  border: var(--stroke-border) solid var(--color-border-default);
+  border-radius: var(--radius-full);
+}
+
+.knowieBottomNav-avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --- the home indicator ---------------------------------------------------
+   Figma's `Home Indicator` frame: 34 tall, with a 131x5 pill sitting 8 off the
+   bottom. Only the pill's fill is variable-bound — background/inverse — and
+   the two dimensions are hand-set in the file.
+
+   They stay hand-set here, on the same grounds scaffold.css already gives for
+   the 390x844 canvas: "neither 390 nor 844 needs a token, since the system has
+   no dimension that large". 34 and 131 are iPhone geometry, not design values,
+   and there is no Space or Radius step for either. The three values that ARE
+   design values — the 5 height, the full radius and the fill — come from
+   tokens, as does the 8 it sits off the bottom.
+
+   The file is not consistent about the width: the bottomNav component and the
+   four plan mockups draw 131, while both home mockups and the Navbar this
+   component was cut from draw 119. 131 is what the component says, so 131 is
+   what this is. See component-gaps.md. */
+
+.knowieBottomNav-homeIndicator {
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 34px;
+  padding-bottom: var(--space-200);
+  /* Inert: it is a picture of the OS, not the OS. */
+  pointer-events: none;
+  user-select: none;
+}
+
+.knowieBottomNav-homeIndicatorPill {
+  display: block;
+  width: 131px;
+  height: var(--space-125);
+  border-radius: var(--radius-full);
+  background-color: var(--color-background-inverse);
+}
