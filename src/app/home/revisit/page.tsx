@@ -7,10 +7,16 @@
  *
  * Same shape as `01 Home` and the same chrome, with three things different:
  * the exam is nearer, the header keeps its caption, and the actions swap
- * emphasis. SPEC.md calls that caption "a '1 term to revisit' line" and the
- * frame draws it as the `verdictHeader`'s own caption rather than as a
- * separate block, which is what is built here — one component carrying the
- * headline and the line under it, the way every other Neutral header does.
+ * emphasis. The frame draws that caption as the `verdictHeader`'s own rather
+ * than as a separate block, which is what is built here — one component
+ * carrying the headline and the line under it, the way every other Neutral
+ * header does.
+ *
+ * **It counts the terms that are actually due.** SPEC.md and the frame both
+ * word it "1 term to revisit", which the scripted run contradicts: it ends
+ * 1 of 3, leaving Serfdom revealed and Manorialism hinted. Two terms come
+ * back, which is what `19` schedules and what `20b` reports, so the count is
+ * derived off `SESSION_OUTCOMES` rather than written down.
  *
  * Explain out loud is the Primary here and Continue studying is demoted to a
  * Tertiary text link, which is the whole point of the screen: the terms are
@@ -27,10 +33,20 @@ import { Button } from '@/components/button/Button';
 import { Scaffold } from '@/components/scaffold/Scaffold';
 import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
 
+import { SESSION_OUTCOMES } from '../../explain/script';
+import { TERM_POSITIONS } from '../../explain/session';
 import { PLAN_TO_REVISIT_HREF } from '../../plan/planHref';
 import { ChromeStrip } from '../../_chrome/ChromeStrip';
 
 import '../../home.css';
+
+/** Terms the first session did not leave unaided — the ones coming back. */
+const DUE = TERM_POSITIONS.filter(
+  (position) => SESSION_OUTCOMES[position].variant !== 'Unaided',
+).length;
+
+/** "2 terms to revisit", or "1 term" if a run ever leaves only one. */
+const DUE_CAPTION = `${DUE} ${DUE === 1 ? 'term' : 'terms'} to revisit`;
 
 export default function HomeRevisitPage() {
   return (
@@ -45,7 +61,7 @@ export default function HomeRevisitPage() {
               verdict="Neutral"
               titleAs="h1"
               title="Your History exam is in 5 days"
-              caption="1 term to revisit"
+              caption={DUE_CAPTION}
             />
 
             <div className="home-actions">

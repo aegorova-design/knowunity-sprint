@@ -131,10 +131,12 @@ This is where a started session returns to: **Leave** and `05b Resume`'s close b
 
 No Explain out loud entry here. Entry on a first session is the step's caption in the plan, and nothing else.
 
+**`?plan=` carries the stage.** Home is the one screen with no place in the story, so the plan's home tab names the stage the student was on and Continue studying returns there. A bare `/` — typed or reloaded — is the entry screen it has always been, and Continue studying goes to `02`. That is the reset between runs.
+
 ### 4. 20 Home, revisit — `/home/revisit`
 
 - **States:** one. Shown only when terms are due.
-- **Components:** same chrome, plus `VerdictHeader verdict="Neutral" titleAs="h1"` reading "Your History exam is in 5 days" with `caption="1 term to revisit"` — the frame draws that line as the header's own caption rather than as a separate block — `Button variant="Primary" size="M" CTA="Explain out loud" showLeftIcon leftIcon="microphone-01"`, and Continue studying demoted to `Button variant="Tertiary" size="S" showRightIcon rightIcon="arrow-right"`. Both buttons hug and sit centred under the header.
+- **Components:** same chrome, plus `VerdictHeader verdict="Neutral" titleAs="h1"` reading "Your History exam is in 5 days" with a `caption` counting the terms actually due — **"2 terms to revisit"** on the scripted run, derived off `SESSION_OUTCOMES`, not the frame's "1 term"; the frame draws that line as the header's own caption rather than as a separate block — `Button variant="Primary" size="M" CTA="Explain out loud" showLeftIcon leftIcon="microphone-01"`, and Continue studying demoted to `Button variant="Tertiary" size="S" showRightIcon rightIcon="arrow-right"`. Both buttons hug and sit centred under the header.
 - **Can do:** Explain out loud; Continue studying.
 - **Leads to:** Explain out loud → `/explain/revisit-done`; Continue studying → `/plan/to-revisit`. Home in the bottom bar is this screen, not `/`.
 

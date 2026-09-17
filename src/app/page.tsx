@@ -29,9 +29,26 @@ import { Scaffold } from '@/components/scaffold/Scaffold';
 import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
 
 import { ChromeStrip } from './_chrome/ChromeStrip';
+import { planHrefFrom } from './plan/planHref';
 import './home.css';
 
-export default function HomePage() {
+/**
+ * `?plan=` is the stage the student had reached when they tapped home, put
+ * there by the plan's own home tab. Home is the one screen with no place in
+ * the story, so the stage travels with them and comes back here — the same
+ * way `?resume=` carries a session in flight. See `planHref.ts`.
+ *
+ * Without it this is the entry screen it has always been and Continue
+ * studying goes to `02`, which is the reset between runs.
+ */
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { plan } = await searchParams;
+  const planHref = planHrefFrom(plan);
+
   return (
     <Scaffold
       topNavigation={<ChromeStrip src="/chrome/home-topnav.png" height={56} />}
@@ -47,7 +64,7 @@ export default function HomePage() {
               title="Your History exam is in 1 week"
               showCaption={false}
             />
-            <Button variant="Primary" size="M" CTA="Continue studying" href="/plan" />
+            <Button variant="Primary" size="M" CTA="Continue studying" href={planHref} />
           </div>
         </div>
       }
@@ -56,7 +73,7 @@ export default function HomePage() {
           {/* The tool row and "Ask anything" only. 358 wide, which is the
               content box inside bottomContent's own side padding. */}
           <ChromeStrip src="/chrome/bottomContent.png" width={358} height={100} />
-          <BottomNav Active="home-chat" homeChatHref="/" studyPlanHref="/plan" />
+          <BottomNav Active="home-chat" homeChatHref="/" studyPlanHref={planHref} />
         </>
       }
     />

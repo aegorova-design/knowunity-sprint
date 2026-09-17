@@ -8,7 +8,7 @@
  */
 
 import { PlanScreen } from '../PlanScreen';
-import { PLAN_IN_PROGRESS_HREF, voiceHrefFor } from '../planHref';
+import { PLAN_IN_PROGRESS_HREF, voiceHrefFor, homeHrefFor } from '../planHref';
 import { PLAN_IN_PROGRESS } from '../planData';
 
 export default async function PlanInProgressPage({
@@ -26,6 +26,10 @@ export default async function PlanInProgressPage({
       // screen 1, "on a first run, /explain/1 after that".
       voiceHref={voiceHrefFor(resume, '/explain/1')}
       planHref={PLAN_IN_PROGRESS_HREF}
+      /* Home carries the stage, so Continue studying comes back here rather
+         than to `02`. `20 Home, revisit` is not it: that screen says terms
+         are due, which is not true mid-section. */
+      homeHref={homeHrefFor('in-progress')}
     />
   );
 }

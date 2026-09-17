@@ -16,7 +16,7 @@
 
 import { PlanScreen } from '../PlanScreen';
 import { PLAN_MASTERED } from '../planData';
-import { PLAN_MASTERED_HREF } from '../planHref';
+import { PLAN_MASTERED_HREF, homeHrefFor } from '../planHref';
 
 export default function PlanMasteredPage() {
   return (
@@ -24,10 +24,10 @@ export default function PlanMasteredPage() {
       sections={PLAN_MASTERED}
       voiceHref="/explain/1"
       planHref={PLAN_MASTERED_HREF}
-      /* Home stays `01 Home`, which is the one remaining way back to `02`.
-         There is no "home, all done" frame, and `20 Home, revisit` still
-         claims a term is due — untrue once the section is mastered. It
-         doubles as the reset for the next run through. */
+      /* `01 Home` carrying the stage: there is no "home, all done" frame, and
+         `20 Home, revisit` still says terms are due — untrue once the section
+         is mastered. A bare `/`, typed or reloaded, is the reset. */
+      homeHref={homeHrefFor('mastered')}
     />
   );
 }

@@ -45,3 +45,31 @@ export function voiceHrefFor(
 
   return fallback;
 }
+
+/**
+ * The plan stages a link can name, as `?plan=` on `01 Home`.
+ *
+ * Home is the one screen in the flow with no place in the story: `01` is the
+ * entry, and it is also where the home tab lands from every plan stage. So the
+ * stage travels with the student and comes back on Continue studying, the same
+ * way `?resume=` carries a session in flight. Without it — a typed `/`, or a
+ * reload — home is the entry it was, and Continue studying goes to `02`. That
+ * is the reset between runs.
+ */
+const PLAN_STAGES: Record<string, string> = {
+  'in-progress': PLAN_IN_PROGRESS_HREF,
+  'to-revisit': PLAN_TO_REVISIT_HREF,
+  mastered: PLAN_MASTERED_HREF,
+};
+
+/** `01 Home` carrying the stage the student is on, for the home tab. */
+export function homeHrefFor(stage: keyof typeof PLAN_STAGES | string): string {
+  return `/?plan=${stage}`;
+}
+
+/** What `01 Home` sends Continue studying and its plan tab to. */
+export function planHrefFrom(raw: string | string[] | undefined): string {
+  const stage = Array.isArray(raw) ? raw[0] : raw;
+
+  return (stage && PLAN_STAGES[stage]) || PLAN_HREF;
+}
