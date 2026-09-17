@@ -4,12 +4,17 @@
  *
  * Matches the Mockups v2 frame "20b Revisit complete" (13663:19600).
  *
- * **A revisit is one term, so there is no breakdown.** `17 Summary` exists to
- * make a claim out of three outcomes and an XP total; one term that came back
- * unaided is a sentence, not a table. SPEC.md: "A revisit awards no XP. One
- * term does not warrant a per-term breakdown." So there are no `termRow`s, no
- * XP pill and no Redo here — Knowie says what happened and names the next
- * check, and Done is the only way on.
+ * **A revisit is not a session, so there is no breakdown.** `17 Summary`
+ * exists to make a claim out of three outcomes and an XP total; the terms that
+ * came back unaided are a sentence, not a table. SPEC.md: "A revisit awards no
+ * XP." So there are no `termRow`s, no XP pill and no Redo here — Knowie says
+ * what happened and names the next check, and Done is the only way on.
+ *
+ * **It reports both terms the first session left behind**, not one. The
+ * scripted run ends 1 of 3: Serfdom revealed and Manorialism hinted, which is
+ * what `19` names and what comes back here. The student recalls both, which is
+ * what makes `21 Plan, section mastered` — "You got all 3 terms right" — true
+ * on the other side of Done. The recall itself is not built; see the stubs.
  *
  * **Done goes to `/plan/mastered`.** The term that was outstanding came back
  * unaided, so the section's latest session is now all-unaided — which is what
@@ -22,13 +27,16 @@
  * primer and `14` this sits outside the term loop.
  *
  * **Two entries, and the copy has to read from both.** `19`'s "Do it now
- * anyway" arrives with no time passed — the student pulled the term forward
+ * anyway" arrives with no time passed — the student pulled the terms forward
  * rather than waiting — and `20 Home, revisit` arrives five days later, with
- * the term coming back on the date Knowie named. So neither line may lean on
- * the gap: the title no longer says the term "came back on its own", which is
- * only true of the scheduled return, and the caption no longer names a day.
- * What is true from both is that the term needed showing last time and was
- * explained unaided this time, with one check still to come.
+ * them coming back on the date Knowie named. So neither line may lean on the
+ * gap: the title does not say the terms "came back on their own", which is
+ * only true of the scheduled return, and the caption names no day. What is
+ * true from both is that they needed help last time and were explained
+ * unaided this time, with one check still to come.
+ *
+ * The walkthrough reaches it once, through `20`. `19`'s route stays wired
+ * because that is the entry the real flow uses.
  */
 
 import { AppBar } from '@/components/app-bar/AppBar';
@@ -38,14 +46,25 @@ import { Scaffold } from '@/components/scaffold/Scaffold';
 import { ActionStack } from '../ActionStack';
 import { MascotHeading } from '../MascotHeading';
 import { CloseButton } from '../navigation';
-import { TERMS } from '../session';
+import { SESSION_OUTCOMES } from '../script';
+import { TERMS, TERM_POSITIONS } from '../session';
 
 /**
- * The term a revisit brings back. Serfdom is the one the scripted run leaves
- * needing another pass — it is the term that gets revealed — so it is the one
- * the frame names and the one this screen reports on.
+ * The terms a revisit brings back: every one the first session did not leave
+ * unaided. Derived off `SESSION_OUTCOMES` rather than written down, the way
+ * the summary's totals are, so this screen can never name a different set from
+ * the one `17` and `19` report.
+ *
+ * The scripted run leaves two — Serfdom revealed, Manorialism hinted — which
+ * is what "both" in the title rests on. A script that left some other number
+ * would need that word to carry the count instead.
  */
-const REVISITED = TERMS['2'];
+const REVISITED = TERM_POSITIONS.filter(
+  (position) => SESSION_OUTCOMES[position].variant !== 'Unaided',
+).map((position) => TERMS[position].name);
+
+/** "Serfdom and Manorialism", in the order the session ran them. */
+const REVISITED_NAMES = REVISITED.join(' and ');
 
 /** Where the section stands once its last outstanding term has come back. */
 const DONE_HREF = '/plan/mastered';
@@ -67,8 +86,8 @@ export default function RevisitDonePage() {
              celebrating. The title beside her carries it, so the pose is
              never the only thing saying so. */
           pose="Excited"
-          title={`You got ${REVISITED.name} on your own`}
-          caption="It needed showing last time, and you explained it unaided this time. One more check before your exam."
+          title="You got both terms on your own"
+          caption={`${REVISITED_NAMES} needed help last time. You explained them unaided this time. One more check before your exam.`}
         />
       }
       bottomContent={

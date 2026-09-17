@@ -334,11 +334,13 @@ The sheet is currently hand-built. `bottomSheet` is a decided component that doe
 ### 28. 20b Revisit complete — `/explain/revisit-done`
 
 - **States:** one. The end of a revisit session, in place of the full summary.
-- **Components:** `MascotFigure size="L" pose="Excited"`; `TextBlock variant="L"` naming the term that came back and the next check date; `Button variant="Primary" size="L" CTA="Done"`.
+- **Components:** `MascotFigure size="L" pose="Excited"`; `TextBlock variant="L"` naming the terms that came back and the next check; `Button variant="Primary" size="L" CTA="Done"`.
 - **Can do:** Done.
 - **Leads to:** `/plan/to-revisit` or `/plan/mastered`.
 
-A revisit awards no XP. One term does not warrant a per-term breakdown.
+A revisit awards no XP, and does not warrant a per-term breakdown.
+
+**It reports both terms the first session left behind**, not one. The scripted run ends 1 of 3 — Serfdom revealed, Manorialism hinted — and both come back unaided here, which is what makes `21`'s "You got all 3 terms right" true on the other side of Done. The recall itself is not built.
 
 **Two entries, and neither may show in the copy.** `19`'s "Do it now anyway" arrives with no time passed; `20 Home, revisit` arrives five days later. So the title says the term was got on the student's own rather than that it "came back", and the caption names no day. Both are stubbed — see below.
 
