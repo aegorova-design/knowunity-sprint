@@ -86,3 +86,25 @@
   flex-direction: column;
   gap: var(--space-150);
 }
+
+/* Knowie's message at Body S Bold, not the Caption M Bold `mascotMessage`
+   draws. Both frames that carry a bubble — "19 Plan, 1 of 3 unaided"
+   (13662:14553) and "21 Plan, section mastered" (13662:14554) — override the
+   instance to 15/20 SemiBold, and the component set stays at 12/16. So the
+   override lives here, on the two screens that render one, rather than in
+   mascotMessage.css: the component is untouched and its stories still draw
+   what the set draws.
+
+   `mascotMessage` only appears inside `.planScreen`, on a section with a
+   result behind it, so scoping to the screen reaches exactly `19` and `21`.
+   The helper and the action label are left alone — the frames bind those the
+   way the set does.
+
+   See component-gaps.md: what this wants is a size on the component. */
+.planScreen .knowieMascotMessage-message {
+  font-family: var(--greed-body-s-bold-font-family);
+  font-weight: var(--greed-body-s-bold-font-weight);
+  font-size: var(--greed-body-s-bold-font-size);
+  line-height: var(--greed-body-s-bold-line-height);
+  letter-spacing: var(--greed-body-s-bold-letter-spacing);
+}
