@@ -1,0 +1,61 @@
+/* 07 Recording's own layout. Every value is a token from build/css/tokens.css
+   — see design-system.md, "Never invent a value".
+
+   The mic zone is 06 Idle's, unchanged: same centred column, same Space/300
+   between the control and its copy, same Space/200 lead-in. Only what sits in
+   it changes, so the record button does not move between the two screens and
+   the thumb lands in the same place to stop as it did to start.
+
+   No padding of its own: scaffold.css owns the thumb zone's inset. */
+
+.recordingScreen-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+}
+
+.recordingScreen-micZone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-300);
+  padding-top: var(--space-200);
+}
+
+/* waveform is width:100% with fixed-width bars, so any container wider than
+   its 24 bars leaves the row packed to the left. Sizing this wrapper to the
+   row's own content width puts it back under the mic zone's centring. Logged
+   in component-gaps.md. */
+
+.recordingScreen-wave {
+  width: fit-content;
+}
+
+/* The one place in this feature where brand violet means live audio —
+   waveform.css says nothing else may use it that way. "Listening" is beside
+   it, so the colour never carries the meaning on its own. */
+
+.recordingScreen-status {
+  margin: 0;
+  color: var(--color-accent-brand-bold);
+  text-align: center;
+  font-family: var(--greed-body-s-bold-font-family);
+  font-weight: var(--greed-body-s-bold-font-weight);
+  font-size: var(--greed-body-s-bold-font-size);
+  line-height: var(--greed-body-s-bold-line-height);
+  letter-spacing: var(--greed-body-s-bold-letter-spacing);
+}
+
+/* Body M Bold, per SPEC.md screen 19 — the same step 06 Idle sets "Tap to
+   start" in, so the two labels swap without the line moving. */
+
+.recordingScreen-stopLabel {
+  margin: 0;
+  color: var(--color-text-primary);
+  text-align: center;
+  font-family: var(--greed-body-m-bold-font-family);
+  font-weight: var(--greed-body-m-bold-font-weight);
+  font-size: var(--greed-body-m-bold-font-size);
+  line-height: var(--greed-body-m-bold-line-height);
+  letter-spacing: var(--greed-body-m-bold-letter-spacing);
+}

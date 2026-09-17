@@ -155,12 +155,16 @@
   --font-line-height-3xl: 60px;
   --font-line-height-4xl: 76px;
   --font-line-height-5xl: 104px;
-  --font-tracking-tight: -1%;
-  --font-tracking-none: 0%;
-  --font-tracking-loose: 1%;
+  --font-tracking-tight: -0.01em;
+  --font-tracking-none: 0em;
+  --font-tracking-loose: 0.01em;
   --motion-duration-press-in: 70ms; /** How long a button takes to sink under the finger. Faster than it comes back, so the press feels immediate. */
   --motion-duration-press-out: 140ms; /** How long a button takes to rise after release. Twice the press, so the release feels like a spring rather than a snap. */
+  --motion-duration-listen: 1200ms; /** One full rise and fall of a waveform bar while audio is being captured. Long enough to read as breathing rather than flickering. */
+  --motion-duration-listen-stagger: 120ms; /** How far each waveform bar lags the one before it. Against a 1200ms listen loop this puts roughly 2.4 crests on a 24-bar row, so the row reads as travelling waves rather than a single swell. */
+  --motion-duration-shimmer: 1350ms; /** One full pass of the shimmer band across a skeleton line. Long enough that the sweep reads as one travelling highlight rather than a flicker, and slow enough to sit under Knowie rather than compete with her. */
   --motion-easing-press: cubic-bezier(0.2, 0.9, 0.3, 1); /** Easing for a button press, in and out. */
+  --motion-easing-listen: cubic-bezier(0.4, 0, 0.6, 1); /** Easing for the waveform's listen loop. Symmetric, so the rise and the fall take the same time and no edge of the figure reads as a beat. */
   --color-component-button-lip-fill-primary: var(--color-alpha-dark-15); /** Fill of the lip under a Primary button face. The same perceptual step as the Secondary lip, on a much lighter face. */
   --color-component-button-lip-fill-secondary: var(--color-alpha-dark-40); /** Fill of the lip under a Secondary button face. The same perceptual step as the Primary lip, on a much darker face. */
   --color-background-page: var(--color-navy-950); /** Root canvas behind every screen, with cards and sheets on background.surface instead. */
@@ -170,6 +174,7 @@
   --color-background-floating: var(--color-alpha-glass-60); /** Translucent frosted-glass fill for menus, tooltips and popovers that float above content. */
   --color-background-stacking: var(--color-alpha-light-10); /** Additive white layer that lifts toasts and floating notifications off dark surfaces. */
   --color-background-input: var(--color-navy-900); /** Resting fill of editable fields such as text inputs, textareas and search. */
+  --color-background-shimmer: var(--color-alpha-light-18); /** Crest of the sweep across a loading placeholder, one step brighter than background.stacking, which is what the placeholder rests at. */
   --color-interactive-primary: var(--color-violet-50); /** Fill for the one main call to action per screen and for progress bar fills. */
   --color-interactive-primary-hover: var(--color-violet-100); /** Pointer hover state of interactive.primary. */
   --color-interactive-primary-active: var(--color-violet-200); /** Pressed state of interactive.primary at the moment of tap or click. */
@@ -253,77 +258,96 @@
   --greed-display-l-font-weight: var(--font-weight-heavy); /** Font weight of the Display L text style; use when setting Display L text. */
   --greed-display-l-font-size: var(--font-size-6xl); /** Font size of the Display L text style; use when setting Display L text. */
   --greed-display-l-line-height: var(--font-line-height-5xl); /** Line height of the Display L text style; use when setting Display L text. */
+  --greed-display-l-letter-spacing: var(--font-tracking-tight); /** Letter spacing of the Display L text style; use when setting Display L text. */
   --greed-display-m-font-family: var(--font-family-default); /** Font family of the Display M text style; use when setting Display M text. */
   --greed-display-m-font-weight: var(--font-weight-bold); /** Font weight of the Display M text style; use when setting Display M text. */
   --greed-display-m-font-size: var(--font-size-5xl); /** Font size of the Display M text style; use when setting Display M text. */
   --greed-display-m-line-height: var(--font-line-height-4xl); /** Line height of the Display M text style; use when setting Display M text. */
+  --greed-display-m-letter-spacing: var(--font-tracking-tight); /** Letter spacing of the Display M text style; use when setting Display M text. */
   --greed-display-s-font-family: var(--font-family-default); /** Font family of the Display S text style; use when setting Display S text. */
   --greed-display-s-font-weight: var(--font-weight-bold); /** Font weight of the Display S text style; use when setting Display S text. */
   --greed-display-s-font-size: var(--font-size-4xl); /** Font size of the Display S text style; use when setting Display S text. */
   --greed-display-s-line-height: var(--font-line-height-3xl); /** Line height of the Display S text style; use when setting Display S text. */
+  --greed-display-s-letter-spacing: var(--font-tracking-tight); /** Letter spacing of the Display S text style; use when setting Display S text. */
   --greed-headline-xl-font-family: var(--font-family-default); /** Font family of the Headline XL text style; use when setting Headline XL text. */
   --greed-headline-xl-font-weight: var(--font-weight-bold); /** Font weight of the Headline XL text style; use when setting Headline XL text. */
   --greed-headline-xl-font-size: var(--font-size-3xl); /** Font size of the Headline XL text style; use when setting Headline XL text. */
   --greed-headline-xl-line-height: var(--font-line-height-2xl); /** Line height of the Headline XL text style; use when setting Headline XL text. */
+  --greed-headline-xl-letter-spacing: var(--font-tracking-tight); /** Letter spacing of the Headline XL text style; use when setting Headline XL text. */
   --greed-headline-l-font-family: var(--font-family-default); /** Font family of the Headline L text style; use when setting Headline L text. */
   --greed-headline-l-font-weight: var(--font-weight-bold); /** Font weight of the Headline L text style; use when setting Headline L text. */
   --greed-headline-l-font-size: var(--font-size-2xl); /** Font size of the Headline L text style; use when setting Headline L text. */
   --greed-headline-l-line-height: var(--font-line-height-xl); /** Line height of the Headline L text style; use when setting Headline L text. */
+  --greed-headline-l-letter-spacing: var(--font-tracking-tight); /** Letter spacing of the Headline L text style; use when setting Headline L text. */
   --greed-headline-m-font-family: var(--font-family-default); /** Font family of the Headline M text style; use when setting Headline M text. */
   --greed-headline-m-font-weight: var(--font-weight-bold); /** Font weight of the Headline M text style; use when setting Headline M text. */
   --greed-headline-m-font-size: var(--font-size-xl); /** Font size of the Headline M text style; use when setting Headline M text. */
   --greed-headline-m-line-height: var(--font-line-height-lg); /** Line height of the Headline M text style; use when setting Headline M text. */
+  --greed-headline-m-letter-spacing: var(--font-tracking-tight); /** Letter spacing of the Headline M text style; use when setting Headline M text. */
   --greed-headline-s-font-family: var(--font-family-default); /** Font family of the Headline S text style; use when setting Headline S text. */
   --greed-headline-s-font-weight: var(--font-weight-bold); /** Font weight of the Headline S text style; use when setting Headline S text. */
   --greed-headline-s-font-size: var(--font-size-lg); /** Font size of the Headline S text style; use when setting Headline S text. */
   --greed-headline-s-line-height: var(--font-line-height-md); /** Line height of the Headline S text style; use when setting Headline S text. */
+  --greed-headline-s-letter-spacing: var(--font-tracking-none); /** Letter spacing of the Headline S text style; use when setting Headline S text. */
   --greed-headline-xs-bold-font-family: var(--font-family-default); /** Font family of the Headline XS Bold text style; use when setting Headline XS Bold text. */
   --greed-headline-xs-bold-font-weight: var(--font-weight-semibold); /** Font weight of the Headline XS Bold text style; use when setting Headline XS Bold text. */
   --greed-headline-xs-bold-font-size: var(--font-size-md); /** Font size of the Headline XS Bold text style; use when setting Headline XS Bold text. */
   --greed-headline-xs-bold-line-height: var(--font-line-height-sm); /** Line height of the Headline XS Bold text style; use when setting Headline XS Bold text. */
+  --greed-headline-xs-bold-letter-spacing: var(--font-tracking-loose); /** Letter spacing of the Headline XS Bold text style; use when setting Headline XS Bold text. */
   --greed-headline-xs-regular-font-family: var(--font-family-default); /** Font family of the Headline XS Regular text style; use when setting Headline XS Regular text. */
   --greed-headline-xs-regular-font-weight: var(--font-weight-regular); /** Font weight of the Headline XS Regular text style; use when setting Headline XS Regular text. */
   --greed-headline-xs-regular-font-size: var(--font-size-md); /** Font size of the Headline XS Regular text style; use when setting Headline XS Regular text. */
   --greed-headline-xs-regular-line-height: var(--font-line-height-sm); /** Line height of the Headline XS Regular text style; use when setting Headline XS Regular text. */
+  --greed-headline-xs-regular-letter-spacing: var(--font-tracking-loose); /** Letter spacing of the Headline XS Regular text style; use when setting Headline XS Regular text. */
   --greed-headline-xxs-bold-font-family: var(--font-family-default); /** Font family of the Headline XXS Bold text style; use when setting Headline XXS Bold text. */
   --greed-headline-xxs-bold-font-weight: var(--font-weight-semibold); /** Font weight of the Headline XXS Bold text style; use when setting Headline XXS Bold text. */
   --greed-headline-xxs-bold-font-size: var(--font-size-sm); /** Font size of the Headline XXS Bold text style; use when setting Headline XXS Bold text. */
   --greed-headline-xxs-bold-line-height: var(--font-line-height-xs); /** Line height of the Headline XXS Bold text style; use when setting Headline XXS Bold text. */
+  --greed-headline-xxs-bold-letter-spacing: var(--font-tracking-loose); /** Letter spacing of the Headline XXS Bold text style; use when setting Headline XXS Bold text. */
   --greed-headline-xxs-regular-font-family: var(--font-family-default); /** Font family of the Headline XXS Regular text style; use when setting Headline XXS Regular text. */
   --greed-headline-xxs-regular-font-weight: var(--font-weight-regular); /** Font weight of the Headline XXS Regular text style; use when setting Headline XXS Regular text. */
   --greed-headline-xxs-regular-font-size: var(--font-size-sm); /** Font size of the Headline XXS Regular text style; use when setting Headline XXS Regular text. */
   --greed-headline-xxs-regular-line-height: var(--font-line-height-xs); /** Line height of the Headline XXS Regular text style; use when setting Headline XXS Regular text. */
+  --greed-headline-xxs-regular-letter-spacing: var(--font-tracking-loose); /** Letter spacing of the Headline XXS Regular text style; use when setting Headline XXS Regular text. */
   --greed-body-m-bold-font-family: var(--font-family-default); /** Font family of the Body M Bold text style; use when setting Body M Bold text. */
   --greed-body-m-bold-font-weight: var(--font-weight-semibold); /** Font weight of the Body M Bold text style; use when setting Body M Bold text. */
   --greed-body-m-bold-font-size: var(--font-size-md); /** Font size of the Body M Bold text style; use when setting Body M Bold text. */
   --greed-body-m-bold-line-height: var(--font-line-height-md); /** Line height of the Body M Bold text style; use when setting Body M Bold text. */
+  --greed-body-m-bold-letter-spacing: var(--font-tracking-loose); /** Letter spacing of the Body M Bold text style; use when setting Body M Bold text. */
   --greed-body-m-regular-font-family: var(--font-family-default); /** Font family of the Body M Regular text style; use when setting Body M Regular text. */
   --greed-body-m-regular-font-weight: var(--font-weight-regular); /** Font weight of the Body M Regular text style; use when setting Body M Regular text. */
   --greed-body-m-regular-font-size: var(--font-size-md); /** Font size of the Body M Regular text style; use when setting Body M Regular text. */
   --greed-body-m-regular-line-height: var(--font-line-height-md); /** Line height of the Body M Regular text style; use when setting Body M Regular text. */
+  --greed-body-m-regular-letter-spacing: var(--font-tracking-loose); /** Letter spacing of the Body M Regular text style; use when setting Body M Regular text. */
   --greed-body-s-bold-font-family: var(--font-family-default); /** Font family of the Body S Bold text style; use when setting Body S Bold text. */
   --greed-body-s-bold-font-weight: var(--font-weight-semibold); /** Font weight of the Body S Bold text style; use when setting Body S Bold text. */
   --greed-body-s-bold-font-size: var(--font-size-sm); /** Font size of the Body S Bold text style; use when setting Body S Bold text. */
   --greed-body-s-bold-line-height: var(--font-line-height-sm); /** Line height of the Body S Bold text style; use when setting Body S Bold text. */
+  --greed-body-s-bold-letter-spacing: var(--font-tracking-loose); /** Letter spacing of the Body S Bold text style; use when setting Body S Bold text. */
   --greed-body-s-regular-font-family: var(--font-family-default); /** Font family of the Body S Regular text style; use when setting Body S Regular text. */
   --greed-body-s-regular-font-weight: var(--font-weight-regular); /** Font weight of the Body S Regular text style; use when setting Body S Regular text. */
   --greed-body-s-regular-font-size: var(--font-size-sm); /** Font size of the Body S Regular text style; use when setting Body S Regular text. */
   --greed-body-s-regular-line-height: var(--font-line-height-sm); /** Line height of the Body S Regular text style; use when setting Body S Regular text. */
+  --greed-body-s-regular-letter-spacing: var(--font-tracking-loose); /** Letter spacing of the Body S Regular text style; use when setting Body S Regular text. */
   --greed-caption-m-bold-font-family: var(--font-family-default); /** Font family of the Caption M Bold text style; use when setting Caption M Bold text. */
   --greed-caption-m-bold-font-weight: var(--font-weight-semibold); /** Font weight of the Caption M Bold text style; use when setting Caption M Bold text. */
   --greed-caption-m-bold-font-size: var(--font-size-xs); /** Font size of the Caption M Bold text style; use when setting Caption M Bold text. */
   --greed-caption-m-bold-line-height: var(--font-line-height-xs); /** Line height of the Caption M Bold text style; use when setting Caption M Bold text. */
+  --greed-caption-m-bold-letter-spacing: var(--font-tracking-loose); /** Letter spacing of the Caption M Bold text style; use when setting Caption M Bold text. */
   --greed-caption-m-regular-font-family: var(--font-family-default); /** Font family of the Caption M Regular text style; use when setting Caption M Regular text. */
   --greed-caption-m-regular-font-weight: var(--font-weight-regular); /** Font weight of the Caption M Regular text style; use when setting Caption M Regular text. */
   --greed-caption-m-regular-font-size: var(--font-size-xs); /** Font size of the Caption M Regular text style; use when setting Caption M Regular text. */
   --greed-caption-m-regular-line-height: var(--font-line-height-xs); /** Line height of the Caption M Regular text style; use when setting Caption M Regular text. */
+  --greed-caption-m-regular-letter-spacing: var(--font-tracking-loose); /** Letter spacing of the Caption M Regular text style; use when setting Caption M Regular text. */
   --greed-caption-s-bold-font-family: var(--font-family-default); /** Font family of the Caption S Bold text style; use when setting Caption S Bold text. */
   --greed-caption-s-bold-font-weight: var(--font-weight-semibold); /** Font weight of the Caption S Bold text style; use when setting Caption S Bold text. */
   --greed-caption-s-bold-font-size: var(--font-size-2xs); /** Font size of the Caption S Bold text style; use when setting Caption S Bold text. */
   --greed-caption-s-bold-line-height: var(--font-line-height-2xs); /** Line height of the Caption S Bold text style; use when setting Caption S Bold text. */
+  --greed-caption-s-bold-letter-spacing: var(--font-tracking-loose); /** Letter spacing of the Caption S Bold text style; use when setting Caption S Bold text. */
   --greed-caption-s-regular-font-family: var(--font-family-default); /** Font family of the Caption S Regular text style; use when setting Caption S Regular text. */
   --greed-caption-s-regular-font-weight: var(--font-weight-regular); /** Font weight of the Caption S Regular text style; use when setting Caption S Regular text. */
   --greed-caption-s-regular-font-size: var(--font-size-2xs); /** Font size of the Caption S Regular text style; use when setting Caption S Regular text. */
   --greed-caption-s-regular-line-height: var(--font-line-height-2xs); /** Line height of the Caption S Regular text style; use when setting Caption S Regular text. */
+  --greed-caption-s-regular-letter-spacing: var(--font-tracking-loose); /** Letter spacing of the Caption S Regular text style; use when setting Caption S Regular text. */
   --color-pro-accent: var(--color-pro-bold); /** Legacy alias of pro.bold for PRO badges and upgrade prompts. */
 }

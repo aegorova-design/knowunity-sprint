@@ -1,0 +1,15 @@
+/* 06b Leave session, confirm — the sheet's own column, read off the Mockups
+   v2 frame "06b Leave session, confirm" (13663:19721). Every value is a custom
+   property from build/css/tokens.css — see design-system.md, "Never invent a
+   value".
+
+   The panel, the grabber and the scrim all come from `SheetPanel`; this is
+   only the gap between the question and the two answers. It is the sheet's
+   single child, so `.sheetPanel-content`'s Space/600 has nothing to space and
+   the frame's Space/400 is what shows. */
+
+.leaveSheet-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-400);
+}

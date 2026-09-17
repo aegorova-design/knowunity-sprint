@@ -1,0 +1,109 @@
+/* 17 Summary, read off the Mockups v2 frame "17 Summary" (13662:14541). Every
+   value is a custom property from build/css/tokens.css — see design-system.md,
+   "Never invent a value".
+
+   No padding: scaffold owns the screen's insets. The column is not centred in
+   the free space the way the verdict screens are — the frame stacks it from
+   the top of middleContent and lets the thumb zone take the slack, because
+   three rows and a claim already fill most of it. */
+
+.summaryScreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-600);
+}
+
+/* --- the claim ----------------------------------------------------------
+
+   Headline L, centred. `textBlock` has no variant at this step — L is
+   Headline XL and M is Headline S — so the claim is the screen's own h1 and
+   sets its type here. Logged in component-gaps.md.
+
+   The frame's second line under it ("Serfdom you had to be shown…") is hidden
+   on the frame, so it is not built. */
+
+.summaryScreen-claim {
+  margin: 0;
+  color: var(--color-text-primary);
+  text-align: center;
+  font-family: var(--greed-headline-l-font-family);
+  font-weight: var(--greed-headline-l-font-weight);
+  font-size: var(--greed-headline-l-font-size);
+  line-height: var(--greed-headline-l-line-height);
+  letter-spacing: var(--greed-headline-l-letter-spacing);
+}
+
+/* --- the XP total -------------------------------------------------------
+
+   The frame's outlined pill: a 2px brand ring around the page's own
+   background, so it reads as an outline rather than a filled tag. Nothing in
+   Storybook draws it — `statusTag` is an outcome word inside a row and
+   `chips` is a key idea — so it is built here. Logged in component-gaps.md.
+
+   It hugs its content, which is what the frame's 210 against a 358 column
+   means. */
+
+.summaryScreen-xp {
+  display: flex;
+  align-items: center;
+  gap: var(--space-150);
+  margin: 0;
+  padding: var(--space-300);
+  border: var(--stroke-heavy-border) solid var(--color-accent-brand-bold);
+  border-radius: var(--radius-400);
+  background-color: var(--color-background-page);
+  color: var(--color-text-primary);
+  font-family: var(--greed-headline-s-font-family);
+  font-weight: var(--greed-headline-s-font-weight);
+  font-size: var(--greed-headline-s-font-size);
+  line-height: var(--greed-headline-s-line-height);
+  letter-spacing: var(--greed-headline-s-letter-spacing);
+}
+
+/* The bolt. It goes into `iconSlot` as `children` rather than as a named
+   icon, because it is two-tone artwork and the component draws a named icon as
+   a mask, which keeps only the alpha. So there is no colour here: the asset
+   carries its own, and they are the system's — violet/500, which is
+   accent/brand/bold, over blue/950.
+
+   `iconSlot` stretches its child to the full square. This one is 24 by 29, so
+   `object-fit` letterboxes it inside the box instead of squashing it. */
+
+.summaryScreen-xpIcon {
+  display: flex;
+}
+
+.summaryScreen-xpIcon img {
+  object-fit: contain;
+}
+
+/* --- the terms ----------------------------------------------------------
+
+   The three rows on Space/200, with the line that says they can be tapped the
+   same step below them — one group, which is why the hint is inside it rather
+   than a fourth child of the column above. */
+
+.summaryScreen-terms {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+  align-self: stretch;
+}
+
+.summaryScreen-rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+}
+
+.summaryScreen-tapHint {
+  margin: 0;
+  color: var(--color-text-secondary);
+  text-align: center;
+  font-family: var(--greed-caption-m-regular-font-family);
+  font-weight: var(--greed-caption-m-regular-font-weight);
+  font-size: var(--greed-caption-m-regular-font-size);
+  line-height: var(--greed-caption-m-regular-line-height);
+  letter-spacing: var(--greed-caption-m-regular-letter-spacing);
+}

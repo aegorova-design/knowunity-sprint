@@ -49,8 +49,20 @@ export type VerdictHeaderProps = Omit<HTMLAttributes<HTMLDivElement>, 'title'> &
   verdict?: VerdictHeaderVerdict;
   /** The headline. This is what actually says the verdict — see the docs. */
   title?: string;
-  /** The line under it, explaining the result. */
+  /** The line under it, explaining the result. Only rendered when showCaption is true. */
   caption?: string;
+  /**
+   * Whether the caption shows. Defaults to true, so every screen that already
+   * uses the header is untouched.
+   *
+   * Figma has no property for this, unlike textBlock's own showCaption: the
+   * frames switch the caption layer off on the instance instead, which is
+   * something an instance can do and a component cannot express. `01 Home` is
+   * the frame that does it — the exam line stands alone there. The component's
+   * Figma description names the missing property as a gap; it is logged in
+   * component-gaps.md too.
+   */
+  showCaption?: boolean;
   /**
    * Heading level for the title. Figma has no say in this, but the DOM does:
    * a result screen's headline is usually the screen's h1. Defaults to h2 so
@@ -63,6 +75,7 @@ export function VerdictHeader({
   verdict = 'Pass',
   title = 'You got it',
   caption = 'Every key idea, first try, no help.',
+  showCaption = true,
   titleAs: Title = 'h2',
   ...rest
 }: VerdictHeaderProps) {
@@ -73,7 +86,7 @@ export function VerdictHeader({
           rule requires. */}
       <MascotFigure size="L" pose={POSE[verdict]} />
       <Title className="knowieVerdictHeader-title">{title}</Title>
-      <p className="knowieVerdictHeader-caption">{caption}</p>
+      {showCaption ? <p className="knowieVerdictHeader-caption">{caption}</p> : null}
     </div>
   );
 }

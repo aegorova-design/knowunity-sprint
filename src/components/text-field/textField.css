@@ -27,6 +27,7 @@
   font-weight: var(--greed-body-m-regular-font-weight);
   font-size: var(--greed-body-m-regular-font-size);
   line-height: var(--greed-body-m-regular-line-height);
+  letter-spacing: var(--greed-body-m-regular-letter-spacing);
 }
 
 /* The prompt before anything is typed. Figma draws this as the value layer in

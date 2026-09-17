@@ -33,9 +33,29 @@ const config = {
         transform: (token) => `color-${token.name}`,
       },
 
+      // Tracking is authored in percent, the way Figma states it, and percent
+      // is not a unit CSS accepts on letter-spacing. `em` is: both are
+      // relative to the font size, so -1% and -0.01em are the same tracking at
+      // every step of the ramp. The conversion lives here rather than in
+      // tokens.json so the token file keeps saying exactly what Figma says.
+      //
+      // Percent is the tracking group's alone — no other dimension token in
+      // tokens.json is authored in it — so the unit is the whole filter.
+      'tracking/css-em': {
+        type: 'value',
+        filter: (token) =>
+          token.$type === 'dimension' &&
+          token.$value !== null &&
+          typeof token.$value === 'object' &&
+          token.$value.unit === 'percent',
+        transform: (token) => `${token.$value.value / 100}em`,
+      },
+
       // Dimensions arrive as objects: { value: 16, unit: "px" }. Emit the
       // authored number and unit untouched — no px-to-rem conversion, so the
-      // CSS matches the values in Figma exactly.
+      // CSS matches the values in Figma exactly. Anything an earlier transform
+      // has already turned into a string, such as tracking, passes straight
+      // through.
       'dimension/css-unit': {
         type: 'value',
         filter: (token) => token.$type === 'dimension',
@@ -68,6 +88,7 @@ const config = {
       transforms: [
         'name/kebab', // color.violet.50        -> color-violet-50
         'name/color-prefix', // interactive.primary    -> color-interactive-primary
+        'tracking/css-em', // { value: -1, unit: percent } -> -0.01em
         'dimension/css-unit', // { value: 16, unit: px } -> 16px
         'color/css', // srgb components        -> #f4f2ff / rgba(...)
         'fontFamily/css', // Greed Standard-TRIAL   -> 'Greed Standard-TRIAL'

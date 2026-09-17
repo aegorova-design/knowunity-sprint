@@ -7,11 +7,15 @@ import './statusTag.stories.css';
 const DOCS = `
 The component's description in Figma, verbatim:
 
-> One term's outcome as a label. Same four values and the same colours as
-> termRow, so the two read as a set. The label is decided by the variant and is
-> never edited on an instance: a fifth outcome is a new variant and a decision.
-> Use it wherever the outcome needs naming beside a term, in the summary row
-> and in the sheet header.
+> One term’s outcome as a label. Same four values and the same colours as
+> termRow, so the two read as a set. The label is decided by the variant and
+> is never edited on an instance: a fifth outcome is a new variant and a
+> decision. Use it wherever the outcome needs naming beside a term in a
+> list, which in this sprint is the summary row. Not in the sheet header: 18
+> Summary, term tapped sets the outcome as a word in its own colour beside
+> the term, because the badge next to it is already a coloured shape and the
+> pill would be a second one. If that word ever needs to be a component, it
+> is a variant of this one rather than a new part.
 
 design-system.md adds that statusTag, termRow and mascotMessage all name the
 same four end states for a term — Unaided, Hinted, Revealed, Skipped — and that

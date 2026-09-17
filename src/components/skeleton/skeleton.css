@@ -1,8 +1,8 @@
 /* skeleton — built from the Figma component set `skeleton` (node 13654:8800) in
    Yummy__Knowie Design Sprint. Every value here is a custom property from
-   build/css/tokens.css except the three line widths, which have no token; they
-   are set inline from the component's own variant map, and the gap is reported
-   in the stories.
+   build/css/tokens.css except the three line widths and the two shimmer ratios
+   named below. The widths have no token; they are set inline from the
+   component's own variant map, and the gap is reported in the stories.
 
    The block is auto layout and three painted bars. It draws no fill of its own:
    everything visible is a line. */
@@ -38,13 +38,92 @@
   background-color: var(--color-background-stacking);
 }
 
-/* --- no motion -----------------------------------------------------------
-   Deliberate, and stated in the component's description: "Neutral fill, no
-   motion: the Processing screen already has Knowie rolling, so the skeleton
-   stays quiet."
+/* --- the shimmer ---------------------------------------------------------
+   A band of light travelling each line, diagonally, on a loop.
 
-   There is nothing to switch off under prefers-reduced-motion, which is the
-   point — the one moving thing on that screen is the mascot, and the wait is
-   named in text above it. If a shimmer is ever wanted it needs a duration and
-   an easing in tokens/tokens.json first; the Motion family currently holds
-   only the button press. */
+   The figure is a 135deg gradient on a background box 2.6x the line's own
+   width, swept end to end by animating background-position, so the highlight
+   crosses the bar rather than the bar changing colour. The line breathes with
+   it, resting a little under full opacity and reaching it as the band passes
+   the middle.
+
+   Both ends of the gradient are background/stacking — the fill the line
+   carries at rest — and the crest is background/shimmer, one step brighter.
+   Nothing dips below the resting fill: the source figure troughs very slightly
+   after the crest, and the alpha scale has no step between light-05 and
+   light-10, so a dip here would be twice as deep as the one being copied. The
+   design owner's call was to drop it.
+
+   Timing is motion.duration.shimmer on motion.easing.listen. The easing is
+   deliberately borrowed rather than duplicated: the sweep wants a symmetric
+   ease-in-out so neither edge reads as a beat, which is exactly what the
+   listen curve already is, and a second near-identical cubic-bezier under a
+   second name would be a token earning nothing. Signed off as a reuse.
+
+   The three lines run in sync. waveform staggers its bars to make a travelling
+   wave out of a row of 24; there are three here, and the diagonal already
+   carries the direction. */
+
+.knowieSkeleton-line {
+  /* The three values in this file that are not tokens, on the same grounds
+     waveform.css gives for its listen depth: an angle and two unitless ratios,
+     none of which belong to any group tokens/tokens.json has.
+
+     Travel is how far the gradient box overruns the line. At 2.6x the band is
+     a soft sweep rather than a hard edge, and it is also the distance the
+     sweep covers, which is why the same number sets the box and the end
+     position. Rest is where opacity sits outside the crest; at 0.75 the lull
+     is felt without the block appearing to drop out. */
+  --skeleton-shimmer-angle: 135deg;
+  --skeleton-shimmer-travel: 260%;
+  --skeleton-shimmer-rest: 0.75;
+
+  /* The gradient carries the resting fill itself, so the flat fill underneath
+     is cleared. Both are translucent white: left stacked they composite to
+     roughly twice the alpha either of them names, and the line would sit at
+     double weight with the crest brighter still. */
+  background-color: transparent;
+  background-image: linear-gradient(
+    var(--skeleton-shimmer-angle),
+    var(--color-background-stacking) 0%,
+    var(--color-background-shimmer) 40%,
+    var(--color-background-stacking) 100%
+  );
+  background-size: var(--skeleton-shimmer-travel) 100%;
+  animation: knowieSkeletonShimmer var(--motion-duration-shimmer) var(--motion-easing-listen)
+    infinite;
+}
+
+@keyframes knowieSkeletonShimmer {
+  0% {
+    background-position: 0% 50%;
+    opacity: var(--skeleton-shimmer-rest);
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    background-position: var(--skeleton-shimmer-travel) 50%;
+    opacity: var(--skeleton-shimmer-rest);
+  }
+}
+
+/* Reduced motion drops back to the flat line — what this component was until
+   the shimmer landed, and a finished resting state in its own right. SPEC.md's
+   motion rule stops the skeleton shimmer and keeps the copy changes on the
+   screen around it running.
+
+   The gradient goes with the animation, and the flat fill comes back with it:
+   a frozen band would otherwise leave one bright patch parked on the bar for
+   the whole wait. */
+
+@media (prefers-reduced-motion: reduce) {
+  .knowieSkeleton-line {
+    animation: none;
+    background-color: var(--color-background-stacking);
+    background-image: none;
+    opacity: 1;
+  }
+}

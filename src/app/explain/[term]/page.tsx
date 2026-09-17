@@ -7,19 +7,18 @@
  * Skip is live here — the student can still act on this term — and the
  * progress indicator has not moved for this term yet, per SPEC.md's Skip and
  * Progress rules.
+ *
+ * What the screen draws lives in `IdleScreen.tsx`, because `06b Leave
+ * session, confirm` draws it again underneath its sheet.
  */
 
 import { notFound } from 'next/navigation';
 
-import { Button } from '@/components/button/Button';
 import { Scaffold } from '@/components/scaffold/Scaffold';
 
 import { TERMS, isTermPosition, nextTermHref } from '../session';
+import { IdleActions, IdleContent } from './IdleScreen';
 import { SessionAppBar } from './SessionAppBar';
-import { TermPrompt } from './TermPrompt';
-import { StartRecordingButton } from './navigation';
-
-import './idleScreen.css';
 
 export default async function IdlePage({ params }: { params: Promise<{ term: string }> }) {
   const { term } = await params;
@@ -31,46 +30,8 @@ export default async function IdlePage({ params }: { params: Promise<{ term: str
     <Scaffold
       size="iPhone 13"
       topNavigation={<SessionAppBar term={term} skipHref={nextTermHref(term)} />}
-      middleContent={<TermPrompt term={current} />}
-      bottomContent={
-        <div className="idleScreen-bottom">
-          <div className="idleScreen-micZone">
-            <StartRecordingButton href={`/explain/${term}/recording`} label="Start recording" />
-            {/* The record button's visible label and helper. Not a Storybook
-                component — recordButton's own `label` is its accessible name,
-                and this copy is the page's. Logged in component-gaps.md. */}
-            <div className="idleScreen-micCopy">
-              <p className="idleScreen-micLabel">Tap to start</p>
-              <p className="idleScreen-micHelper">About 30 seconds is plenty</p>
-            </div>
-          </div>
-
-          <div className="idleScreen-actions">
-            {/* SPEC.md leaves where "I don't know" lives open; this frame
-                answers it by putting it here. What it does is settled — one
-                hint, then the reveal — and that hint is its own neutral
-                screen, not `hint-1`: the ladder's first rung carries a Miss
-                verdict and quotes back what Knowie heard, and a student who
-                has not spoken yet has neither. */}
-            <Button
-              variant="Secondary"
-              size="M"
-              CTA="I don’t know"
-              showLeftIcon
-              leftIcon="help-circle"
-              href={`/explain/${term}/hint`}
-            />
-            <Button
-              variant="Secondary"
-              size="M"
-              CTA="Type instead"
-              showLeftIcon
-              leftIcon="keyboard-01"
-              href={`/explain/${term}/type`}
-            />
-          </div>
-        </div>
-      }
+      middleContent={<IdleContent prompt={current.prompt} />}
+      bottomContent={<IdleActions term={term} />}
     />
   );
 }

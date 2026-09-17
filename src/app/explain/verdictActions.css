@@ -1,0 +1,42 @@
+/* A verdict screen's thumb zone, read off the Mockups v2 frames "10 Got it"
+   (13662:14537) and "10b Got it, after a hint" (13663:18824). Every value is a
+   custom property from build/css/tokens.css — see design-system.md, "Never
+   invent a value".
+
+   No padding of its own: scaffold.css owns the thumb zone's inset, and this
+   sits inside it. */
+
+/* Two children: the `ActionStack` of buttons, and the outcome caption under
+   it. The buttons' own gap is the stack's, so it is not set here — one copy of
+   the thumb zone's Space/200, in `actionStack.css`, where every other screen
+   in the flow reads it from.
+
+   Space/400 to the caption, which is what `10` and `13` draw. The caption is
+   not an action: it is what the term recorded, which is the same kind of step
+   `reviewScreen.css` puts between its player and the buttons under it. The
+   Space/200 this file used to set through the whole column made the caption
+   read as a third row of the stack.
+
+   align-items is left at `stretch`, which is what makes the buttons fill: the
+   face takes whatever width its outer box is given. See button's "Fill And
+   Hug" story. */
+
+.verdictActions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-400);
+}
+
+/* Greed/Caption M Bold on text/secondary, centred — the same step the frames
+   give the "You covered" label above. */
+
+.verdictActions-outcome {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-family: var(--greed-caption-m-bold-font-family);
+  font-size: var(--greed-caption-m-bold-font-size);
+  font-weight: var(--greed-caption-m-bold-font-weight);
+  line-height: var(--greed-caption-m-bold-line-height);
+  letter-spacing: var(--greed-caption-m-bold-letter-spacing);
+  text-align: center;
+}

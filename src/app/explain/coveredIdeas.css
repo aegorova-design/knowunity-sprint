@@ -1,0 +1,42 @@
+/* The "You covered" group, read off the Mockups v2 frames "10 Got it"
+   (13662:14537) and "10b Got it, after a hint" (13663:18824), which bind it
+   identically. Every value is a custom property from build/css/tokens.css —
+   see design-system.md, "Never invent a value". */
+
+/* Figma "covered": the label over its chips at Space/300, centred. */
+
+.coveredIdeas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-300);
+  align-self: stretch;
+}
+
+/* Greed/Caption M Bold on text/secondary, centred. Its size is a label's, not
+   a heading's — the verdict's own title above it is the screen's h1. */
+
+.coveredIdeas-label {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-family: var(--greed-caption-m-bold-font-family);
+  font-size: var(--greed-caption-m-bold-font-size);
+  font-weight: var(--greed-caption-m-bold-font-weight);
+  line-height: var(--greed-caption-m-bold-line-height);
+  letter-spacing: var(--greed-caption-m-bold-letter-spacing);
+  text-align: center;
+}
+
+/* The chips wrap and stay centred, which is what puts the fourth idea alone on
+   a second row under the three above it — what both frames draw. Row and
+   column gap are both Space/200, the gap they bind in each axis. */
+
+.coveredIdeas-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-200);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

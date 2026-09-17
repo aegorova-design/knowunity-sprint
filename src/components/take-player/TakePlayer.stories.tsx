@@ -26,6 +26,27 @@ its badge and its nested statusTag at once.
 | Playing | buttonIcon **Brand**/M | pause | Idle, progress 50 |
 | Silent | buttonIcon Primary/M | play | **Silent**, progress 0 |
 
+### The playback position
+
+The table above is what a variant can draw. A take that is actually playing has
+a position, and Figma's Playing is a fixed halfway fill — so a 0:30 take used to
+show the same frozen picture for half a minute.
+
+\`played\` (0 to 1) is that position. It comes from the screen's clock, and the
+nested waveform rounds it to the nearest bar: 24 steps, not the four quarters
+\`progress\` can name. Each bar lights over 140ms on the press curve; the detail
+is in waveform's own docs.
+
+- **Playing** is where a position comes from.
+- **Default** honours one too, so a take **paused partway holds its place**
+  instead of snapping back to the start. A paused take is still mid-playback,
+  it has just stopped moving, and the control correctly offers play again.
+- **Silent** ignores it. There is no audio, so there is nothing to be partway
+  through.
+
+Left off, every state fills exactly as its Figma variant does, which is what
+every story above this one shows.
+
 \`surface\` changes only the fill: background.surface on Page, the lighter
 background.stacking on Sheet.
 
@@ -67,6 +88,10 @@ Both are nested the way Figma nests them, rather than redrawn.
 - **\`onPlayPause\` has no Figma property.** Figma cannot express a handler, but
   a player whose button does nothing is not a player, so the control's press is
   exposed.
+- **\`played\` has no Figma property either.** A variant cannot carry a clock,
+  and the set has no picture of a take paused partway — Default is drawn empty.
+  Both are in code only; the component's Figma description is where they belong
+  in the file.
 `;
 
 const meta = {
@@ -203,5 +228,47 @@ export const BothSurfaces: Story = {
     await expect(getComputedStyle(players[0]).backgroundColor).not.toBe(
       getComputedStyle(players[1]).backgroundColor,
     );
+  },
+};
+
+/**
+ * Not a Figma variant — the take's position, which no variant can carry.
+ *
+ * All three players are handed the same 0.75. Playing and Default draw it, so a
+ * paused take holds its place rather than snapping back to the start; Silent
+ * ignores it, because a take with no audio cannot be partway through.
+ */
+export const PlayedPosition: Story = {
+  name: 'played, a real position',
+  args: { state: 'Playing', played: 0.75 },
+  render: (args) => (
+    <div className="knowieTakePlayerDemo">
+      <div className="knowieTakePlayerDemo-stack">
+        <TakePlayer state="Playing" played={0.75} onPlayPause={args.onPlayPause} />
+        <TakePlayer state="Default" played={0.75} onPlayPause={args.onPlayPause} />
+        <TakePlayer state="Silent" played={0.75} onPlayPause={args.onPlayPause} />
+      </div>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const [playing, paused, silent] = [
+      ...canvasElement.querySelectorAll('.knowieTakePlayer'),
+    ] as HTMLElement[];
+
+    const filled = (player: HTMLElement) =>
+      player.querySelectorAll('[data-filled="true"]').length;
+
+    // 0.75 of 24 bars, drawn by the state that is running and by the one that
+    // is paused partway through.
+    await expect(filled(playing)).toBe(18);
+    await expect(filled(paused)).toBe(18);
+
+    // The control still says what pressing it does: pause while running, play
+    // while paused.
+    await expect(playing.querySelector('button')).toHaveAccessibleName('Pause');
+    await expect(paused.querySelector('button')).toHaveAccessibleName('Play');
+
+    // Silent has no audio to be partway through.
+    await expect(filled(silent)).toBe(0);
   },
 };

@@ -7,13 +7,19 @@ import './answerBlock.stories.css';
 const DOCS = `
 The component's description in Figma, verbatim:
 
-> A labelled passage of text about the current term. Said is what Knowie heard,
-> quoted back so a mishear reads as the app's mistake. Hint is the nudge, and it
-> is the loudest of the three because it is the thing to act on. Answer is the
-> reveal. Reach for it inside a verdict sheet or under a prompt, never as a
-> screen heading, which is textBlock's job. Keep bodies to three lines; this is
-> a glance, not a passage. Never recolour an instance to make one kind look like
-> another. If you need a fourth treatment, that is a new kind and a decision.
+> A labelled passage of text about the current term. Said is what Knowie
+> heard, quoted back so a mishear reads as the app's mistake. Hint is the
+> nudge, and it is the loudest of the three because it is the thing to act on.
+> Answer is the reveal, and it carries the term's key ideas inside it: the
+> name of the set over the chips that are in it, unticked, because a reveal
+> means the student has been shown the answer rather than said it. Hint is the
+> only kind with a fill — Said and Answer are outlined, and the label and the
+> icon are what tell those two apart. Reach for it inside a verdict sheet or
+> under a prompt, never as a screen heading, which is textBlock's job. Keep
+> bodies to three lines; this is a glance, not a passage. Never recolour an
+> instance to make one kind look like another, and never put the key ideas on
+> Said or Hint: the group belongs to the one variant that has it. If you need
+> a fourth treatment, that is a new kind and a decision.
 
 ### How the three kinds are told apart
 
@@ -24,13 +30,39 @@ icon — so none of them leans on colour alone:
 | --- | --- | --- | --- |
 | Said | outlined, no fill | text.secondary | microphone-01 |
 | Hint | background.surface | accent.brand.bold | lightbulb-02 |
-| Answer | background.stacking | accent.brand.bold | check |
+| Answer | background.stacking, outlined | accent.brand.bold | check |
 
 The body is text.primary in all three. Only the label and the icon change, which
 is what keeps the passage itself equally readable whichever kind it is.
 
-Said is the only one with a border rather than a fill, so it is 2 taller than
-the other two — 82 against 80. That is how Figma has it, not a rounding slip.
+Said and Answer are outlined, which is why they are 2 taller than Hint — 82
+against 80. That is how Figma has it, not a rounding slip. They are told apart
+by the fill as well as by the label and the icon: Said carries none, Answer
+carries background.stacking under its key ideas.
+
+### Answer carries the key ideas
+
+The updated \`kind=Answer\` variant holds the term's key ideas inside the block,
+under the body: the name of the set, then the chips that are in it. It gained
+the outline with them, and keeps background.stacking behind them — an unticked
+chip is background.surface, which is what a sheet is, so without a fill of its
+own the four ideas vanish into the sheet on \`18 Summary, term tapped\`.
+
+Figma bakes four chips in with their labels set on the instances and gives the
+set no text property for them, so here they arrive as \`keyIdeas\`. A reveal is
+about one term and the ideas are that term's. Left off, Answer is the label and
+the body, which is what every use of it was before the update. Passing them to
+Said or Hint draws nothing: the group belongs to the one variant that has it.
+
+They have one state, the unticked one Figma draws, and \`chips\`'s \`active\` is
+not exposed here. A reveal tells the student what the answer contains rather
+than recording what they covered, and that holds on the say-back and on the
+summary too. Ticked chips belong to \`CoveredIdeas\`, on the two pass screens.
+
+The chips are wrapped in a named list, because \`chips\` renders a \`<button>\`
+whatever it is handed and four unnamed buttons would be four controls that do
+nothing. The visible name is hidden from assistive tech and given to the list
+instead, so the group is announced once.
 
 ### What not to do with it
 
@@ -82,7 +114,7 @@ type Story = StoryObj<typeof meta>;
 const KIND: Record<AnswerBlockKind, { icon: string; outlined: boolean }> = {
   Said: { icon: 'microphone-01.svg', outlined: true },
   Hint: { icon: 'lightbulb-02.svg', outlined: false },
-  Answer: { icon: 'check.svg', outlined: false },
+  Answer: { icon: 'check.svg', outlined: true },
 };
 
 /** One story per Figma variant, checking the container, the type and the icon. */
@@ -105,7 +137,7 @@ function kindStory(kind: AnswerBlockKind, overrides: { label: string; body: stri
       await expect(box.padding).toBe('16px');
       await expect(box.rowGap).toBe('8px');
       await expect(box.borderRadius).toBe('16px');
-      // Said is the only kind carrying a border, which is why it is 2 taller.
+      // Hint is the only kind with a fill; the outlined two are 2 taller.
       await expect(box.borderTopWidth).toBe(expected.outlined ? '1px' : '0px');
 
       // Both texts are the 15/20 step — Bold on the label, Regular on the body.
@@ -195,10 +227,83 @@ export const AllThree: Story = {
     </div>
   ),
   play: async ({ canvasElement }) => {
-    const blocks = canvasElement.querySelectorAll('.knowieAnswerBlock');
+    const blocks = [...canvasElement.querySelectorAll('.knowieAnswerBlock')] as HTMLElement[];
     await expect(blocks).toHaveLength(3);
-    // Said outlines, the other two fill — no two kinds read the same.
-    const fills = [...blocks].map((b) => getComputedStyle(b).backgroundColor);
-    await expect(new Set(fills).size).toBe(3);
+
+    // Said and Answer are both outlined since the update, so the container
+    // alone no longer separates all three — the label colour is what finishes
+    // the job, and no two kinds share both.
+    const reads = blocks.map((b) => {
+      const box = getComputedStyle(b);
+      const label = b.querySelector('.knowieAnswerBlock-label') as HTMLElement;
+      return `${box.backgroundColor}/${box.borderTopWidth}/${getComputedStyle(label).color}`;
+    });
+    await expect(new Set(reads).size).toBe(3);
+  },
+};
+
+/**
+ * The updated `kind=Answer`: the term's key ideas inside the block, under the
+ * body. Unticked, which is what a reveal means — the student has just been
+ * shown the answer.
+ */
+export const AnswerWithKeyIdeas: Story = {
+  name: 'Answer, with key ideas',
+  args: {
+    kind: 'Answer',
+    label: 'The answer',
+    body: 'Land was traded for loyalty and service. Nobles held land from the king and owed him support, and peasants worked that land in exchange for protection.',
+    keyIdeas: ['Land', 'Loyalty and service', 'Protection', 'Peasant labour'],
+  },
+  play: async ({ canvasElement }) => {
+    const block = canvasElement.querySelector('.knowieAnswerBlock') as HTMLElement;
+    const list = block.querySelector('.knowieAnswerBlock-chips') as HTMLElement;
+    const chips = [...list.querySelectorAll('.knowieChips')] as HTMLElement[];
+
+    // Four ideas, in the order they were given, inside the block itself.
+    await expect(chips).toHaveLength(4);
+    await expect(chips.map((c) => c.textContent)).toEqual([
+      'Land',
+      'Loyalty and service',
+      'Protection',
+      'Peasant labour',
+    ]);
+
+    // Unticked, the way Figma draws them, and there is no other state.
+    await expect(chips.every((c) => c.dataset.active === 'False')).toBe(true);
+
+    // One named list rather than four loose buttons, and the visible name is
+    // not announced twice.
+    await expect(list.tagName).toBe('UL');
+    await expect(list).toHaveAttribute('aria-label', 'The key ideas');
+    await expect(
+      block.querySelector('.knowieAnswerBlock-ideasLabel'),
+    ).toHaveAttribute('aria-hidden', 'true');
+
+    // The group sits on Space/300 inside a block that is outlined, not filled.
+    await expect(
+      getComputedStyle(block.querySelector('.knowieAnswerBlock-ideas') as HTMLElement).rowGap,
+    ).toBe('12px');
+    await expect(getComputedStyle(block).borderTopWidth).toBe('1px');
+    await expect(getComputedStyle(list).columnGap).toBe('8px');
+  },
+};
+
+/**
+ * Not a Figma variant — the group belongs to Answer alone, so ideas handed to
+ * another kind draw nothing rather than a combination the variants do not
+ * offer.
+ */
+export const KeyIdeasIgnoredOffAnswer: Story = {
+  name: 'key ideas ignored off Answer',
+  args: {
+    kind: 'Hint',
+    label: 'Hint',
+    body: 'Think about what the peasants owed in return for the land they worked.',
+    keyIdeas: ['Land', 'Loyalty and service'],
+  },
+  play: async ({ canvasElement }) => {
+    const block = canvasElement.querySelector('.knowieAnswerBlock') as HTMLElement;
+    await expect(block.querySelector('.knowieAnswerBlock-ideas')).toBeNull();
   },
 };

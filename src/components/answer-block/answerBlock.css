@@ -45,6 +45,7 @@
   font-weight: var(--greed-body-s-bold-font-weight);
   font-size: var(--greed-body-s-bold-font-size);
   line-height: var(--greed-body-s-bold-line-height);
+  letter-spacing: var(--greed-body-s-bold-letter-spacing);
 }
 
 /* The body is text.primary in every kind — only the label and the icon change. */
@@ -55,12 +56,14 @@
   font-weight: var(--greed-body-s-regular-font-weight);
   font-size: var(--greed-body-s-regular-font-size);
   line-height: var(--greed-body-s-regular-line-height);
+  letter-spacing: var(--greed-body-s-regular-letter-spacing);
 }
 
-/* Said — what Knowie heard, quoted back. The only kind with no fill of its own:
-   an outline, so a mishear reads as the app's record rather than as a surface
-   the app is asserting. That border makes it 2 taller than the other two, which
-   is how Figma has it (82 against 80). */
+/* Said — what Knowie heard, quoted back. Outlined rather than filled, so a
+   mishear reads as the app's record rather than as a surface the app is
+   asserting. The border is why it is 2 taller than Hint, which is how Figma has
+   it (82 against 80). Answer is outlined too, since the update, and filled as
+   well. */
 .knowieAnswerBlock[data-kind='Said'] {
   border: var(--stroke-border) solid var(--color-border-strong);
   color: var(--color-text-secondary);
@@ -83,8 +86,18 @@
   mask-image: url('/icons/lightbulb-02.svg');
 }
 
-/* Answer — the reveal. The lightest fill of the three, so it sits behind Hint. */
+/* Answer — the reveal. Outlined *and* filled: the border came with the update
+   that put the key ideas inside it, and background/stacking is back behind
+   them. The fill is what makes the chips read on a sheet — an unticked chip is
+   background/surface, which is exactly what `bottomSheetOnly` is, so on
+   `18 Summary, term tapped` the four ideas had nothing around them until the
+   block carried a layer of its own. Stacking is additive white, so it lifts off
+   the page and off a sheet alike.
+
+   The brand label and the check are what separate it from Said, which is
+   outlined the same way but reads at text.secondary and carries no fill. */
 .knowieAnswerBlock[data-kind='Answer'] {
+  border: var(--stroke-border) solid var(--color-border-strong);
   background-color: var(--color-background-stacking);
   color: var(--color-accent-brand-bold);
 }
@@ -92,4 +105,44 @@
 .knowieAnswerBlock[data-kind='Answer'] .knowieAnswerBlock-icon {
   -webkit-mask-image: url('/icons/check.svg');
   mask-image: url('/icons/check.svg');
+}
+
+/* --- the key ideas -------------------------------------------------------
+
+   Answer's own group: the name of the set over the chips that are in it. The
+   group sits under the body on the block's own Space/200, and its two parts
+   are Space/300 apart, which is what the variant draws.
+
+   The chips wrap: four of them are wider than the 358 block at any real term,
+   and Figma draws them on two rows. */
+
+.knowieAnswerBlock-ideas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+}
+
+/* Caption M Bold on text.secondary — quieter than the block's own label, since
+   it names a set inside the passage rather than the passage itself. */
+.knowieAnswerBlock-ideasLabel {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-family: var(--greed-caption-m-bold-font-family);
+  font-weight: var(--greed-caption-m-bold-font-weight);
+  font-size: var(--greed-caption-m-bold-font-size);
+  line-height: var(--greed-caption-m-bold-line-height);
+  letter-spacing: var(--greed-caption-m-bold-letter-spacing);
+}
+
+/* A list, not a row of loose controls: `chips` renders a button whatever it is
+   handed, so the four are wrapped in a named `ul` and the markers are dropped
+   rather than styled. */
+.knowieAnswerBlock-chips {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--space-200);
+  margin: 0;
+  padding: var(--space-0);
+  list-style: none;
 }

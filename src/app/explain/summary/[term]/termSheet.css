@@ -1,0 +1,156 @@
+/* 18 Summary, term tapped, read off the Mockups v2 frame "18 Summary, term
+   tapped" (13662:14542). Every value is a custom property from
+   build/css/tokens.css — see design-system.md, "Never invent a value".
+
+   No padding and no radius: `SheetPanel` owns the panel, its grabber and its
+   insets. This is the column inside it. */
+
+.termSheet {
+  display: flex;
+  flex-direction: column;
+  /* The frame's Space/400 between the header, the take and the answer — not
+     the panel's own Space/600, which is why this is one child rather than
+     three. */
+  gap: var(--space-400);
+}
+
+/* --- the header ----------------------------------------------------------
+
+   The same trio `termRow` carries, in a row: the outcome's badge, the term,
+   and the outcome's word. Not that component — design-system.md is explicit
+   that the sheet header "shows the same trio but is not this component". */
+
+.termSheet-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-300);
+}
+
+/* The badge, and the four outcome colours under it. The same figure termRow
+   draws, at the same Icon/500 box, so a row and the sheet it opens read as the
+   same thing. Logged in component-gaps.md. */
+
+.termSheet-badge {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-500);
+  height: var(--icon-500);
+  border-radius: var(--radius-full);
+}
+
+/* iconSlot paints itself text/primary by default; inside the badge it takes
+   the colour of whatever it sits in. */
+.termSheet-badge .knowieIconSlot {
+  color: inherit;
+}
+
+.termSheet-badge[data-variant='Unaided'] {
+  background-color: var(--color-feedback-success-bold);
+  color: var(--color-feedback-success-on-bold);
+}
+
+.termSheet-badge[data-variant='Hinted'] {
+  background-color: var(--color-feedback-partial-bold);
+  color: var(--color-feedback-partial-on-bold);
+}
+
+/* Revealed is brand violet rather than an error colour, and Skipped is the
+   neutral one: the same four `termRow` and `statusTag` use, because the row
+   and the sheet it opens have to read as the same thing. */
+.termSheet-badge[data-variant='Revealed'] {
+  background-color: var(--color-accent-brand-bold);
+  color: var(--color-accent-brand-on-bold);
+}
+
+.termSheet-badge[data-variant='Skipped'] {
+  background-color: var(--color-interactive-secondary-active);
+  color: var(--color-text-secondary);
+}
+
+/* The term over its outcome, with no gap between them: the two line heights
+   already set the pair's rhythm, and the frame closes the column up. Ranged
+   left rather than stretched. */
+
+.termSheet-title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-0);
+}
+
+.termSheet-term {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-family: var(--greed-headline-s-font-family);
+  font-weight: var(--greed-headline-s-font-weight);
+  font-size: var(--greed-headline-s-font-size);
+  line-height: var(--greed-headline-s-line-height);
+  letter-spacing: var(--greed-headline-s-letter-spacing);
+}
+
+/* --- the two groups ------------------------------------------------------
+
+   The take with what Knowie heard, and the answer with its key ideas. Both
+   stack on the frame's Space/300. */
+
+.termSheet-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+}
+
+/* "Your last attempt" — a label over the take, in the frame's Caption M Bold
+   on text/secondary. Nothing in Storybook sets a label at this step inside a
+   sheet: `textBlock`'s S is Body S Bold on text/primary, which is the sheet
+   title's step, and this sits under it. Logged in component-gaps.md. */
+
+.termSheet-label {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-family: var(--greed-caption-m-bold-font-family);
+  font-weight: var(--greed-caption-m-bold-font-weight);
+  font-size: var(--greed-caption-m-bold-font-size);
+  line-height: var(--greed-caption-m-bold-line-height);
+  letter-spacing: var(--greed-caption-m-bold-letter-spacing);
+}
+
+/* The outcome, as a word in the outcome's own colour — Body S Bold, not a
+   `statusTag`. The updated frame sets it this way: the header is a badge, a
+   term and a word, and the tag's pill would put a second shape next to a badge
+   that is already carrying the colour.
+
+   The colours are the four `statusTag` and `termRow` share, taken as text
+   rather than as a fill, so the three places an outcome is named agree.
+   Skipped has no accent of its own and recedes on text/secondary, which is the
+   same read its tag has.
+
+   The word is never the only thing carrying the outcome: the badge's icon sits
+   beside it, which is what keeps it legible in greyscale. */
+
+.termSheet-result {
+  margin: 0;
+  font-family: var(--greed-body-s-bold-font-family);
+  font-weight: var(--greed-body-s-bold-font-weight);
+  font-size: var(--greed-body-s-bold-font-size);
+  line-height: var(--greed-body-s-bold-line-height);
+  letter-spacing: var(--greed-body-s-bold-letter-spacing);
+}
+
+.termSheet-result[data-variant='Unaided'] {
+  color: var(--color-feedback-success-bold);
+}
+
+.termSheet-result[data-variant='Hinted'] {
+  color: var(--color-feedback-partial-bold);
+}
+
+.termSheet-result[data-variant='Revealed'] {
+  color: var(--color-accent-brand-bold);
+}
+
+.termSheet-result[data-variant='Skipped'] {
+  color: var(--color-text-secondary);
+}

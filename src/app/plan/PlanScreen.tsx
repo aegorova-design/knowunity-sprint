@@ -11,7 +11,9 @@
  * for the sprint and nothing on it is in the click path.
  */
 
+import { Button } from '@/components/button/Button';
 import { IconSlot } from '@/components/icon-slot/IconSlot';
+import { MascotMessage } from '@/components/mascot-message/MascotMessage';
 import { Scaffold } from '@/components/scaffold/Scaffold';
 import { SectionHeader } from '@/components/section-header/SectionHeader';
 import { StepperStep } from '@/components/stepper-step/StepperStep';
@@ -23,7 +25,12 @@ import './planScreen.css';
 
 export type PlanScreenProps = {
   sections: PlanSection[];
-  /** Where a voice step goes. First run sends the student through the primer. */
+  /**
+   * Where a voice step goes. First run sends the student through the primer.
+   * Knowie's action on a result section goes to the same place: SPEC.md
+   * screens 5 and 6 send both there, because "Do it now anyway" and "Practice
+   * sooner" start the recall loop now rather than on the date Knowie named.
+   */
   voiceHref: string;
 };
 
@@ -34,7 +41,11 @@ export function PlanScreen({ sections, voiceHref }: PlanScreenProps) {
       middleContent={
         <div className="planScreen">
           <div className="planScreen-header">
-            <IconSlot size="400" icon="graduation-hat-01" aria-hidden="true" />
+            {/* Wrapped because `iconSlot` sets its own colour on itself, so a
+                parent cannot recolour it by inheritance — see planScreen.css. */}
+            <span className="planScreen-headerIcon">
+              <IconSlot size="400" icon="graduation-hat-01" aria-hidden="true" />
+            </span>
             <h1 className="planScreen-subject">{SUBJECT}</h1>
           </div>
 
@@ -49,7 +60,14 @@ export function PlanScreen({ sections, voiceHref }: PlanScreenProps) {
 
           {sections.map((section) => (
             <section className="planScreen-section" key={section.title}>
-              <SectionHeader state="Default" title={section.title} titleAs="h2" />
+              <SectionHeader
+                /* Default carries no status layer at all, which is why a
+                   section with no result behind it passes none. */
+                state={section.result?.state ?? 'Default'}
+                status={section.result?.status}
+                title={section.title}
+                titleAs="h2"
+              />
               <div className="planScreen-stepper">
                 {section.learning.map((step) => (
                   <StepperStep
@@ -68,6 +86,36 @@ export function PlanScreen({ sections, voiceHref }: PlanScreenProps) {
                   href={voiceHref}
                 />
               </div>
+
+              {section.result ? (
+                <MascotMessage
+                  state={section.result.message.state}
+                  message={section.result.message.message}
+                  helper={section.result.message.helper}
+                  /* Always on where a result exists. SPEC.md screen 5: the
+                     scheduling line is the calibration mechanism, so it cannot
+                     be hidden on the screen that has something to schedule.
+                     Frame 19 has it off; reported with the build. */
+                  showHelper
+                  actionSlot={
+                    /* Tertiary XS per SPEC.md, and the screen's lowest
+                       emphasis — the scheduled date is the recommendation and
+                       this is the way around it, not the way through. */
+                    <Button
+                      variant="Tertiary"
+                      size="XS"
+                      CTA={section.result.message.action}
+                      /* The mic, because the action starts the recall loop —
+                         the same icon the plan's Voice step and every "Try
+                         again" in the session carry. The frame reserves a left
+                         icon container without naming what goes in it. */
+                      showLeftIcon
+                      leftIcon="microphone-01"
+                      href={voiceHref}
+                    />
+                  }
+                />
+              ) : null}
             </section>
           ))}
         </div>

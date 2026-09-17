@@ -13,6 +13,9 @@ The component's description in Figma, verbatim:
 > rolling, so the skeleton stays quiet. Pick the line count to match the text it
 > stands in for; line widths are fixed so the shape reads as prose, not a bar.
 
+**That description is out of date on one point and is due an edit.** The lines
+shimmer now — see below. Everything else in it still holds.
+
 ### The three counts
 
 The widths are not one list sliced to length. Each count has its own order, off
@@ -27,16 +30,27 @@ the file:
 Each line is 16 tall with Radius/100 and background/stacking. The block is the
 full 358, its lines are centred, and the gap is Space/300.
 
-### Why it does not move
+### Why it moves
 
-"No motion" is the decision, not an omission. voice-ux.md asks for "a
-skeleton/animated state, not a dead spinner" during the <4s wait, and on the
-Processing screen the moving thing is Knowie at pose=Thinking, with
-verdictHeader naming the wait in words above it. The skeleton is the third
-layer of that and stays quiet, which is the same rule waveform follows: it is
-decoration for a state already carried by a label.
+It did not, and the reversal was deliberate. The original decision leaned on
+Knowie carrying the movement on the Processing screen — but \`mascotFigure\` has
+no motion and no token names a mascot idle loop, so nothing on that screen was
+moving at all. voice-ux.md asks for "a skeleton/animated state, not a dead
+spinner" during the <4s wait, and SPEC.md's motion rule already listed "the
+skeleton shimmer" among the things \`prefers-reduced-motion\` stops. The block
+was the odd one out against both.
 
-So there is nothing to switch off under \`prefers-reduced-motion\`.
+The figure is a 135deg band of light on a gradient box 2.6x the line's width,
+swept end to end by \`background-position\`, with the line breathing from 0.75
+to full opacity as the band passes the middle. It rests at
+\`background/stacking\` and crests at \`background/shimmer\`, one step brighter.
+Timing is \`motion.duration.shimmer\` (1350ms) on \`motion.easing.listen\` — the
+curve is borrowed rather than duplicated, because the sweep wants the same
+symmetric ease-in-out the waveform's loop already is.
+
+Under \`prefers-reduced-motion\` the gradient goes with the animation and the
+flat fill comes back, which is exactly the component as it was before. A frozen
+band would leave one bright patch parked on the bar for the whole wait.
 
 ### Where it is used
 
@@ -130,12 +144,21 @@ function variantStory(lines: SkeletonLines): Story {
       // Decorative, so it stays out of the accessibility tree.
       await expect(root).toHaveAttribute('aria-hidden', 'true');
 
-      // No motion, by decision — nothing here animates or transitions.
-      for (const el of [root, ...drawn]) {
-        const style = getComputedStyle(el);
-        await expect(style.animationName).toBe('none');
-        await expect(style.transitionProperty).toBe('all');
-        await expect(style.transitionDuration).toBe('0s');
+      // The block itself never moves; the shimmer belongs to the lines.
+      await expect(getComputedStyle(root).animationName).toBe('none');
+
+      // Every line runs the same sweep, in sync — no stagger, unlike waveform.
+      for (const line of drawn) {
+        const style = getComputedStyle(line);
+        await expect(style.animationName).toBe('knowieSkeletonShimmer');
+        await expect(style.animationDuration).toBe('1.35s');
+        await expect(style.animationIterationCount).toBe('infinite');
+        await expect(style.animationDelay).toBe('0s');
+
+        // The gradient paints the resting fill itself, so the flat fill under
+        // it is cleared — stacked, the two translucent whites would double up.
+        await expect(style.backgroundColor).toBe('rgba(0, 0, 0, 0)');
+        await expect(style.backgroundImage).toContain('linear-gradient');
       }
     },
   };
@@ -192,8 +215,8 @@ export const EveryCount: Story = {
  * place this component is used: verdictHeader at verdict=Checking, then the
  * block at lines=3, Space/600 apart.
  *
- * It is also the argument for the skeleton staying still. Knowie is the moving
- * part and the headline is the reading part; the block is neither.
+ * It is also where to judge the shimmer: the block has to read as the third
+ * layer behind Knowie and the headline, not compete with them.
  */
 export const OnProcessing: Story = {
   name: 'On the Processing screen',

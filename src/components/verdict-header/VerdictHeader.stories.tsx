@@ -10,15 +10,19 @@ const DOCS = `
 The component's description in Figma, verbatim:
 
 > Invented. The top of a turn result: Knowie at size L, a headline and a
-> caption, centred. The verdict picks the pose and the headline's colour — Pass
-> is Excited, Partial Approving, Miss Questioning — and the headline names the
-> result in words, which is what still reads when colour and pose both disappear
-> in greyscale. Neutral and Checking are not verdicts: Neutral is a term read
-> back on the summary, Checking is the wait while an answer is judged, and both
-> keep text.primary. One per result screen or verdict sheet. Never let the
-> headline stop naming the result, never set the pose on the nested mascotFigure
-> since the verdict drives it, and never recolour the headline on an instance —
-> a sixth colour is a sixth verdict, and that is a decision.
+> caption, centred. The verdict picks the pose and the headline's colour —
+> Pass is Excited, Partial Approving, Miss Questioning — and the headline
+> names the result in words, which is what still reads when colour and pose
+> both disappear in greyscale. Neutral and Checking are not verdicts: Neutral
+> is any screen that leads with Knowie and a headline rather than with a
+> result — a term read back on the summary, and the home screens' exam line —
+> Checking is the wait while an answer is judged, and both keep text.primary.
+> One per screen or sheet. The caption can be switched off on an instance
+> where the headline stands alone, as 01 Home does; there is no property for
+> that yet, which is a gap. Never let the headline stop naming the result,
+> never set the pose on the nested mascotFigure since the verdict drives it,
+> and never recolour the headline on an instance — a sixth colour is a sixth
+> verdict, and that is a decision.
 
 ### How meaning survives greyscale
 
@@ -70,6 +74,18 @@ instance:
 Figma does not nest textBlock here either, so the component and the file agree.
 If textBlock ever gains a Headline M step and a title colour, this is the place
 to revisit.
+
+### The optional caption
+
+\`showCaption\` is code only. Figma has no such property here — the frames switch
+the caption layer off on the instance, which an instance can do and a component
+cannot express — and \`01 Home\` is the frame that does it: the exam line stands
+alone over the mascot, with no second line under it. The component's Figma
+description names the missing property as a gap.
+
+It defaults to true, so every screen that already uses the header is untouched.
+Switching it off removes the paragraph rather than emptying it, so the stack's
+Space/300 gap closes up instead of leaving a hole where a line used to be.
 
 ### What not to do with it
 
@@ -247,5 +263,26 @@ export const EveryVerdict: Story = {
     );
     await expect(new Set(colors).size).toBe(4);
     await expect(colors[3]).toBe(colors[4]);
+  },
+};
+
+/**
+ * Not a Figma variant — the caption switched off, which is what `01 Home` does
+ * on its instance. The layer is removed rather than emptied, so the stack
+ * closes up.
+ */
+export const CaptionOff: Story = {
+  name: 'caption switched off',
+  args: { verdict: 'Neutral', title: 'Your History exam is in 1 week', showCaption: false },
+  play: async ({ canvasElement }) => {
+    const root = canvasElement.querySelector('.knowieVerdictHeader') as HTMLElement;
+
+    // The title and the mascot stay; the caption is gone, not blank.
+    await expect(root.querySelector('.knowieVerdictHeader-title')).toBeVisible();
+    await expect(root.querySelector('img')).toBeVisible();
+    await expect(root.querySelector('.knowieVerdictHeader-caption')).toBeNull();
+
+    // Two children left, so the Space/300 gap closes rather than leaving a hole.
+    await expect(root.children).toHaveLength(2);
   },
 };

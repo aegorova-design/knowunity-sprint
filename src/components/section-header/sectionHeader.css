@@ -36,6 +36,7 @@
   font-weight: var(--greed-body-s-bold-font-weight);
   font-size: var(--greed-body-s-bold-font-size);
   line-height: var(--greed-body-s-bold-line-height);
+  letter-spacing: var(--greed-body-s-bold-letter-spacing);
 }
 
 /* The status and the icon always share a colour, so the count and the mark
@@ -46,6 +47,7 @@
   font-weight: var(--greed-caption-m-bold-font-weight);
   font-size: var(--greed-caption-m-bold-font-size);
   line-height: var(--greed-caption-m-bold-line-height);
+  letter-spacing: var(--greed-caption-m-bold-letter-spacing);
 }
 
 .knowieSectionHeader-icon {

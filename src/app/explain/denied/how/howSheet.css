@@ -1,0 +1,47 @@
+/* The "turn on your mic" sheet's own layout. No Figma frame exists for this
+   screen, so the values are the ones its neighbours already use: the sheet is
+   sheetPanel.css, and the steps borrow the primer's card — same radius, same
+   hairline, same Space/400 rhythm — so the two sheets read as one family.
+
+   Every value is a custom property from build/css/tokens.css. */
+
+/* The line between the title and the steps: what is wrong and how long the
+   fix takes, before the fix itself. */
+
+.howSheet-intro {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-family: var(--greed-body-s-regular-font-family);
+  font-weight: var(--greed-body-s-regular-font-weight);
+  font-size: var(--greed-body-s-regular-font-size);
+  line-height: var(--greed-body-s-regular-line-height);
+  letter-spacing: var(--greed-body-s-regular-letter-spacing);
+}
+
+.howSheet-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-400);
+  margin: 0;
+  padding: var(--space-400) var(--space-400) var(--space-400) var(--space-800);
+  border: var(--stroke-border) solid var(--color-border-default);
+  border-radius: var(--radius-600);
+}
+
+.howSheet-step {
+  color: var(--color-text-primary);
+  font-family: var(--greed-body-s-regular-font-family);
+  font-weight: var(--greed-body-s-regular-font-weight);
+  font-size: var(--greed-body-s-regular-font-size);
+  line-height: var(--greed-body-s-regular-line-height);
+  letter-spacing: var(--greed-body-s-regular-letter-spacing);
+}
+
+/* The number carries the order, so it takes the brand accent the primer's
+   icons take. */
+.howSheet-step::marker {
+  color: var(--color-accent-brand-bold);
+  font-family: var(--greed-body-s-bold-font-family);
+  font-weight: var(--greed-body-s-bold-font-weight);
+  font-size: var(--greed-body-s-bold-font-size);
+}

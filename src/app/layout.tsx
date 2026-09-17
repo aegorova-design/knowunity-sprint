@@ -12,6 +12,10 @@ export const metadata: Metadata = {
 // Next 16 keeps viewport separate from metadata, and both are Server Component
 // exports only. A page that takes 'use client' cannot carry either.
 export const viewport: Viewport = {
+  // Mirrors --color-background-page (color.navy.950) from build/css/tokens.css.
+  // It is a raw hex because this is browser chrome, not CSS: Safari reads the
+  // meta tag before any stylesheet, so a var() here would resolve to nothing.
+  // If that token changes, change this with it — nothing links the two.
   themeColor: "#090c18",
   viewportFit: "cover",
   maximumScale: 1,

@@ -1,0 +1,29 @@
+/* Knowie over the heading, read off the Mockups v2 frames "14 Permission
+   denied" (13662:14548), "05b Resume, pick up where you left off"
+   (13663:19481) and "20b Revisit complete" (13663:19600). Every value is a
+   custom property from build/css/tokens.css — see design-system.md, "Never
+   invent a value".
+
+   No padding: scaffold owns the screen's insets.
+
+   `margin-block: auto` centres the pair in whatever middleContent has left
+   over after the thumb zone. The column is already a flex column, so a single
+   child's auto margins split the free space — the idiom 09 Processing and the
+   verdict screens use, rather than a fixed spacer written above and below. */
+
+.mascotHeading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-block: auto;
+}
+
+/* The one thing the three frames disagree on. */
+
+.mascotHeading[data-gap='400'] {
+  gap: var(--space-400);
+}
+
+.mascotHeading[data-gap='600'] {
+  gap: var(--space-600);
+}

@@ -1,0 +1,55 @@
+/* The bottom sheet's panel, read off the Mockups v2 frame "05 First run,
+   example" (13662:14547). Every value is a custom property from
+   build/css/tokens.css.
+
+   No width and no positioning on the panel: scaffold's bottomSheetOnly slot
+   already pins it to the bottom three edges. */
+
+/* Tap outside to close. The slot is only as tall as the panel, so this is
+   anchored to the slot's bottom and given the full screen height to grow
+   upwards over the scrim. It sits behind the panel, which is why the panel
+   takes a stacking position of its own: both are positioned with z-index
+   auto, so the one later in the DOM paints on top.
+
+   100dvh rather than a token: the scaffold's own height is the viewport, and
+   the system has no dimension that large — the same reason scaffold.css gives
+   for 390 and 844. */
+
+.sheetPanel-dismiss {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 100dvh;
+}
+
+.sheetPanel {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-400);
+  padding: var(--space-300) var(--space-400) var(--space-800);
+  border-start-start-radius: var(--radius-600);
+  border-start-end-radius: var(--radius-600);
+  background-color: var(--color-background-surface);
+}
+
+/* The grab handle. Decorative — the sheet cannot actually be dragged this
+   sprint, and it is hidden from the accessibility tree for that reason. */
+
+.sheetPanel-grabber {
+  flex: none;
+  width: var(--space-800);
+  height: var(--space-100);
+  border-radius: var(--radius-full);
+  background-color: var(--color-border-strong);
+}
+
+.sheetPanel-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-600);
+  width: 100%;
+}

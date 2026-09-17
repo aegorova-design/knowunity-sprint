@@ -1,0 +1,45 @@
+/* The centred column every verdict screen reads down, and the stack of cards
+   some of them put in it. Read off the Mockups v2 frames "10 Got it"
+   (13662:14537), "10b Got it, after a hint" (13663:18824), "11 Not quite, hint
+   1 of 2" (13662:14538), "12 Partial, hint 2 of 2" (13662:14543) and "12b Not
+   quite, last attempt" (13663:19327), which bind both identically. Every value
+   is a custom property from build/css/tokens.css — see design-system.md,
+   "Never invent a value".
+
+   A stylesheet rather than a component: there is nothing here but two boxes and
+   a handful of rules, and wrapping each screen's children in a component to
+   carry them would be a layer for its own sake.
+
+   No padding: scaffold owns the screen's insets.
+
+   Both frames centre the column with a fixed spacer above and below it — 120
+   on 10, 88 on 10b, because 10b's thumb zone is a row taller. That is centring
+   written twice, so `margin-block: auto` does it once and keeps doing it when
+   the content grows past the free space. The idiom 09 Processing and 14
+   Permission denied already use.
+
+   Space/600 between the header and the covered group: the gap both frames'
+   `verdict` layer binds. */
+
+.verdictBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-600);
+  margin-block: auto;
+}
+
+/* Figma "cards": the passages a verdict hands back, stacked at Space/300 —
+   the take quoted back over the nudge that answers it on 11 and 12, the take
+   alone on 12b. `align-self: stretch` because the column above centres its
+   children and these fill the content width.
+
+   Three screens draw it, so it stops being copied — see `component-gaps.md`.
+   One child is a supported case, not a degenerate one: that is 12b. */
+
+.verdictCards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+  align-self: stretch;
+}

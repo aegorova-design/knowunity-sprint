@@ -264,6 +264,7 @@
   font-weight: var(--greed-body-s-bold-font-weight);
   font-size: var(--greed-body-s-bold-font-size);
   line-height: var(--greed-body-s-bold-line-height);
+  letter-spacing: var(--greed-body-s-bold-letter-spacing);
 }
 
 .knowieButton[data-size='L'] .knowieButton-label {
@@ -271,6 +272,7 @@
   font-weight: var(--greed-headline-s-font-weight);
   font-size: var(--greed-headline-s-font-size);
   line-height: var(--greed-headline-s-line-height);
+  letter-spacing: var(--greed-headline-s-letter-spacing);
 }
 
 /* --- icon seams ----------------------------------------------------------

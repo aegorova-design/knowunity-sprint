@@ -1,0 +1,15 @@
+/* The thumb zone's action stack. Every value is a custom property from
+   build/css/tokens.css — see design-system.md, "Never invent a value".
+
+   No padding of its own: scaffold.css owns the thumb zone's inset, and this
+   sits inside it. */
+
+.actionStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+}
+
+/* align-items is left at `stretch`, which is what makes the buttons fill: the
+   face takes whatever width its outer box is given, and a stretch column gives
+   it all of it. See button's "Fill And Hug" story. */

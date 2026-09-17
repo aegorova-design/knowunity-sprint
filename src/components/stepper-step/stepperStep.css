@@ -158,6 +158,7 @@
   font-weight: var(--greed-body-s-bold-font-weight);
   font-size: var(--greed-body-s-bold-font-size);
   line-height: var(--greed-body-s-bold-line-height);
+  letter-spacing: var(--greed-body-s-bold-letter-spacing);
 }
 
 .knowieStepperStep-caption {
@@ -167,4 +168,5 @@
   font-weight: var(--greed-caption-m-regular-font-weight);
   font-size: var(--greed-caption-m-regular-font-size);
   line-height: var(--greed-caption-m-regular-line-height);
+  letter-spacing: var(--greed-caption-m-regular-letter-spacing);
 }

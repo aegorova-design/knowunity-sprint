@@ -7,7 +7,9 @@
  *
  * Composed, not redrawn: the control is a buttonIcon and the levels are a
  * waveform, which is how Figma nests them. The state drives all three parts at
- * once, so the button, the bars and the fill can never disagree.
+ * once, so the button, the bars and the fill can never disagree — except for
+ * the one thing a variant cannot carry, the take's playback position, which
+ * arrives as `played` and is the screen's clock rather than a picture.
  */
 
 import type { HTMLAttributes } from 'react';
@@ -50,6 +52,20 @@ export type TakePlayerProps = Omit<HTMLAttributes<HTMLDivElement>, 'children'> &
    * a player whose button does nothing is not a player.
    */
   onPlayPause?: () => void;
+  /**
+   * How far through the take playback has reached, 0 to 1. Figma has no
+   * property for this either: `Playing` is drawn at a fixed halfway fill, so a
+   * take of any length shows the same frozen picture for as long as it runs.
+   *
+   * Playing is where a position comes from. Default honours one too, so a take
+   * that is paused partway holds its place instead of snapping back to the
+   * start — a paused take is still mid-playback, it has just stopped moving,
+   * and the control correctly offers play again. Silent ignores it: there is
+   * no audio, so there is nothing to be partway through.
+   *
+   * Left off, every state fills exactly as its Figma variant does.
+   */
+  played?: number;
 };
 
 export function TakePlayer({
@@ -57,9 +73,14 @@ export function TakePlayer({
   surface = 'Page',
   duration = '0:14',
   onPlayPause,
+  played,
   ...rest
 }: TakePlayerProps) {
   const spec = BY_STATE[state];
+
+  // A position, where one was given and the state can be partway through it.
+  // Silent falls back to its variant, which is empty by definition.
+  const position = state === 'Silent' ? undefined : played;
 
   return (
     <div className="knowieTakePlayer" data-state={state} data-surface={surface} {...rest}>
@@ -68,7 +89,7 @@ export function TakePlayer({
             which icon the nested buttonIcon is swapped to. */}
         <span className="knowieTakePlayer-glyph" aria-hidden="true" />
       </ButtonIcon>
-      <Waveform state={spec.waveform} progress={spec.progress} />
+      <Waveform state={spec.waveform} progress={spec.progress} played={position} />
       <p className="knowieTakePlayer-duration">{duration}</p>
     </div>
   );

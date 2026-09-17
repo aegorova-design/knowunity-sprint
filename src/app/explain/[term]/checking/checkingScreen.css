@@ -1,0 +1,69 @@
+/* 09 Processing, read off the Mockups v2 frame "09 Processing" (13662:14536).
+   Every value is a custom property from build/css/tokens.css, with the one
+   exception called out below.
+
+   No padding here: scaffold owns the screen's insets in both slots. */
+
+/* The frame centres the stack with a flexible spacer above and below. The
+   screen has one child, so `margin-block: auto` splits the free space the same
+   way — the idiom `14 Permission denied` already uses.
+
+   Space/600 between the header and the block: the gap the frame binds, and the
+   one skeleton's own "On the Processing screen" story documents. */
+
+.checkingScreen-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-600);
+  margin-block: auto;
+}
+
+/* The tap acknowledgement. A tap does nothing to the request — the answer is
+   already sent, and SPEC.md says the tap is inert — but Knowie answers it, so
+   an impatient student gets something back rather than a dead screen.
+
+   The timing is the system's own press feel rather than a new number: out on
+   `motion.duration.pressIn` and back on `motion.duration.pressOut`, twice as
+   long, which is exactly the asymmetry `button` uses under a finger. The
+   direction is outward, not in: Knowie is answering the tap, not being pressed
+   by it. */
+
+.checkingScreen-pulse {
+  /* The one value here that is not a token, on the same grounds waveform.css
+     gives for its listen depth: a unitless scale factor belongs to no group
+     the token file has, and inventing a group for a single value would be
+     worse than naming it here. 1.06 is a beat Knowie can be seen to give at
+     size L without the headline under her appearing to move. */
+  --checkingScreen-pulse-depth: 1.06;
+
+  animation-name: checkingScreen-pulse;
+  animation-duration: calc(var(--motion-duration-press-in) + var(--motion-duration-press-out));
+  animation-timing-function: var(--motion-easing-press);
+}
+
+@keyframes checkingScreen-pulse {
+  /* The turn sits at pressIn / (pressIn + pressOut) — 70 of 210 — so the beat
+     out is half the length of the settle back. */
+  0% {
+    transform: scale(1);
+  }
+
+  33.3% {
+    transform: scale(var(--checkingScreen-pulse-depth));
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Reduced motion stops the pulse. The status line under Knowie keeps stepping,
+   which is what SPEC.md's motion rule asks of this screen: the shimmer and the
+   roll stop, "every copy change keeps running". */
+
+@media (prefers-reduced-motion: reduce) {
+  .checkingScreen-pulse {
+    animation: none;
+  }
+}

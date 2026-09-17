@@ -21,4 +21,5 @@
   font-weight: var(--greed-caption-m-bold-font-weight);
   font-size: var(--greed-caption-m-bold-font-size);
   line-height: var(--greed-caption-m-bold-line-height);
+  letter-spacing: var(--greed-caption-m-bold-letter-spacing);
 }

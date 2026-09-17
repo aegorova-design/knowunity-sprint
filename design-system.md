@@ -107,7 +107,7 @@ Values are not repeated here. Every fill, padding, radius, gap and text style co
 - **progress:** 0, 25, 50, 75, 100
 - **Other properties:** none
 - 7 variants. progress only exists at 0 for Live and for Silent; the four filled steps exist on Idle only.
-- 236x32, 24 bars named `bar`. Playback lands on the nearest step, so a take reads in quarters and not continuously.
+- 236x32, 24 bars named `bar`. An instance lands on the nearest quarter; a take played back in code lands on the nearest bar, so the row fills in 24 steps rather than 4.
 
 ### takePlayer
 
@@ -122,13 +122,13 @@ Values are not repeated here. Every fill, padding, radius, gap and text style co
 
 ### answerBlock
 
-> A labelled passage of text about the current term. Said is what Knowie heard, quoted back so a mishear reads as the app's mistake. Hint is the nudge, and it is the loudest of the three because it is the thing to act on. Answer is the reveal. Reach for it inside a verdict sheet or under a prompt, never as a screen heading, which is textBlock's job. Keep bodies to three lines; this is a glance, not a passage. Never recolour an instance to make one kind look like another. If you need a fourth treatment, that is a new kind and a decision.
+> A labelled passage of text about the current term. Said is what Knowie heard, quoted back so a mishear reads as the app's mistake. Hint is the nudge, and it is the loudest of the three because it is the thing to act on. Answer is the reveal, and it carries the term's key ideas inside it: the name of the set over the chips that are in it, unticked, because a reveal means the student has been shown the answer rather than said it. Hint is the only kind with a fill — Said and Answer are outlined, and the label and the icon are what tell those two apart. Reach for it inside a verdict sheet or under a prompt, never as a screen heading, which is textBlock's job. Keep bodies to three lines; this is a glance, not a passage. Never recolour an instance to make one kind look like another, and never put the key ideas on Said or Hint: the group belongs to the one variant that has it. If you need a fourth treatment, that is a new kind and a decision.
 
 - **kind:** Said, Hint, Answer
 - **label:** text, default "What you said"
 - **body:** text, default "Body"
 - **showIcon:** boolean, default true
-- 3 variants, 358 wide, hugging height. `labelRow` holds an iconSlot and the label; `body` sits under it.
+- 3 variants, 358 wide, hugging height. `labelRow` holds an iconSlot and the label; `body` sits under it. Answer adds a `key ideas` group under the body — a Caption M Bold label over a wrapping row of `chips size=S active=False` — and carries a border as well as its background/stacking fill, which is why it is 190 tall against Said's 82 and Hint's 80. The chips have no text property in Figma: in code they arrive as `keyIdeas`.
 
 ### mascotMessage
 
@@ -148,7 +148,7 @@ Values are not repeated here. Every fill, padding, radius, gap and text style co
 
 ### statusTag
 
-> One term's outcome as a label. Same four values and the same colours as termRow, so the two read as a set. The label is decided by the variant and is never edited on an instance: a fifth outcome is a new variant and a decision. Use it wherever the outcome needs naming beside a term, in the summary row and in the sheet header.
+> One term's outcome as a label. Same four values and the same colours as termRow, so the two read as a set. The label is decided by the variant and is never edited on an instance: a fifth outcome is a new variant and a decision. Use it wherever the outcome needs naming beside a term in a list, which in this sprint is the summary row. Not in the sheet header: 18 Summary, term tapped sets the outcome as a word in its own colour beside the term, because the badge next to it is already a coloured shape and the pill would be a second one. If that word ever needs to be a component, it is a variant of this one rather than a new part.
 
 - **variant:** Unaided, Hinted, Revealed, Skipped
 - **Other properties:** none. The label is a fixed text layer, deliberately not a text property.
@@ -206,7 +206,7 @@ Values are not repeated here. Every fill, padding, radius, gap and text style co
 
 ### verdictHeader
 
-> Invented. The top of a turn result: Knowie at size L, a headline and a caption, centred. The verdict picks the pose and the headline's colour — Pass is Excited, Partial Approving, Miss Questioning — and the headline names the result in words, which is what still reads when colour and pose both disappear in greyscale. Neutral and Checking are not verdicts: Neutral is a term read back on the summary, Checking is the wait while an answer is judged, and both keep text.primary. One per result screen or verdict sheet. Never let the headline stop naming the result, never set the pose on the nested mascotFigure since the verdict drives it, and never recolour the headline on an instance — a sixth colour is a sixth verdict, and that is a decision.
+> Invented. The top of a turn result: Knowie at size L, a headline and a caption, centred. The verdict picks the pose and the headline's colour — Pass is Excited, Partial Approving, Miss Questioning — and the headline names the result in words, which is what still reads when colour and pose both disappear in greyscale. Neutral and Checking are not verdicts: Neutral is any screen that leads with Knowie and a headline rather than with a result — a term read back on the summary, and the home screens' exam line — Checking is the wait while an answer is judged, and both keep text.primary. One per screen or sheet. The caption can be switched off on an instance where the headline stands alone, as 01 Home does; there is no property for that yet, which is a gap. Never let the headline stop naming the result, never set the pose on the nested mascotFigure since the verdict drives it, and never recolour the headline on an instance — a sixth colour is a sixth verdict, and that is a decision.
 
 - **verdict:** Pass, Partial, Miss, Neutral, Checking
 - **title:** text / **caption:** text

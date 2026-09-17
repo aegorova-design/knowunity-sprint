@@ -1,0 +1,23 @@
+/* The row of ways out. Every value is a custom property from
+   build/css/tokens.css — see design-system.md, "Never invent a value".
+
+   Space/200 is the gap across the whole flow's thumb zone: the same one
+   ActionStack sets between its rows, so a screen's bottom reads as one grid
+   whichever way the buttons are arranged. Mockups v2 screen 10b draws this row
+   at 16 rather than 8; that frame is the odd one out and the 8 here is
+   deliberate. */
+
+.buttonPair {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-200);
+}
+
+/* `flex: 1 1 0` rather than `1 1 auto`: from a zero basis the halves are equal
+   whatever the labels say, which is what the frames draw. A lone child takes
+   the whole row by the same rule. */
+
+.buttonPair > * {
+  flex: 1 1 0;
+  min-width: 0;
+}

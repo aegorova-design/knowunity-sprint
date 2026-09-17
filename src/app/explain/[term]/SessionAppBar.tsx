@@ -18,6 +18,8 @@ export function SessionAppBar({
   term,
   skipHref,
   skipState = 'Default',
+  resolved = false,
+  behindSheet = false,
 }: {
   term: TermPosition;
   /** Where Skip goes. Ignored while Skip is disabled. */
@@ -27,8 +29,24 @@ export function SessionAppBar({
    * term, Disabled once it is in flight or resolved.
    */
   skipState?: 'Default' | 'Disabled';
+  /**
+   * Whether this term is already settled. SPEC.md's Progress rule: progress
+   * "advances a third on any resolution, including a skip" — so a verdict
+   * screen counts its own term as done, and every screen before the verdict
+   * does not. The Mockups v2 frame "10 Got it" draws the bar a third full on
+   * term 1, which is what this is reading.
+   */
+  resolved?: boolean;
+  /**
+   * Set while `06b Leave session, confirm` covers the screen. The bar keeps
+   * its look — the frame draws it untouched — but stops being actionable:
+   * SPEC.md's "Can do" for that screen is Keep going and Leave, and a confirm
+   * whose backdrop still lets the student Skip the term is a way around the
+   * question rather than an answer to it.
+   */
+  behindSheet?: boolean;
 }) {
-  return (
+  const bar = (
     <AppBar
       variant="leftAndRightButton"
       aria-label="Session navigation"
@@ -37,7 +55,7 @@ export function SessionAppBar({
         <ProgressIndicator
           variant="Primary"
           thickness="24"
-          current={termsDoneBefore(term)}
+          current={termsDoneBefore(term) + (resolved ? 1 : 0)}
           total={TERM_COUNT}
           aria-label={PROGRESS_LABEL}
         />
@@ -53,4 +71,6 @@ export function SessionAppBar({
       }
     />
   );
+
+  return behindSheet ? <div inert>{bar}</div> : bar;
 }

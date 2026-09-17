@@ -1,0 +1,12 @@
+/* The example sheet's own layout, read off the Mockups v2 frame "05 First run,
+   example" (13662:14547). Every value is a custom property from
+   build/css/tokens.css.
+
+   The panel itself is sheetPanel.css, and the question is TermPrompt; only
+   what the example puts around them is here. */
+
+.exampleSheet-answer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+}

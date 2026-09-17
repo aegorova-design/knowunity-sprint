@@ -17,4 +17,5 @@
   font-weight: var(--greed-headline-s-font-weight);
   font-size: var(--greed-headline-s-font-size);
   line-height: var(--greed-headline-s-line-height);
+  letter-spacing: var(--greed-headline-s-letter-spacing);
 }

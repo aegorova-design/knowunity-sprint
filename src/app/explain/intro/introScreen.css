@@ -1,0 +1,112 @@
+/* The mic primer's layout, read off the Mockups v2 frame "04 First run, mic
+   primer" (13662:14546). Every value is a custom property from
+   build/css/tokens.css — see design-system.md, "Never invent a value".
+
+   No padding here: scaffold owns the screen's insets, in both slots. */
+
+.introScreen-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+}
+
+/* --- Knowie and what she says -------------------------------------------
+
+   She is centred over a full-width bubble whose text is centred too, so this
+   is not mascotMessage — that one puts her beside the bubble with the copy
+   ranged left. Logged in component-gaps.md. */
+
+.introScreen-saying {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* The overlap that makes her peek. The bubble comes after her in the DOM, so
+   it paints over her feet; nothing is clipped, it is just covered. */
+.introScreen-saying > :first-child {
+  margin-bottom: calc(var(--space-800) * -1);
+}
+
+.introScreen-bubble {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: var(--space-400);
+  border-radius: var(--radius-600);
+  background-color: var(--color-background-surface);
+  color: var(--color-text-primary);
+  text-align: center;
+  font-family: var(--greed-body-m-regular-font-family);
+  font-weight: var(--greed-body-m-regular-font-weight);
+  font-size: var(--greed-body-m-regular-font-size);
+  line-height: var(--greed-body-m-regular-line-height);
+  letter-spacing: var(--greed-body-m-regular-letter-spacing);
+}
+
+/* --- how it works -------------------------------------------------------
+
+   A list, because the three lines are three parallel statements rather than a
+   paragraph. The card around them is the frame's outlined box. */
+
+.introScreen-points {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-400);
+  margin: 0;
+  padding: var(--space-400);
+  list-style: none;
+  border: var(--stroke-border) solid var(--color-border-default);
+  border-radius: var(--radius-600);
+}
+
+.introScreen-point {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--space-300);
+}
+
+/* The icon's colour lives on this wrapper. iconSlot draws the artwork as a
+   mask that takes currentColor, so it inherits rather than being told. */
+.introScreen-pointIcon {
+  display: flex;
+  flex: none;
+  color: var(--color-accent-brand-bold);
+}
+
+.introScreen-pointText {
+  color: var(--color-text-primary);
+  font-family: var(--greed-body-s-regular-font-family);
+  font-weight: var(--greed-body-s-regular-font-weight);
+  font-size: var(--greed-body-s-regular-font-size);
+  line-height: var(--greed-body-s-regular-line-height);
+  letter-spacing: var(--greed-body-s-regular-letter-spacing);
+}
+
+/* --- thumb zone ----------------------------------------------------------
+   The screen's bottom stack: the primer line over the ActionStack. Space/200
+   is the gap the Figma frame's own `actions` frame binds, and the same one
+   ActionStack sets inside itself, so the primer, the Primary and the row of
+   ways out stay one even rhythm and the thumb zone does not shift as the
+   student moves between screens. */
+
+.introScreen-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+}
+
+/* The line that says what Allow mic is about to do. Centred over a full-width
+   button, and in the same caption step the text screen's helper uses. */
+
+.introScreen-primer {
+  margin: 0;
+  color: var(--color-text-secondary);
+  text-align: center;
+  font-family: var(--greed-caption-m-regular-font-family);
+  font-weight: var(--greed-caption-m-regular-font-weight);
+  font-size: var(--greed-caption-m-regular-font-size);
+  line-height: var(--greed-caption-m-regular-line-height);
+  letter-spacing: var(--greed-caption-m-regular-letter-spacing);
+}

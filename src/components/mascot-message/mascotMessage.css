@@ -56,6 +56,7 @@
   font-weight: var(--greed-caption-m-bold-font-weight);
   font-size: var(--greed-caption-m-bold-font-size);
   line-height: var(--greed-caption-m-bold-line-height);
+  letter-spacing: var(--greed-caption-m-bold-letter-spacing);
 }
 
 .knowieMascotMessage[data-state='ToRevisit'] .knowieMascotMessage-message {
@@ -78,6 +79,7 @@
   font-weight: var(--greed-caption-m-regular-font-weight);
   font-size: var(--greed-caption-m-regular-font-size);
   line-height: var(--greed-caption-m-regular-line-height);
+  letter-spacing: var(--greed-caption-m-regular-letter-spacing);
 }
 
 /* Figma's action frame hugs its child rather than stretching it, which is a

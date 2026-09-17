@@ -88,6 +88,7 @@
   font-weight: var(--greed-body-s-bold-font-weight);
   font-size: var(--greed-body-s-bold-font-size);
   line-height: var(--greed-body-s-bold-line-height);
+  letter-spacing: var(--greed-body-s-bold-letter-spacing);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -105,6 +106,7 @@
   font-weight: var(--greed-caption-m-bold-font-weight);
   font-size: var(--greed-caption-m-bold-font-size);
   line-height: var(--greed-caption-m-bold-line-height);
+  letter-spacing: var(--greed-caption-m-bold-letter-spacing);
   white-space: nowrap;
 }
 

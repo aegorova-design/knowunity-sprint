@@ -11,7 +11,8 @@
  * That is read off the file rather than derived, which is why the widths live
  * in a map here instead of being sliced off one list.
  *
- * No motion, by decision. See the note in the stories.
+ * It shimmers: a band of light travelling each line on a loop. That reverses
+ * the component's original "no motion" decision — see the note in the stories.
  */
 
 import type { HTMLAttributes } from 'react';

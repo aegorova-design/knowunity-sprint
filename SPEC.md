@@ -118,7 +118,7 @@ It carries `href`, which makes the whole row one focusable link. `StepperStep` i
 ### 3. 01 Home, first session — `/`
 
 - **States:** one.
-- **Components:** `MascotFigure size="L" pose="Standby"`, `TextBlock variant="M" titleAs="h1"` reading "Your History exam is in 1 week", and `Button variant="Primary" size="M" CTA="Continue studying" href="/plan"`. Everything else on the screen — the top bar, the tool row, "Ask anything" and the bottom navigation — is placeholder chrome (see Out of scope).
+- **Components:** `VerdictHeader verdict="Neutral" titleAs="h1"` reading "Your History exam is in 1 week", with its caption switched off — Knowie is the size L Standby figure nested inside the header, not a separate `MascotFigure` — and `Button variant="Primary" size="M" CTA="Continue studying" href="/plan"`. Everything else on the screen — the top bar, the tool row, "Ask anything" and the bottom navigation — is placeholder chrome (see Out of scope).
 - **Can do:** Continue studying.
 - **Leads to:** `/plan`.
 
@@ -127,7 +127,7 @@ No Explain out loud entry here. Entry on a first session is the step's caption i
 ### 4. 20 Home, revisit — `/home/revisit`
 
 - **States:** one. Shown only when terms are due.
-- **Components:** same chrome, plus a "1 term to revisit" line, `Button variant="Primary" CTA="Explain out loud"`, and Continue studying demoted to a text link.
+- **Components:** same chrome, plus `VerdictHeader verdict="Neutral" titleAs="h1"` reading "Your History exam is in 5 days" with `caption="1 term to revisit"` — the frame draws that line as the header's own caption rather than as a separate block — `Button variant="Primary" size="M" CTA="Explain out loud" showLeftIcon leftIcon="microphone-01"`, and Continue studying demoted to `Button variant="Tertiary" size="S" showRightIcon rightIcon="arrow-right"`. Both buttons hug and sit centred under the header.
 - **Can do:** Explain out loud; Continue studying.
 - **Leads to:** `/explain/1` (a revisit session); `/plan`.
 
@@ -217,16 +217,16 @@ The ladder has nowhere else to go, but the student taps through to the answer ra
 ### 15. 13 Answer revealed — `/explain/[term]/answer`
 
 - **States:** one.
-- **Components:** `VerdictHeader verdict="Neutral" title="Here's the idea"`, with a caption that credits the attempt only if there was one; `AnswerBlock kind="Answer"`; a "The key ideas" label with `Chips active="False"` ×4; `Button variant="Primary" size="L" CTA="Say it back" showLeftIcon leftIcon="microphone-01"`; `Button variant="Tertiary" size="M" CTA="Next term" showRightIcon rightIcon="arrow-right"`.
+- **Components:** `VerdictHeader verdict="Neutral" title="Here's the idea"`, with a caption that credits the attempt only if there was one; `AnswerBlock kind="Answer"` carrying the term's four key ideas inside it, under "The key ideas" and unticked; `Button variant="Primary" size="L" CTA="Say it back" showLeftIcon leftIcon="microphone-01"`; `Button variant="Tertiary" size="M" CTA="Next term" showRightIcon rightIcon="arrow-right"`.
 - **Can do:** Say it back; Next term.
 - **Leads to:** `/explain/[term]/recording` then `/explain/[term]/answer/said-back`; next term or `/explain/summary`.
 
-The outcome line reads **`revealed`** — the word alone, no number, in the same slot where a pass reads `+15 XP · unaided`. The outcome is Revealed at 0 XP and nothing on this screen can change that.
+The outcome line reads **`+0 XP · revealed`**, in the same shape and the same slot as a pass's `+15 XP · unaided`. The outcome is Revealed at 0 XP and nothing on this screen can change that — the number says so, and the word says why.
 
 ### 16. 13b Answer revealed, said back — `/explain/[term]/answer/said-back`
 
 - **States:** one.
-- **Components:** as 13, with `VerdictHeader title="That's the one to remember"`, `Chips active="True"` ×4, `Next term` promoted to `Button variant="Primary" size="L"`, and the same **`revealed`** outcome line.
+- **Components:** as 13, with `VerdictHeader title="That's the one to remember"`, `Next term` promoted to `Button variant="Primary" size="L"`, and the same **`+0 XP · revealed`** outcome line.
 - **Can do:** Next term.
 - **Leads to:** next term or `/explain/summary`.
 
@@ -244,9 +244,11 @@ The say-back is recorded and never judged. Outcome and XP are unchanged, and the
 ### 18. 06 Idle — `/explain/[term]`
 
 - **States:** one.
-- **Components:** the prompt in `middleContent` beside `MascotFigure size="S" pose="Questioning"`; `RecordButton variant="Idle" label="Start recording"` in `bottomContent` with its label and helper text.
-- **Can do:** start recording; Skip; close.
-- **Leads to:** `/explain/[term]/recording`; next term; `/explain/[term]/leave`.
+- **Components:** the prompt in `middleContent` beside `MascotFigure size="S" pose="Questioning"`; `RecordButton variant="Idle" label="Start recording"` in `bottomContent` with its label and helper text, and a `ButtonPair` under the mic carrying `Button variant="Secondary" size="M" CTA="I don't know" showLeftIcon leftIcon="help-circle"` and `Button variant="Secondary" size="M" CTA="Type instead" showLeftIcon leftIcon="keyboard-01"`.
+- **Can do:** start recording; I don't know; Type instead; Skip; close.
+- **Leads to:** `/explain/[term]/recording`; `/explain/[term]/hint`; `/explain/[term]/type`; next term; `/explain/[term]/leave`.
+
+The mic is the main action, so the two ways out sit beside each other under it rather than competing with it. This is where "I don't know" lives; the text screen carries the other copy.
 
 ### 19. 07 Recording — `/explain/[term]/recording`
 
@@ -283,9 +285,9 @@ No transcript on this screen. Correcting a transcript turns the loop into an edi
 ### 23. 15 + 16 Text fallback — `/explain/[term]/type`
 
 - **States:** two on one route — `TextField state="Empty"` and `state="Filled"`. The field moves between them as the student types.
-- **Components:** the prompt; `TextField label="Your explanation"`; a helper line reading "Typed answers are judged the same way and count the same."; `Button variant="Primary" size="L" CTA="Send answer"`, disabled while empty; `Button variant="Secondary" size="M" CTA="Switch to voice" showLeftIcon leftIcon="microphone-01"`.
-- **Can do:** type; Send answer; Switch to voice; Skip; close.
-- **Leads to:** `/explain/[term]/checking`; `/explain/[term]`; next term; `/explain/[term]/leave`.
+- **Components:** the prompt; `TextField label="Your explanation"`; a helper line reading "Typed answers are judged the same way and count the same."; `Button variant="Primary" size="L" CTA="Send answer"`, disabled while empty; under it a `ButtonPair` of `Button variant="Secondary" size="M" CTA="I don't know" showLeftIcon leftIcon="help-circle"` and `Button variant="Secondary" size="M" CTA="Switch to voice" showLeftIcon leftIcon="microphone-01"`.
+- **Can do:** type; Send answer; I don't know; Switch to voice; Skip; close.
+- **Leads to:** `/explain/[term]/checking`; `/explain/[term]/hint`; `/explain/[term]`; next term; `/explain/[term]/leave`.
 
 Text is **sticky** for the rest of the session once chosen — term 2 opens here, not on Idle, with Switch to voice still offered. For a student whose mic is denied, this button reads **Turn on voice** and leads to `/explain/denied`.
 
@@ -308,7 +310,7 @@ The sheet is currently hand-built. `bottomSheet` is a decided component that doe
 ### 26. 17 Summary — `/explain/summary`
 
 - **States:** one.
-- **Components:** the claim headline — for a scripted run, **"You explained 1 of 3 without help."**; an XP total of **25 XP**; `TermRow` ×3 — `Feudalism` Unaided `+15 XP`, `Serfdom` Revealed with an empty `xp`, `Manorialism` Hinted `+10 XP`; a "Tap any term…" line; `Button variant="Primary" size="L" CTA="Continue"`; `Button variant="Secondary" size="M" CTA="Redo 3 terms"`.
+- **Components:** the claim headline — for a scripted run, **"You explained 1 of 3 without help."**; an XP total of **25 XP**; `TermRow` ×3 — `Feudalism` Unaided `+15 XP`, `Serfdom` Revealed `+0 XP`, `Manorialism` Hinted `+10 XP`; a "Tap any term…" line; `Button variant="Primary" size="L" CTA="Continue"`; `Button variant="Secondary" size="M" CTA="Redo 3 terms"`.
 - **Can do:** tap a row; Continue; Redo 3 terms.
 - **Leads to:** `/explain/summary/[term]`; `/plan/to-revisit` or `/plan/mastered`; `/explain/1` for a fresh run.
 
@@ -317,7 +319,7 @@ The sheet is currently hand-built. `bottomSheet` is a decided component that doe
 ### 27. 18 Summary, term tapped — `/explain/summary/[term]`
 
 - **States:** two shapes. A **recorded** term shows `TakePlayer surface="Sheet"` with `AnswerBlock kind="Said"` and `AnswerBlock kind="Answer"`. A term with **no take** — skipped, or typed — shows the answer and its key ideas alone, with no player.
-- **Components:** the summary behind a sheet; `StatusTag` in the sheet header; the blocks above; `Chips active="True"` for the key ideas.
+- **Components:** the summary behind a sheet; a header carrying the outcome's badge, the term and the outcome as a word in its own colour — **not** `StatusTag`, which the updated frame replaced and whose own description no longer claims this place; the blocks above, with the key ideas inside the `AnswerBlock kind="Answer"`; `Button variant="Primary" size="L" CTA="Done"` back to the summary.
 - **Can do:** play the take where there is one; close the sheet.
 - **Leads to:** back to `/explain/summary`.
 
@@ -378,7 +380,7 @@ Identical every run, which is what makes a demo repeatable.
 
 **Mode is not recorded.** A typed answer that passes records as Unaided at the full 15 XP, and nothing on the row or in the sheet says it was typed. Text is an equal path.
 
-**XP.** Unaided 15, correct after one hint 10, correct after two hints 5, revealed 0, skipped 0. A scripted session therefore collects 25 XP.
+**XP.** Unaided 15, correct after one hint 10, correct after two hints 5, revealed 0, skipped 0. A scripted session therefore collects 25 XP. **Every outcome prints its number, including the zeroes** — a revealed or skipped term reads `+0 XP`, on its summary row and in its outcome line, so the three rows visibly add up to the total above them. The word beside the number is what says why it is what it is.
 
 ---
 
@@ -410,7 +412,7 @@ Start at `/` and never type a URL again.
 4. **Term 1.** Hold record for at least 3 seconds. The timer counts real seconds. Stop → Review shows that same duration. Play it back; it runs for that long. **Send answer** → 2.5s wait → **You got it**, chips ticked, `+15 XP · unaided`.
 5. **Term 2.** Record and send. **The wait runs about 7 seconds**, and at 5s the screen says "Still thinking" and offers Cancel and try again. Let it finish → **Not quite**, hint 1 of 2, with what Knowie heard. Skip is live here. Try again → hint 2 → try again → **Not quite, last attempt** → **Show me the answer** → the reveal, chips not ticked, and the outcome line reading `revealed`. Tap **Say it back**, record, and land back on the reveal with the chips now ticked and Next term promoted to Primary.
 6. **Term 3.** Record and send → hint 1 → try again → **Got it**, caption "Took a nudge, and you got there.", `+10 XP · hinted`, with **Say it back** offered as a secondary. The forward button reads **See how you did**, not Next term.
-7. `/explain/summary` — **"You explained 1 of 3 without help."**, **25 XP**, three rows: `Feudalism` Unaided `+15 XP`, `Serfdom` Revealed with no number, `Manorialism` Hinted `+10 XP`. Tap each row: a recorded term shows a player, a term with no take shows the answer alone.
+7. `/explain/summary` — **"You explained 1 of 3 without help."**, **25 XP**, three rows: `Feudalism` Unaided `+15 XP`, `Serfdom` Revealed `+0 XP`, `Manorialism` Hinted `+10 XP`. Tap each row: a recorded term shows a player, a term with no take shows the answer alone.
 8. **Continue** → `/plan/to-revisit`. The section header reads its unaided count, and Knowie's scheduling line is **visible**, naming when the terms come back.
 
 ### 3. Every failure path is reachable by clicking
@@ -421,6 +423,7 @@ Start at `/` and never type a URL again.
 - **Leaving:** tap the close icon mid-session. The confirm sheet appears. **Keep going** returns to the same screen. **Leave** goes to the plan.
 - **Resuming:** leave mid-session, then tap the Voice step again. `/explain/resume` names which terms are done. **Continue** returns to the term you left; **Start over** clears it.
 - **Impatience:** tap the screen repeatedly during a wait. Nothing breaks and nothing double-sends, but Knowie reacts.
+- **Saying you don't know:** tap **I don't know** on `06 Idle`, and again on the text screen. Both land on `/explain/[term]/hint` — one hint, headline in the neutral colour — and **Show me the answer** resolves the term as Revealed at 0 XP, with no take quoted back and no attempt credited. The row of ways out reads in the mode the student came from: from Idle it offers **Have a go** at the mic and **Type instead**; from the text screen it offers **Have a go** at the field and **Switch to voice**.
 
 ### 4. Rules that must hold on every screen
 
@@ -444,6 +447,4 @@ This is a deliberate decision, not an oversight. Availability and full credit ar
 
 ## Open
 
-One thing is still unplaced.
-
-1. **Which screen carries the "I don't know" control.** What it *does* is settled — one hint, then the reveal. Where the student taps it is not: `06 Idle` already has `RecordButton` plus its label and helper in `bottomContent`, and adding a low-emphasis action there is a change to the locked Idle stack. It also needs a home on the text screen.
+Nothing. The last open question — which screen carries the "I don't know" control — is settled: it sits in the `ButtonPair` on `06 Idle` and again on the text screen, in both cases as the left half of the row of ways out, so the same control is in the same place whichever way the student is answering. What it does was already settled and has not changed: one hint, then the reveal, recorded as Revealed at 0 XP.

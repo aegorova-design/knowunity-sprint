@@ -9,13 +9,28 @@
 
 /* --- subject -------------------------------------------------------------
    The icon sits over the subject, matching the Figma plan header: a vertical
-   stack at Space/200 with the icon at Icon/400. */
+   stack at Space/200 with the icon at Icon/400, centred on the column the way
+   the frame's `plan header` sets its cross axis. */
 
 .planScreen-header {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--space-200);
+}
+
+/* Brand, not text/primary. `iconSlot` sets `color: var(--color-text-primary)`
+   on its own element, and its docs say "a parent can recolour the slot in
+   place" — but a declaration on the element beats anything it would inherit,
+   so recolouring it means naming the slot rather than its wrapper. Scoped to
+   this screen's header, and it changes nothing else about the component. */
+
+.planScreen-headerIcon {
+  display: flex;
+}
+
+.planScreen-headerIcon .knowieIconSlot {
+  color: var(--color-accent-brand-bold);
 }
 
 .planScreen-subject {
@@ -23,6 +38,7 @@
   font-size: var(--greed-headline-m-font-size);
   font-weight: var(--greed-headline-m-font-weight);
   line-height: var(--greed-headline-m-line-height);
+  letter-spacing: var(--greed-headline-m-letter-spacing);
   color: var(--color-text-primary);
 }
 
@@ -43,6 +59,7 @@
   font-size: var(--greed-body-s-regular-font-size);
   font-weight: var(--greed-body-s-regular-font-weight);
   line-height: var(--greed-body-s-regular-line-height);
+  letter-spacing: var(--greed-body-s-regular-letter-spacing);
   color: var(--color-text-secondary);
 }
 
@@ -59,8 +76,13 @@
   gap: var(--space-400);
 }
 
+/* Space/150, not the Space/400 that separates everything else on this screen:
+   the frame's `stepper` frame sets its own 6px gap, so the four steps read as
+   one run rather than as four things that happen to be near each other. It is
+   also what keeps both sections on the screen without scrolling. */
+
 .planScreen-stepper {
   display: flex;
   flex-direction: column;
-  gap: var(--space-400);
+  gap: var(--space-150);
 }

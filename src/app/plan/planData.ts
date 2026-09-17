@@ -4,6 +4,8 @@
  * "02 Plan, nothing started" and "03 Plan, section 1 in progress".
  */
 
+import type { MascotMessageState } from '@/components/mascot-message/MascotMessage';
+import type { SectionHeaderState } from '@/components/section-header/SectionHeader';
 import type { StepperStepState } from '@/components/stepper-step/StepperStep';
 
 export type PlanStep = {
@@ -18,6 +20,12 @@ export type PlanSection = {
   /** The voice capstone. Last by position, and never Locked — it is available
    *  from the moment the section exists. See sprint-context.md. */
   voice: PlanStep;
+  /**
+   * What the last capstone session left behind, on the two screens that have
+   * one. Left off, the header is Default with no status and Knowie says
+   * nothing — which is `/plan` and `/plan/in-progress`.
+   */
+  result?: PlanResult;
 };
 
 export const SUBJECT = 'World History';
@@ -25,9 +33,19 @@ export const SUBJECT = 'World History';
 /** The voice step's caption, identical on every section. */
 const VOICE_CAPTION = 'Explain 3 terms from this section out loud, ~2 min';
 
-const learning = (label: string, state: StepperStepState): PlanStep => ({
+/**
+ * A learning step. The caption is the frame's own text, not something derived
+ * from the state: `03` leaves its Completed step reading "Study and quiz"
+ * while `19` and `21` change theirs to "Done", so there is no rule to derive
+ * it from. Pass the frame's words when they differ from the default.
+ */
+const learning = (
+  label: string,
+  state: StepperStepState,
+  caption = 'Study and quiz',
+): PlanStep => ({
   label,
-  caption: 'Study and quiz',
+  caption,
   state,
 });
 
@@ -65,9 +83,103 @@ export const PLAN_IN_PROGRESS: PlanSection[] = [
     ...PLAN_NOTHING_STARTED[0],
     learning: [
       learning('What feudalism was', 'Completed'),
-      learning('Lords, vassals and fiefs', 'InProgress'),
-      learning('Life on the manor', 'InProgress'),
+      learning('Lords, vassals and fiefs', 'InProgress', 'Study and quiz, in progress'),
+      learning('Life on the manor', 'InProgress', 'Study and quiz, in progress'),
     ],
   },
+  PLAN_NOTHING_STARTED[1],
+];
+
+/**
+ * A capstone result on a section — the read `sectionHeader` reports and the
+ * line Knowie says about it.
+ *
+ * Only the two result screens carry one. `/plan` and `/plan/in-progress` leave
+ * it off, because no session has happened yet and `sectionHeader`'s Default
+ * variant has no status layer at all.
+ */
+export type PlanResult = {
+  /** The header's read. Drives its status colour and icon together. */
+  state: SectionHeaderState;
+  /** The unaided count, as the frames word it: "2 of 3 on your own". */
+  status: string;
+  /** Knowie's read on the same session. */
+  message: {
+    state: MascotMessageState;
+    message: string;
+    /** The scheduling line — when Knowie brings these terms back. */
+    helper: string;
+    /** The low-emphasis way to start the recall loop now rather than then. */
+    action: string;
+  };
+};
+
+/**
+ * A completed section's steps. Every step reads Done on `19` and `21` —
+ * including the learning ones, which `03` leaves reading "Study and quiz".
+ * The frames are the source for both, which is why `learning()` takes the
+ * caption rather than deriving it from the state.
+ */
+const DONE_SECTION = (result: PlanResult): PlanSection => ({
+  ...PLAN_NOTHING_STARTED[0],
+  result,
+  learning: [
+    learning('What feudalism was', 'Completed', 'Done'),
+    learning('Lords, vassals and fiefs', 'Completed', 'Done'),
+    learning('Life on the manor', 'Completed', 'Done'),
+  ],
+  voice: { ...voice(), state: 'Completed', caption: 'Done' },
+});
+
+/**
+ * 19 Plan, 2 of 3 unaided. Structure off the Mockups v2 frame "19 Plan, 2 of 3
+ * unaided" (13662:14553); the bubble's two lines are the design owner's,
+ * replacing the frame's.
+ *
+ * They swap what the two lines carry: the message now names *which* terms
+ * needed help and how much — a hint against a reveal — and the helper carries
+ * the advice rather than a date. The frame's "I will bring these three back on
+ * Thursday" was `mascotMessage`'s own default left unchanged, and it named a
+ * count the header contradicts.
+ *
+ * `showHelper` is forced on where this is drawn: SPEC.md screen 5 — "The
+ * scheduling line is the calibration mechanism, so it cannot be hidden on the
+ * screen that has something to schedule." The frame has it off.
+ */
+export const PLAN_TO_REVISIT: PlanSection[] = [
+  DONE_SECTION({
+    state: 'ToRevisit',
+    status: '1 of 3 on your own',
+    message: {
+      state: 'ToRevisit',
+      message: 'Manorialism needed a hint. Serfdom was revealed.',
+      helper: 'Try them on your own in a couple of days.',
+      action: 'Do it now anyway',
+    },
+  }),
+  PLAN_NOTHING_STARTED[1],
+];
+
+/**
+ * 21 Plan, section mastered. Structure off the Mockups v2 frame "21 Plan,
+ * section mastered" (13662:14554); the bubble's two lines are the design
+ * owner's, replacing the frame's.
+ *
+ * The frame's message ended "Try it on your own in a couple of days", which is
+ * `19`'s advice on a section that has just been done on its own; that sentence
+ * is gone. The helper keeps a date, and now says *all three* come back rather
+ * than "it".
+ */
+export const PLAN_MASTERED: PlanSection[] = [
+  DONE_SECTION({
+    state: 'Mastered',
+    status: '3 of 3 on your own',
+    message: {
+      state: 'Mastered',
+      message: 'You got all 3 terms right',
+      helper: "I'll bring them all back Thursday, 2 days before your exam.",
+      action: 'Practice sooner',
+    },
+  }),
   PLAN_NOTHING_STARTED[1],
 ];

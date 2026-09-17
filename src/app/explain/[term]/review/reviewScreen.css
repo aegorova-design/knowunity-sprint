@@ -1,0 +1,20 @@
+/* 08 Review's own layout, read off the Mockups v2 frame "08 Review"
+   (13662:14535). Every gap below is the Space variable the frame binds, not a
+   guess.
+
+   middleContent carries the prompt and nothing else, so it needs no rule here:
+   the scaffold's own gap and padding are already what the frame sets. The
+   player is not under the question — it is in the thumb zone above the
+   buttons, where the thumb already is after stopping the take. */
+
+/* Figma "bottom stack" — the player over the action group at Space/400. The
+   player is a different kind of thing from the buttons under it, so the step
+   between them is wider than the Space/200 the actions keep among themselves.
+
+   No padding of its own: scaffold.css owns the thumb zone's inset. */
+
+.reviewScreen-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-400);
+}

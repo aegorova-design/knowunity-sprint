@@ -5,7 +5,17 @@
    24 bars on a Space/150 gap, each Space/100 wide and pill-shaped. The row is
    236 wide in the file but set to FILL, so it fills its container here. */
 
+/* The one value in this file that is not a token. Depth is how far a bar falls
+   at the trough of the listen loop, as a fraction of its resting height. At
+   0.55 the row still reads as levels at its lowest rather than collapsing to a
+   line, and the crest is the resting figure itself — which is why the frozen
+   state needs no separate design. It is named here rather than tokenised: a
+   unitless scale factor belongs to no group the token file has, and inventing
+   one for a single value would be worse than this. */
+
 .knowieWaveform {
+  --waveform-listen-depth: 0.55;
+
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
@@ -46,6 +56,43 @@
    this feature may use accent.brand.bold to mean live audio. */
 .knowieWaveform[data-state='Live'] .knowieWaveform-bar {
   background-color: var(--color-accent-brand-bold);
+
+  /* scaleY rather than height: the row redraws every frame while recording, and
+     a transform stays on the compositor where a height change would lay out 24
+     elements each time. transform-origin is the centre, matching the row's own
+     vertical centring, so a bar shrinks from both ends rather than sinking. */
+  transform-origin: center;
+  animation: knowieWaveformListen var(--motion-duration-listen)
+    var(--motion-easing-listen) infinite;
+
+  /* Negative, so every bar is already mid-figure on the first frame instead of
+     the row assembling itself over the first loop. `--i` is the bar's index,
+     set by the component. Against the 1200ms loop the 120ms step puts about
+     2.4 crests on the row, which reads as travelling waves rather than one
+     swell — a decision by the design owner, not a fallout of the maths. */
+  animation-delay: calc(var(--i) * var(--motion-duration-listen-stagger) * -1);
+}
+
+/* The figure: down to the depth, up to the resting height, back. Symmetric, so
+   neither edge reads as a beat. */
+@keyframes knowieWaveformListen {
+  0%,
+  100% {
+    transform: scaleY(var(--waveform-listen-depth));
+  }
+
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+/* The description's own rule: "the bars freeze, the timer and the label keep
+   moving". The frozen frame is the resting figure — the same thing every other
+   state draws — so this branch removes the motion and adds nothing. */
+@media (prefers-reduced-motion: reduce) {
+  .knowieWaveform[data-state='Live'] .knowieWaveform-bar {
+    animation: none;
+  }
 }
 
 /* Idle — a take at rest. Progress fills the bars left to right as it plays, the
@@ -54,8 +101,36 @@
   background-color: var(--color-accent-brand-bold);
 }
 
+/* The flip from unplayed to played. The fill itself is not motion — it reports
+   where the student is, the way progressIndicator does — but at 24 steps the
+   bars turn over often enough that a hard cut reads as a stutter, so each bar
+   lights rather than snaps.
+
+   Timing is motion.duration.pressOut on motion.easing.press, borrowed rather
+   than duplicated on the same grounds skeleton.css gives for borrowing
+   motion.easing.listen: this is one element settling into a new state under a
+   finger, which is exactly what the press curve already describes, and a
+   second near-identical pair under a new name would be tokens earning nothing.
+   Signed off as a reuse, and logged in component-gaps.md.
+
+   Idle only. Live's bars never change colour, and scoping it here keeps the
+   transition off the 24 elements that are already animating every frame. */
+.knowieWaveform[data-state='Idle'] .knowieWaveform-bar {
+  transition: background-color var(--motion-duration-press-out) var(--motion-easing-press);
+}
+
 /* Silent — nothing was captured, so every bar flattens to Space/100 and the row
    reads as a dotted line rather than as levels. */
 .knowieWaveform[data-state='Silent'] .knowieWaveform-bar {
   height: var(--space-100);
+}
+
+/* The playback fill keeps advancing under reduced motion: it is position, and
+   SPEC.md's motion rule keeps the progress indicator and the timers running
+   while it stops the loops. Only the flip goes, so a bar changes colour on the
+   frame it is reached. */
+@media (prefers-reduced-motion: reduce) {
+  .knowieWaveform[data-state='Idle'] .knowieWaveform-bar {
+    transition: none;
+  }
 }
