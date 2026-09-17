@@ -19,6 +19,10 @@
  * screen reader reaches four covered ideas as one thing instead of four loose
  * controls — which matters more here than usual, because `chips` renders a
  * button whatever it is handed. See `component-gaps.md`.
+ *
+ * The chips are recoloured to interactive/secondary in coveredIdeas.css,
+ * because that is what both frames override them to. It is the same override
+ * `answerBlock`'s Answer variant carries, and the same gap.
  */
 
 import { Chips, type ChipsActive } from '@/components/chips/Chips';
@@ -42,6 +46,13 @@ export function CoveredIdeas({
    * what the student covered; `False` on `13 Answer revealed`, where they are
    * the four ideas the answer contains and the student has not said any of
    * them yet. `13b` ticks them, once they have.
+   *
+   * **It no longer shows.** Both frames override the chip's fill to
+   * interactive/secondary whichever way they set it — `10` sets False, `10b`
+   * sets True — so the two states paint the same and only `aria-pressed`
+   * still tells them apart. It stays because that semantic is still worth
+   * saying, and because `13` and `13b` moved into `answerBlock` rather than
+   * being deleted. See coveredIdeas.css.
    */
   active?: ChipsActive;
 }) {

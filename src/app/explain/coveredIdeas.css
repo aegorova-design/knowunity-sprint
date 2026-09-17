@@ -40,3 +40,22 @@
   padding: 0;
   list-style: none;
 }
+
+/* The chips are not the colour their variant draws. Both frames override every
+   one of them to interactive/secondary with an interactive/onSecondary label,
+   the same override `answerBlock`'s Answer variant carries — see
+   answerBlock.css, and component-gaps.md for the `chips` variant this wants
+   instead of an override in two places.
+
+   Both states are listed because the two frames disagree about which one these
+   are: `10 Got it` sets active=False and `10b Got it, after a hint` sets
+   active=True, and then both paint the result identically. So the paint is the
+   same here whichever way `active` falls, and the tick stops being a colour.
+   That is fine on these two screens — "You covered" above the group is what
+   says the student covered them, so colour was never carrying it alone — but
+   it does mean `active` no longer shows on screen. See the note on the prop. */
+.coveredIdeas-chips .knowieChips[data-color='Primary'][data-active='False'],
+.coveredIdeas-chips .knowieChips[data-color='Primary'][data-active='True'] {
+  background-color: var(--color-interactive-secondary);
+  color: var(--color-interactive-on-secondary);
+}

@@ -25,7 +25,8 @@
  * four instances to interactive/secondary with interactive/onSecondary labels,
  * in place of background/surface and text/primary. The recolour lives in
  * answerBlock.css, scoped to this block, because `chips` has no variant that
- * offers it — see component-gaps.md.
+ * offers it. `CoveredIdeas` carries the same override for the two pass
+ * screens — see component-gaps.md.
  */
 
 import type { HTMLAttributes } from 'react';
