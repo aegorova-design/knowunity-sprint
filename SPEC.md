@@ -29,7 +29,7 @@ Easiest first. Each tier depends on the one above it only for shared session sta
 | 2 | 03 Plan, section 1 in progress | `/plan/in-progress` | `src/app/plan/in-progress/page.tsx` |
 | 3 | 01 Home, first session | `/` | `src/app/page.tsx` |
 | 4 | 20 Home, revisit | `/home/revisit` | `src/app/home/revisit/page.tsx` |
-| 5 | 19 Plan, 2 of 3 unaided | `/plan/to-revisit` | `src/app/plan/to-revisit/page.tsx` |
+| 5 | 19 Plan, 1 of 3 unaided | `/plan/to-revisit` | `src/app/plan/to-revisit/page.tsx` |
 | 6 | 21 Plan, section mastered | `/plan/mastered` | `src/app/plan/mastered/page.tsx` |
 
 ### Tier 2 — first run and permission
@@ -136,10 +136,10 @@ No Explain out loud entry here. Entry on a first session is the step's caption i
 
 **Explain out loud is stubbed.** It goes straight to `20b Revisit complete`, skipping the revisit session at `/explain/1` that earns it. A second pass of the recall loop is not built this sprint, so the stakeholder walkthrough jumps the middle.
 
-### 5. 19 Plan, 2 of 3 unaided — `/plan/to-revisit`
+### 5. 19 Plan, 1 of 3 unaided — `/plan/to-revisit`
 
 - **States:** one.
-- **Components:** `SectionHeader state="ToRevisit" status="2 of 3 on your own"`; `StepperStep type="Voice" state="Completed"`; `MascotMessage state="ToRevisit"` with `showHelper={true}` carrying the scheduling line, and a `Button variant="Tertiary" size="XS"` in `actionSlot`.
+- **Components:** `SectionHeader state="ToRevisit" status="1 of 3 on your own"`; `StepperStep type="Voice" state="Completed"`; `MascotMessage state="ToRevisit"` with `showHelper={true}` carrying the scheduling line, and a `Button variant="Tertiary" size="XS"` in `actionSlot`.
 - **Can do:** tap the Voice step to redo; tap **Do it now anyway** in `actionSlot`.
 - **Leads to:** the Voice step → `/explain/1`. **Do it now anyway → `/explain/revisit-done`, stubbed**: it means "start the recall loop now instead of waiting for the scheduled date", and `20b` is where that lands once the term comes back unaided — but the second pass of the loop is not built, so the walkthrough jumps the middle.
 - **Home in the bottom bar goes to `/home/revisit`, not `/`.** The first session is done and terms are pending, so the home the student returns to is the one that says a term is due. This is the only route into `20 Home, revisit`, and so the only way `21 Plan, section mastered` is reachable by clicking.
@@ -316,8 +316,8 @@ The sheet is currently hand-built. `bottomSheet` is a decided component that doe
 ### 26. 17 Summary — `/explain/summary`
 
 - **States:** one.
-- **Components:** the claim headline — for a scripted run, **"You explained 1 of 3 without help."**; an XP total of **25 XP**; `TermRow` ×3 — `Feudalism` Unaided `+15 XP`, `Serfdom` Revealed `+0 XP`, `Manorialism` Hinted `+10 XP`; a "Tap any term…" line; `Button variant="Primary" size="L" CTA="Continue"`; `Button variant="Secondary" size="M" CTA="Redo 3 terms"`.
-- **Can do:** tap a row; Continue; Redo 3 terms.
+- **Components:** the claim headline — for a scripted run, **"You explained 1 of 3 without help."**; an XP total of **25 XP**; `TermRow` ×3 — `Feudalism` Unaided `+15 XP`, `Serfdom` Revealed `+0 XP`, `Manorialism` Hinted `+10 XP`; a "Tap any term…" line; `Button variant="Primary" size="L" CTA="Continue"`; `Button variant="Secondary" size="M" CTA="Redo 2 terms"`.
+- **Can do:** tap a row; Continue; Redo 2 terms.
 - **Leads to:** `/explain/summary/[term]`; `/plan/to-revisit` or `/plan/mastered`; `/explain/1` for a fresh run.
 
 `TermRow variant` stays the four values. A Hinted term reads `+10 XP` or `+5 XP` and the XP value is what tells the two apart — there is no fifth outcome. Redo awards full XP.

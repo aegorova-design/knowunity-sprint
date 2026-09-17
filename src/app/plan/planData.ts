@@ -103,7 +103,7 @@ export const PLAN_IN_PROGRESS: PlanSection[] = [
 export type PlanResult = {
   /** The header's read. Drives its status colour and icon together. */
   state: SectionHeaderState;
-  /** The unaided count, as the frames word it: "2 of 3 on your own". */
+  /** The unaided count, as the frames word it: "1 of 3 on your own". */
   status: string;
   /** Knowie's read on the same session. */
   message: {
@@ -135,7 +135,7 @@ const DONE_SECTION = (result: PlanResult): PlanSection => ({
 });
 
 /**
- * 19 Plan, 2 of 3 unaided. Structure off the Mockups v2 frame "19 Plan, 2 of 3
+ * 19 Plan, 1 of 3 unaided. Structure off the Mockups v2 frame "19 Plan, 1 of 3
  * unaided" (13662:14553); the bubble's two lines are the design owner's,
  * replacing the frame's.
  *

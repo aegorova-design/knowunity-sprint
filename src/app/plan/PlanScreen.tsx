@@ -53,7 +53,7 @@ export type PlanScreenProps = {
   learningHref?: string;
   /**
    * Where the home tab in the bottom bar goes. `/` everywhere but `19 Plan,
-   * 2 of 3 unaided`, which sends it to `20 Home, revisit`: the first session
+   * 1 of 3 unaided`, which sends it to `20 Home, revisit`: the first session
    * is behind the student and terms are pending, so the home they return to
    * is the one that says so. It is the only route into `/home/revisit`, and
    * so the only way the flow reaches `21` at all.

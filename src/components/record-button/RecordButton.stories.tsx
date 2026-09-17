@@ -17,10 +17,10 @@ The component's description in Figma, verbatim:
 
 ### The two variants
 
-| variant | fill | icon | icon colour | press overlay |
-| --- | --- | --- | --- | --- |
-| Idle | interactive.primary | microphone-01 | interactive.onPrimary | interactive.**pressedInverse** |
-| Recording | accent.brand.bold | square (stop) | accent.brand.onBold | interactive.**pressed** |
+| variant | fill | icon | icon slot | icon colour | press overlay |
+| --- | --- | --- | --- | --- | --- |
+| Idle | interactive.primary | microphone-01 | Size 400 | interactive.onPrimary | interactive.**pressedInverse** |
+| Recording | accent.brand.bold | square (stop) | Size 300 | accent.brand.onBold | interactive.**pressed** |
 
 A fixed 96 circle, both axes bound to Space/2400 — unlike most fixed-shape
 controls in this system, nothing here had to be derived from padding.
@@ -47,8 +47,9 @@ cannot be disabled mid-take. The props encode it as a union, so
 
 ### Built from
 
-- **iconSlot** at Size 400, which is how Figma nests it and what
-  design-system.md requires: every icon goes through iconSlot, never raw.
+- **iconSlot**, which is how Figma nests it and what design-system.md requires:
+  every icon goes through iconSlot, never raw. Size 400 for the mic, Size 300 for
+  the stop — see below.
 
 ### The stop icon
 
@@ -65,10 +66,12 @@ which blocks anything:
   it takes accent.brand.onBold from the slot like every other icon. It would
   matter if the file were ever used as an \`<img>\`.
 - **It is full-bleed in its 24 box**, where Figma's \`square\` sits inset — a
-  20x20 vector in a 24 grid. So the stop reads about a fifth larger here than in
-  Figma: 32 across the slot rather than 26.7. Matching Figma exactly would mean
-  insetting the glyph to 83.3% of the slot, which is not a token value, so the
-  file is used as drawn. If the size is wrong, the fix belongs in the SVG.
+  20x20 vector in a 24 grid. At Size 400 that drew the stop about a fifth larger
+  than the file: 32 across the slot rather than 26.7. Insetting the glyph would
+  mean 83.3% of the slot, which is not a token value, so the slot steps down
+  instead — **Recording carries iconSlot at Size 300**, 24 across. The button is
+  untouched: still the same 96 circle in the same place, so the thumb does not
+  move between start and stop.
 
 While you are in there: design-system.md describes this component as "built from
 iconSlot carrying microphone-01", which reads as though the mic is used
@@ -99,8 +102,9 @@ type Story = StoryObj<typeof meta>;
 
 /** The fill and glyph each variant carries. */
 const SPEC = {
-  Idle: { icon: 'microphone-01.svg', label: 'Start recording' },
-  Recording: { icon: 'stop.svg', label: 'Stop recording' },
+  Idle: { icon: 'microphone-01.svg', label: 'Start recording', slot: '400', box: 32 },
+  // Size 300, because stop.svg is full-bleed where Figma's `square` sits inset.
+  Recording: { icon: 'stop.svg', label: 'Stop recording', slot: '300', box: 24 },
 } as const;
 
 /**
@@ -134,9 +138,9 @@ function variantStory(
       await expect(Math.round(button.getBoundingClientRect().width)).toBe(96);
       await expect(Math.round(button.getBoundingClientRect().height)).toBe(96);
       await expect(getComputedStyle(button).borderRadius).toBe('9999px');
-      // iconSlot at Size 400 owns the icon box.
-      await expect(slot).toHaveAttribute('data-size', '400');
-      await expect(Math.round(slot.getBoundingClientRect().width)).toBe(32);
+      // iconSlot owns the icon box: 400 for the mic, 300 for the stop.
+      await expect(slot).toHaveAttribute('data-size', spec.slot);
+      await expect(Math.round(slot.getBoundingClientRect().width)).toBe(spec.box);
       // The variant picks the artwork, the way the Figma variant picks the swap.
       await expect(getComputedStyle(glyph).maskImage).toContain(spec.icon);
 

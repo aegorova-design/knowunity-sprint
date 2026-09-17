@@ -1,8 +1,8 @@
 /**
- * 19 Plan, 2 of 3 unaided — `/plan/to-revisit`. SPEC.md screen 5. One state,
+ * 19 Plan, 1 of 3 unaided — `/plan/to-revisit`. SPEC.md screen 5. One state,
  * where a session that needed help leaves the section.
  *
- * Matches the Mockups v2 frame "19 Plan, 2 of 3 unaided" (13662:14553).
+ * Matches the Mockups v2 frame "19 Plan, 1 of 3 unaided" (13662:14553).
  *
  * **This is the screen the feature exists for.** The section is left carrying
  * a count of terms explained unaided, and Knowie names the date the ones that

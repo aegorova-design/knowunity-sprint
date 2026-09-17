@@ -5,7 +5,10 @@
  * Yummy__Knowie Design Sprint. Prop names and options match the Figma variant
  * axes exactly: variant and state.
  *
- * The icon goes through iconSlot at Size 400, the way Figma nests it.
+ * The icon goes through iconSlot, the way Figma nests it: Size 400 for the mic,
+ * Size 300 for the stop. Figma nests both at 400, but its `square` sits inset in
+ * its 24 box while `stop.svg` is full-bleed, so at 400 the stop drew about a
+ * fifth larger than the file. Size 300 is the token step that brings it back.
  */
 
 import type { ButtonHTMLAttributes } from 'react';
@@ -65,7 +68,7 @@ export function RecordButton({
       {/* No className passed to iconSlot: it spreads its rest props after its
           own className, so one given here would replace knowieIconSlot rather
           than join it. The slot is styled by descendant selector instead. */}
-      <IconSlot size="400">
+      <IconSlot size={variant === 'Recording' ? '300' : '400'}>
         {/* The variant picks the artwork in CSS, the way the Figma variant picks
             which icon the slot is swapped to. */}
         <span className="knowieRecordButton-glyph" aria-hidden="true" />
