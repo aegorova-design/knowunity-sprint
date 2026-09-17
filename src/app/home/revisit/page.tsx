@@ -48,15 +48,21 @@ export default function HomeRevisitPage() {
             />
 
             <div className="home-actions">
-              {/* A revisit session, not the first run: SPEC.md sends this
-                  straight to the first term rather than through the primer. */}
+              {/* **Stubbed for the stakeholder walkthrough.** It goes
+                  straight to `20b Revisit complete` and skips the session
+                  that earns it. The real path runs the recall loop first —
+                  a revisit session over the term Knowie brought back, at
+                  `/explain/1`, with no primer because this is not a first
+                  run — and `20b` is where that lands. A second pass of the
+                  loop is not built this sprint, so the click-through jumps
+                  the middle. */}
               <Button
                 variant="Primary"
                 size="M"
                 CTA="Explain out loud"
                 showLeftIcon
                 leftIcon="microphone-01"
-                href="/explain/1"
+                href="/explain/revisit-done"
               />
               <Button
                 variant="Tertiary"

@@ -20,6 +20,15 @@
  * The close icon goes to the same place, as the primer's and `14`'s do to
  * theirs. No Skip and no progress bar: the revisit is over, and like the
  * primer and `14` this sits outside the term loop.
+ *
+ * **Two entries, and the copy has to read from both.** `19`'s "Do it now
+ * anyway" arrives with no time passed — the student pulled the term forward
+ * rather than waiting — and `20 Home, revisit` arrives five days later, with
+ * the term coming back on the date Knowie named. So neither line may lean on
+ * the gap: the title no longer says the term "came back on its own", which is
+ * only true of the scheduled return, and the caption no longer names a day.
+ * What is true from both is that the term needed showing last time and was
+ * explained unaided this time, with one check still to come.
  */
 
 import { AppBar } from '@/components/app-bar/AppBar';
@@ -58,8 +67,8 @@ export default function RevisitDonePage() {
              celebrating. The title beside her carries it, so the pose is
              never the only thing saying so. */
           pose="Excited"
-          title={`${REVISITED.name} came back on its own`}
-          caption="You explained it unaided this time. One more check on Tuesday, before the exam."
+          title={`You got ${REVISITED.name} on your own`}
+          caption="It needed showing last time, and you explained it unaided this time. One more check before your exam."
         />
       }
       bottomContent={

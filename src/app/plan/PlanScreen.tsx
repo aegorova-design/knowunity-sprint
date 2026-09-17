@@ -51,9 +51,32 @@ export type PlanScreenProps = {
    * nowhere further to go from them.
    */
   learningHref?: string;
+  /**
+   * Where the home tab in the bottom bar goes. `/` everywhere but `19 Plan,
+   * 2 of 3 unaided`, which sends it to `20 Home, revisit`: the first session
+   * is behind the student and terms are pending, so the home they return to
+   * is the one that says so. It is the only route into `/home/revisit`, and
+   * so the only way the flow reaches `21` at all.
+   */
+  homeHref?: string;
+  /**
+   * Where Knowie's action on a result section goes, when it is not the same
+   * place the Voice step goes.
+   *
+   * Defaults to `voiceHref`, which is what "Practice sooner" on `21` wants:
+   * start the recall loop now rather than on the date Knowie named. `19`
+   * overrides it — see the note there.
+   */
+  resultActionHref?: string;
 };
 
-export function PlanScreen({ sections, voiceHref, learningHref }: PlanScreenProps) {
+export function PlanScreen({
+  sections,
+  voiceHref,
+  learningHref,
+  homeHref = '/',
+  resultActionHref,
+}: PlanScreenProps) {
   return (
     <Scaffold
       showTopNavSlot={false}
@@ -136,7 +159,7 @@ export function PlanScreen({ sections, voiceHref, learningHref }: PlanScreenProp
                          icon container without naming what goes in it. */
                       showLeftIcon
                       leftIcon="microphone-01"
-                      href={voiceHref}
+                      href={resultActionHref ?? voiceHref}
                     />
                   }
                 />
@@ -145,7 +168,9 @@ export function PlanScreen({ sections, voiceHref, learningHref }: PlanScreenProp
           ))}
         </div>
       }
-      bottomContent={<BottomNav Active="study-plan" homeChatHref="/" studyPlanHref="/plan" />}
+      bottomContent={
+        <BottomNav Active="study-plan" homeChatHref={homeHref} studyPlanHref="/plan" />
+      }
     />
   );
 }

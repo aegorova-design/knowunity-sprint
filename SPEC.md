@@ -132,14 +132,17 @@ No Explain out loud entry here. Entry on a first session is the step's caption i
 - **States:** one. Shown only when terms are due.
 - **Components:** same chrome, plus `VerdictHeader verdict="Neutral" titleAs="h1"` reading "Your History exam is in 5 days" with `caption="1 term to revisit"` — the frame draws that line as the header's own caption rather than as a separate block — `Button variant="Primary" size="M" CTA="Explain out loud" showLeftIcon leftIcon="microphone-01"`, and Continue studying demoted to `Button variant="Tertiary" size="S" showRightIcon rightIcon="arrow-right"`. Both buttons hug and sit centred under the header.
 - **Can do:** Explain out loud; Continue studying.
-- **Leads to:** `/explain/1` (a revisit session); `/plan`.
+- **Leads to:** Explain out loud → `/explain/revisit-done`; Continue studying → `/plan`.
+
+**Explain out loud is stubbed.** It goes straight to `20b Revisit complete`, skipping the revisit session at `/explain/1` that earns it. A second pass of the recall loop is not built this sprint, so the stakeholder walkthrough jumps the middle.
 
 ### 5. 19 Plan, 2 of 3 unaided — `/plan/to-revisit`
 
 - **States:** one.
 - **Components:** `SectionHeader state="ToRevisit" status="2 of 3 on your own"`; `StepperStep type="Voice" state="Completed"`; `MascotMessage state="ToRevisit"` with `showHelper={true}` carrying the scheduling line, and a `Button variant="Tertiary" size="XS"` in `actionSlot`.
 - **Can do:** tap the Voice step to redo; tap **Do it now anyway** in `actionSlot`.
-- **Leads to:** both go to `/explain/1` — Do it now anyway starts the recall loop immediately for the terms Knowie named, instead of waiting for the scheduled date.
+- **Leads to:** the Voice step → `/explain/1`. **Do it now anyway → `/explain/revisit-done`, stubbed**: it means "start the recall loop now instead of waiting for the scheduled date", and `20b` is where that lands once the term comes back unaided — but the second pass of the loop is not built, so the walkthrough jumps the middle.
+- **Home in the bottom bar goes to `/home/revisit`, not `/`.** The first session is done and terms are pending, so the home the student returns to is the one that says a term is due. This is the only route into `20 Home, revisit`, and so the only way `21 Plan, section mastered` is reachable by clicking.
 
 `showHelper` must be `true` here. The scheduling line is the calibration mechanism, so it cannot be hidden on the screen that has something to schedule.
 
@@ -336,6 +339,8 @@ The sheet is currently hand-built. `bottomSheet` is a decided component that doe
 - **Leads to:** `/plan/to-revisit` or `/plan/mastered`.
 
 A revisit awards no XP. One term does not warrant a per-term breakdown.
+
+**Two entries, and neither may show in the copy.** `19`'s "Do it now anyway" arrives with no time passed; `20 Home, revisit` arrives five days later. So the title says the term was got on the student's own rather than that it "came back", and the caption names no day. Both are stubbed — see below.
 
 ---
 
