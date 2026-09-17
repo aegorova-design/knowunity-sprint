@@ -30,6 +30,17 @@ const UNAIDED = TERM_POSITIONS.filter(
   (position) => SESSION_OUTCOMES[position].variant === 'Unaided',
 ).length;
 
+/**
+ * Terms that needed help — the number Redo offers to run again. Derived, not
+ * written down, for the same reason the XP total is: it is the complement of
+ * the claim directly above it, so the button can never offer a count the
+ * headline contradicts.
+ *
+ * The frame says "Redo 3 terms". The design owner narrowed it to the terms
+ * that did not land on their own, which on the scripted run is 2.
+ */
+const NEEDS_REDO = TERM_COUNT - UNAIDED;
+
 /** What the session collected, summed off the rows rather than written down. */
 const TOTAL_XP = TERM_POSITIONS.reduce(
   (total, position) => total + SESSION_OUTCOMES[position].xp,
@@ -127,13 +138,17 @@ export function SummaryActions({ behindSheet = false }: { behindSheet?: boolean 
         size="L"
         /* The screen's one Primary. */
         primary={<Button variant="Primary" size="L" CTA="Continue" href={CONTINUE_HREF} />}
-        /* A fresh run of the same three terms. SPEC.md: "Redo awards full
-           XP" — nothing is discounted for having been seen. */
+        /* A fresh run of the terms that needed help. SPEC.md: "Redo awards
+           full XP" — nothing is discounted for having been seen.
+
+           The destination is still `/explain/1`, which runs all three: the
+           session has no store, so there is nowhere to carry "these two" to.
+           The copy is the design owner's and leads the behaviour. */
         secondary={
           <Button
             variant="Secondary"
             size="M"
-            CTA={`Redo ${TERM_COUNT} terms`}
+            CTA={`Redo ${NEEDS_REDO} terms`}
             showLeftIcon
             leftIcon="refresh-ccw-01"
             href="/explain/1"
