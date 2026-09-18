@@ -87,7 +87,7 @@ export default function HomeRevisitPage() {
               <Button
                 variant="Tertiary"
                 size="S"
-                CTA="Continue studying"
+                CTA="Continue learning"
                 showRightIcon
                 rightIcon="arrow-right"
                 href={PLAN_TO_REVISIT_HREF}

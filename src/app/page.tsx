@@ -64,7 +64,7 @@ export default async function HomePage({
               title="Your History exam is in 1 week"
               showCaption={false}
             />
-            <Button variant="Primary" size="M" CTA="Continue studying" href={planHref} />
+            <Button variant="Primary" size="M" CTA="Continue learning" href={planHref} />
           </div>
         </div>
       }
