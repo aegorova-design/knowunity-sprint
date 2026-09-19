@@ -40,9 +40,21 @@
   background-repeat: no-repeat;
   background-position: top center;
   background-size: auto 100%;
+  overflow: hidden;
   /* Inert: it is a picture of the OS, not the OS. */
   pointer-events: none;
   user-select: none;
+}
+
+/* A touchscreen with no hover — a real phone, whether or not it is running
+   standalone — already draws its own status bar. safe-area-inset can't tell
+   this apart from a plain browser tab (iOS only insets the page under the
+   notch when standalone), so pointer/hover is the signal that actually
+   distinguishes a real device from a desktop or Storybook preview. */
+@media (hover: none) and (pointer: coarse) {
+  .knowieScaffold-panelHeader {
+    height: 0;
+  }
 }
 
 /* Hugs its content: one appBar, nothing else. */

@@ -30,7 +30,13 @@
    Figma's Navigation Button with its label switched off: a 24 icon in
    Space/200 of padding, which is the 40 square it hugs to. The Space/050 gap
    is the one between the icon and that hidden label; it is kept so the box
-   stays the size Figma gives it once a label is ever switched back on. */
+   stays the size Figma gives it once a label is ever switched back on.
+
+   The 40 square is under the system's 44pt touch-target floor. buttonIcon
+   already solves this for a tap target smaller than its own visible pill —
+   min-width/min-height at Space/1200 (48), with the visible content
+   centred inside — so the same pattern is reused here rather than growing
+   the icon's own padding past what Figma draws. */
 
 .knowieBottomNav-tab {
   box-sizing: border-box;
@@ -38,7 +44,10 @@
   flex: none;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: var(--space-050);
+  min-width: var(--space-1200);
+  min-height: var(--space-1200);
   padding: var(--space-200);
   border: none;
   border-radius: var(--radius-full);
@@ -129,9 +138,23 @@
   justify-content: center;
   height: 34px;
   padding-bottom: var(--space-200);
+  overflow: hidden;
   /* Inert: it is a picture of the OS, not the OS. */
   pointer-events: none;
   user-select: none;
+}
+
+/* A touchscreen with no hover — a real phone, whether or not it is running
+   standalone — already draws its own home indicator. safe-area-inset can't
+   tell this apart from a plain browser tab (iOS only insets the page above
+   the indicator when standalone), so pointer/hover is the signal that
+   actually distinguishes a real device from a desktop or Storybook
+   preview. */
+@media (hover: none) and (pointer: coarse) {
+  .knowieBottomNav-homeIndicator {
+    height: 0;
+    padding-bottom: 0;
+  }
 }
 
 .knowieBottomNav-homeIndicatorPill {
