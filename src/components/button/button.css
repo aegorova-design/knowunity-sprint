@@ -98,19 +98,25 @@
   padding-top: var(--space-0);
 }
 
-/* Tertiary keeps the family's tap targets at S, M and L. At XS it does not: the
-   box is the label's line box, so XS Tertiary is the one button in the set
-   shorter than a tap-target row. */
+/* Tertiary keeps the family's tap targets at S, M and L, in both dimensions:
+   min-width mirrors the size's own height token, so a short label like Skip's
+   still clears a square tap target. Tertiary has no fill, so the extra width
+   paints nothing — it only widens the invisible hit area. At XS neither
+   applies: the box is the label's line box, so XS Tertiary is the one button
+   in the set shorter than a tap-target row. */
 .knowieButton[data-variant='Tertiary'][data-size='S'] {
   height: var(--component-button-height-s);
+  min-width: var(--component-button-height-s);
 }
 
 .knowieButton[data-variant='Tertiary'][data-size='M'] {
   height: var(--component-button-height-m);
+  min-width: var(--component-button-height-m);
 }
 
 .knowieButton[data-variant='Tertiary'][data-size='L'] {
   height: var(--component-button-height-l);
+  min-width: var(--component-button-height-l);
 }
 
 /* --- the face ------------------------------------------------------------ */

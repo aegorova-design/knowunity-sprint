@@ -55,7 +55,7 @@ Per-term loop
 - A skip jumps straight to the next term without showing the answer, because a skip that reveals is just a slower reveal.
 - A wrong answer after hint 2 gets one beat naming the miss before the reveal, because being jumped to the answer ignores the third attempt.
 - Say it back is offered on the reveal as the primary and on a hinted pass as a secondary. It records, is never judged and changes no outcome or XP, because a term that needed the answer shown cannot earn its way back up.
-- The say-back acknowledgement reuses the reveal screen with the key idea chips ticked and Say it back replaced by Next term, because the answer should stay on view while the confirmation lands.
+- The say-back acknowledgement reuses the reveal screen, chips unticked as on any reveal, with Say it back replaced by Next term, because the answer should stay on view while the confirmation lands.
 - The forward action on the last term reads "See how you did", because "Next term" names something that does not exist.
 - A verdict names its value in one slot under the actions: "+15 XP · unaided" on a pass, the outcome word alone on a 0, because a zero at the session's lowest point is the harshest possible read. The reveal screens carry "revealed" in that slot, and a Revealed row on the summary carries its tag and no number.
 - Progress advances on any resolution including a skip, because the bar reports position in the session and never doubles as a score.

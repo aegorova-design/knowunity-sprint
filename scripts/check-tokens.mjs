@@ -9,6 +9,12 @@
  * A property counts as defined if build/css/tokens.css declares it, or if the
  * same source file declares it — components set local aliases like
  * --knowieButton-lip that way.
+ *
+ * A small allowlist covers properties no CSS declaration ever sets because a
+ * component sets them inline per-instance instead (React's `style` prop) —
+ * not a token and not a smuggled value, just data a token file has no slot
+ * for. Add here only with the same justification waveform's `--i` has:
+ * unitless, structural, and named in the component alongside its use.
  */
 
 import { readFileSync, readdirSync, statSync } from 'node:fs';
@@ -17,6 +23,11 @@ import { join, relative } from 'node:path';
 const ROOT = new URL('..', import.meta.url).pathname;
 const DECLARED = /(--[A-Za-z0-9_-]+)\s*:/g;
 const USED = /var\(\s*(--[A-Za-z0-9_-]+)\s*([,)])/g;
+
+// --i: the bar's index in Waveform, set via inline style in Waveform.tsx
+// because 24 distinct animation delays cannot come from nth-child. See
+// waveform.css's comment on the listen-loop animation-delay.
+const JS_SET = new Set(['--i']);
 
 function cssFilesIn(dir) {
   return readdirSync(dir).flatMap((name) => {
@@ -37,7 +48,7 @@ for (const file of cssFilesIn(join(ROOT, 'src'))) {
   const local = new Set([...css.matchAll(DECLARED)].map((m) => m[1]));
 
   for (const [, name, next] of css.matchAll(USED)) {
-    if (tokens.has(name) || local.has(name)) continue;
+    if (tokens.has(name) || local.has(name) || JS_SET.has(name)) continue;
     // A fallback is banned by CLAUDE.md, but report it as its own problem
     // rather than letting it hide an undefined name.
     const why = next === ',' ? 'has a fallback (banned)' : 'is not defined anywhere';
