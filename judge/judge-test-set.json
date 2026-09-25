@@ -1,0 +1,88 @@
+{
+  "how_to_use": "Run each transcript through the judge with input_mode voice. A test passes when verdict and hint_target match. ideas_hit should also match, but a mismatch there is a warning, not a failure.",
+  "tests": [
+    { "id": "cam-1", "term": "camouflage", "case": "strong answer",
+      "transcript": "It's when an animal's colours help it blend into where it lives so predators can't find it.",
+      "expected": { "verdict": "pass", "ideas_hit": ["C1", "C2"], "hint_target": null } },
+
+    { "id": "cam-2", "term": "camouflage", "case": "casual wording with filler",
+      "transcript": "um so like the animal looks like a leaf or a stick so nothing eats it",
+      "expected": { "verdict": "pass", "ideas_hit": ["C1", "C2"], "hint_target": null } },
+
+    { "id": "cam-3", "term": "camouflage", "case": "partial, no purpose",
+      "transcript": "It's when an animal blends in with its surroundings.",
+      "expected": { "verdict": "partial", "ideas_hit": ["C1"], "hint_target": "C2" } },
+
+    { "id": "cam-4", "term": "camouflage", "case": "contradiction, no ideas",
+      "transcript": "It's when animals have really bright colours so everyone can see them.",
+      "expected": { "verdict": "miss", "ideas_hit": [], "hint_target": "C2" } },
+
+    { "id": "cam-5", "term": "camouflage", "case": "mishearing",
+      "transcript": "It's when a animal blends in so it can sneak up on its pray.",
+      "expected": { "verdict": "pass", "ideas_hit": ["C1", "C2"], "hint_target": null } },
+
+    { "id": "cam-6", "term": "camouflage", "case": "don't know",
+      "transcript": "I don't know.",
+      "expected": { "verdict": "miss", "ideas_hit": [], "hint_target": "C2" } },
+
+    { "id": "cam-7", "term": "camouflage", "case": "garbled audio",
+      "transcript": "can a flush the uh",
+      "expected": { "verdict": "unclear", "ideas_hit": [], "hint_target": null } },
+
+    { "id": "mam-1", "term": "mammal", "case": "strong answer",
+      "transcript": "An animal that's warm-blooded and feeds its babies milk.",
+      "expected": { "verdict": "pass", "ideas_hit": ["M1", "M2"], "hint_target": null } },
+
+    { "id": "mam-2", "term": "mammal", "case": "pass with bonus",
+      "transcript": "Mammals are warm-blooded, they have fur, and the moms nurse their babies.",
+      "expected": { "verdict": "pass", "ideas_hit": ["M1", "M2"], "bonus_hit": ["M3"], "hint_target": null } },
+
+    { "id": "mam-3", "term": "mammal", "case": "partial, missing milk",
+      "transcript": "A warm-blooded animal with fur.",
+      "expected": { "verdict": "partial", "ideas_hit": ["M2"], "bonus_hit": ["M3"], "hint_target": "M1" } },
+
+    { "id": "mam-4", "term": "mammal", "case": "partial, hair and milk (the strictness call)",
+      "transcript": "An animal that has hair and feeds its babies milk.",
+      "expected": { "verdict": "partial", "ideas_hit": ["M1"], "bonus_hit": ["M3"], "hint_target": "M2" } },
+
+    { "id": "mam-5", "term": "mammal", "case": "neutral only",
+      "transcript": "An animal that gives birth to live babies, like dogs.",
+      "expected": { "verdict": "miss", "ideas_hit": [], "hint_target": "M1" } },
+
+    { "id": "mam-6", "term": "mammal", "case": "contradiction with one idea",
+      "transcript": "Mammals are cold-blooded and drink milk when they're babies.",
+      "expected": { "verdict": "partial", "ideas_hit": ["M1"], "hint_target": "M2" } },
+
+    { "id": "mam-7", "term": "mammal", "case": "self-correction",
+      "transcript": "They lay eggs, no wait, the moms make milk for the babies, and they're warm-blooded, like whales.",
+      "expected": { "verdict": "pass", "ideas_hit": ["M1", "M2"], "hint_target": null } },
+
+    { "id": "hib-1", "term": "hibernation", "case": "strong answer",
+      "transcript": "It's when animals go into a deep sleep for the winter and their heart rate and temperature drop to save energy.",
+      "expected": { "verdict": "pass", "ideas_hit": ["H1", "H2", "H3"], "hint_target": null } },
+
+    { "id": "hib-2", "term": "hibernation", "case": "partial, state only",
+      "transcript": "When animals sleep all winter.",
+      "expected": { "verdict": "partial", "ideas_hit": ["H1"], "hint_target": "H3" } },
+
+    { "id": "hib-3", "term": "hibernation", "case": "pass with neutral example",
+      "transcript": "Bears sleep through the winter because there's no food.",
+      "expected": { "verdict": "pass", "ideas_hit": ["H1", "H3"], "hint_target": null } },
+
+    { "id": "hib-4", "term": "hibernation", "case": "partial, missing the state",
+      "transcript": "Their heartbeat slows way down so they can save energy.",
+      "expected": { "verdict": "partial", "ideas_hit": ["H2", "H3"], "hint_target": "H1" } },
+
+    { "id": "hib-5", "term": "hibernation", "case": "contradiction, migration",
+      "transcript": "It's when birds fly south for the winter.",
+      "expected": { "verdict": "miss", "ideas_hit": [], "hint_target": "H3" } },
+
+    { "id": "hib-6", "term": "hibernation", "case": "mishearing",
+      "transcript": "Hi Bernation is when animals sleep through the cold months and their body slows down.",
+      "expected": { "verdict": "pass", "ideas_hit": ["H1", "H2"], "hint_target": null } },
+
+    { "id": "hib-7", "term": "hibernation", "case": "empty recording",
+      "transcript": "",
+      "expected": { "verdict": "unclear", "ideas_hit": [], "hint_target": null } }
+  ]
+}

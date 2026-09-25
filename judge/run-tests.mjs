@@ -28,7 +28,23 @@ const envVars = loadEnv(envPath);
 const apiKey = envVars.ANTHROPIC_API_KEY;
 
 // Parse command-line arguments
-const modelArg = process.argv[2] || 'claude-haiku-4-5';
+let modelArg = process.argv[2] || 'claude-haiku-4-5';
+let runsArg = 1;
+
+// Check for --runs option
+for (let i = 2; i < process.argv.length; i++) {
+  if (process.argv[i] === '--runs' && i + 1 < process.argv.length) {
+    runsArg = parseInt(process.argv[i + 1], 10);
+    if (isNaN(runsArg) || runsArg < 1) {
+      console.error('Error: --runs must be a positive integer');
+      process.exit(1);
+    }
+    // Remove --runs option from args and keep modelArg
+    if (process.argv[2] === '--runs') {
+      modelArg = process.argv[4] || 'claude-haiku-4-5';
+    }
+  }
+}
 
 if (!apiKey) {
   console.error('Error: ANTHROPIC_API_KEY not found in .env');
@@ -135,10 +151,7 @@ async function callJudge(term, transcript) {
   // before the "text" block, so find the text block by type rather than
   // assuming index 0.
   const textBlock = data.content.find(block => block.type === 'text');
-  if (!textBlock) {
-    throw new Error(`No text block in response: ${JSON.stringify(data.content)}`);
-  }
-  const content = textBlock.text;
+  const content = textBlock ? textBlock.text : null;
 
   return { content, latency };
 }
@@ -162,8 +175,8 @@ function parseResponse(content) {
   }
 }
 
-// Run all tests
-async function runTests() {
+// Run all tests (returns raw results without printing)
+async function runTestsRaw() {
   const results = [];
   let passes = 0;
   let failures = 0;
@@ -171,17 +184,13 @@ async function runTests() {
   const latencies = [];
   let slowest = { latency: 0, test: null };
 
-  console.log(`Running tests with model: ${modelArg}\n`);
-  console.log('Test ID       | Term         | Case                      | Expected  | Actual    | Status   | Latency');
-  console.log('-'.repeat(100));
-
   for (const test of testSet.tests) {
     try {
       const term = findTerm(test.term);
       if (!term) throw new Error(`Term not found: ${test.term}`);
 
       const { content, latency } = await callJudge(term, test.transcript);
-      const parsed = parseResponse(content);
+      const parsed = content ? parseResponse(content) : null;
 
       let status = 'PASS';
       const testResult = {
@@ -197,7 +206,7 @@ async function runTests() {
       if (!parsed) {
         status = 'FAIL';
         failures++;
-        testResult.failure = 'Invalid JSON response';
+        testResult.failure = content === null ? 'no verdict returned' : 'Invalid JSON response';
       } else {
         const verdictMatch = parsed.verdict === test.expected.verdict;
         const hintTargetMatch = parsed.hint_target === test.expected.hint_target;
@@ -228,20 +237,8 @@ async function runTests() {
         slowest.test = test.id;
       }
 
-      const expectedStr = `${test.expected.verdict}`;
-      const actualStr = parsed ? parsed.verdict : 'INVALID';
-      const testIdPad = test.id.padEnd(13);
-      const termPad = test.term.padEnd(12);
-      const casePad = test.case.substring(0, 25).padEnd(25);
-      const expectedPad = expectedStr.padEnd(9);
-      const actualPad = actualStr.padEnd(9);
-      const statusPad = status.padEnd(8);
-
-      console.log(`${testIdPad}| ${termPad}| ${casePad}| ${expectedPad}| ${actualPad}| ${statusPad}| ${latency}ms`);
-
     } catch (error) {
       failures++;
-      console.log(`${test.id.padEnd(13)}| ERROR: ${error.message}`);
       results.push({
         id: test.id,
         term: test.term,
@@ -253,37 +250,153 @@ async function runTests() {
     }
   }
 
-  // Print summary
-  console.log('\n' + '='.repeat(100));
-  console.log(`Summary:`);
-  console.log(`  Passes:           ${passes}`);
-  console.log(`  Failures:         ${failures}`);
-  console.log(`  Warnings:         ${warnings}`);
-  console.log(`  Average latency:  ${(latencies.reduce((a, b) => a + b, 0) / latencies.length).toFixed(0)}ms`);
-  console.log(`  Slowest call:     ${slowest.test} (${slowest.latency}ms)`);
-
-  // Save results
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19);
-  const resultsFile = path.join(resultsDir, `${modelArg}-${timestamp}.json`);
-  fs.writeFileSync(resultsFile, JSON.stringify({
-    model: modelArg,
-    timestamp: new Date().toISOString(),
-    summary: {
+  return {
+    results,
+    stats: {
       passes,
       failures,
       warnings,
-      totalTests: testSet.tests.length,
-      avgLatency: latencies.reduce((a, b) => a + b, 0) / latencies.length,
-      slowest: slowest
-    },
-    tests: results
-  }, null, 2));
+      latencies,
+      slowest
+    }
+  };
+}
+
+// Print test results table
+function printTestTable(results, showRun = null) {
+  console.log(`Running tests with model: ${modelArg}${showRun !== null ? ` (run ${showRun})` : ''}\n`);
+  console.log('Test ID       | Term         | Case                      | Expected  | Actual    | Status   | Latency');
+  console.log('-'.repeat(100));
+
+  for (const result of results) {
+    const parsed = result.actual;
+    const test = testSet.tests.find(t => t.id === result.id);
+    let status = 'PASS';
+    if (result.failure) {
+      status = 'FAIL';
+    } else if (result.warning) {
+      status = 'WARN';
+    }
+
+    const expectedStr = `${test.expected.verdict}`;
+    const actualStr = parsed ? parsed.verdict : (result.failure ? 'INVALID' : 'ERROR');
+    const testIdPad = result.id.padEnd(13);
+    const termPad = result.term.padEnd(12);
+    const casePad = result.case.substring(0, 25).padEnd(25);
+    const expectedPad = expectedStr.padEnd(9);
+    const actualPad = actualStr.padEnd(9);
+    const statusPad = status.padEnd(8);
+
+    console.log(`${testIdPad}| ${termPad}| ${casePad}| ${expectedPad}| ${actualPad}| ${statusPad}| ${result.latency}ms`);
+  }
+}
+
+// Print summary
+function printSummary(stats) {
+  console.log('\n' + '='.repeat(100));
+  console.log(`Summary:`);
+  console.log(`  Passes:           ${stats.passes}`);
+  console.log(`  Failures:         ${stats.failures}`);
+  console.log(`  Warnings:         ${stats.warnings}`);
+  const avgLatency = stats.latencies.length > 0 ? (stats.latencies.reduce((a, b) => a + b, 0) / stats.latencies.length).toFixed(0) : 'N/A';
+  console.log(`  Average latency:  ${avgLatency}ms`);
+  console.log(`  Slowest call:     ${stats.slowest.test} (${stats.slowest.latency}ms)`);
+}
+
+// Save results to file
+function saveResults(allRuns) {
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19);
+  const resultsFile = path.join(resultsDir, `${modelArg}-${timestamp}.json`);
+
+  if (runsArg === 1) {
+    // Single run - save as before
+    const run = allRuns[0];
+    fs.writeFileSync(resultsFile, JSON.stringify({
+      model: modelArg,
+      timestamp: new Date().toISOString(),
+      summary: {
+        passes: run.stats.passes,
+        failures: run.stats.failures,
+        warnings: run.stats.warnings,
+        totalTests: testSet.tests.length,
+        avgLatency: run.stats.latencies.length > 0 ? run.stats.latencies.reduce((a, b) => a + b, 0) / run.stats.latencies.length : 0,
+        slowest: run.stats.slowest
+      },
+      tests: run.results
+    }, null, 2));
+  } else {
+    // Multiple runs - save with diff info
+    const diffInfo = {};
+    for (const test of testSet.tests) {
+      const verdicts = allRuns.map(run => {
+        const result = run.results.find(r => r.id === test.id);
+        return result.actual?.verdict || 'error';
+      });
+      if (new Set(verdicts).size > 1) {
+        diffInfo[test.id] = verdicts;
+      }
+    }
+
+    fs.writeFileSync(resultsFile, JSON.stringify({
+      model: modelArg,
+      timestamp: new Date().toISOString(),
+      runs: runsArg,
+      testsWithDifferences: diffInfo,
+      allRuns: allRuns.map((run, idx) => ({
+        runNumber: idx + 1,
+        summary: {
+          passes: run.stats.passes,
+          failures: run.stats.failures,
+          warnings: run.stats.warnings,
+          avgLatency: run.stats.latencies.length > 0 ? run.stats.latencies.reduce((a, b) => a + b, 0) / run.stats.latencies.length : 0
+        },
+        tests: run.results
+      }))
+    }, null, 2));
+  }
 
   console.log(`\nResults saved to: ${resultsFile}`);
+  return resultsFile;
+}
 
-  return failures === 0 ? 0 : 1;
+// Main execution
+async function main() {
+  console.log(`Running tests with model: ${modelArg} (${runsArg} run${runsArg > 1 ? 's' : ''})\n`);
+
+  const allRuns = [];
+  for (let runNum = 1; runNum <= runsArg; runNum++) {
+    const run = await runTestsRaw();
+    allRuns.push(run);
+    printTestTable(run.results, runsArg > 1 ? runNum : null);
+    printSummary(run.stats);
+  }
+
+  // Show differences if multiple runs
+  if (runsArg > 1) {
+    console.log('\n' + '='.repeat(100));
+    console.log('Tests with different results between runs:');
+    let hasDiffs = false;
+    for (const test of testSet.tests) {
+      const verdicts = allRuns.map(run => {
+        const result = run.results.find(r => r.id === test.id);
+        return result.actual?.verdict || (result.failure ? 'error' : 'invalid');
+      });
+      if (new Set(verdicts).size > 1) {
+        hasDiffs = true;
+        console.log(`  ${test.id}: ${verdicts.join(' → ')}`);
+      }
+    }
+    if (!hasDiffs) {
+      console.log('  (no differences found)');
+    }
+  }
+
+  saveResults(allRuns);
+
+  const hasFailures = allRuns.some(run => run.stats.failures > 0);
+  return hasFailures ? 1 : 0;
 }
 
 // Run
-const exitCode = await runTests();
+const exitCode = await main();
 process.exit(exitCode);
