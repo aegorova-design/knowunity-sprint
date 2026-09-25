@@ -85,18 +85,10 @@ function buildUserMessage(template, term, transcript) {
 async function callJudge(term, transcript) {
   const userMessage = buildUserMessage(userTemplate, term, transcript);
 
-  const startTime = Date.now();
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'anthropic-version': '2023-06-01',
-      'content-type': 'application/json',
-      'x-api-key': apiKey
-    },
-    body: JSON.stringify({
+  async function post(includeTemperature) {
+    const body = {
       model: modelArg,
       max_tokens: 400,
-      temperature: 0,
       system: systemPrompt,
       messages: [
         {
@@ -104,8 +96,32 @@ async function callJudge(term, transcript) {
           content: userMessage
         }
       ]
-    })
-  });
+    };
+    if (includeTemperature) body.temperature = 0;
+
+    return fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+        'x-api-key': apiKey
+      },
+      body: JSON.stringify(body)
+    });
+  }
+
+  const startTime = Date.now();
+  let response = await post(true);
+
+  if (!response.ok && response.status === 400) {
+    const errorText = await response.text();
+    if (errorText.includes('temperature') && errorText.includes('deprecated')) {
+      // Some newer models reject the temperature param entirely; retry without it.
+      response = await post(false);
+    } else {
+      throw new Error(`API error: ${response.status} - ${errorText}`);
+    }
+  }
 
   const latency = Date.now() - startTime;
 
@@ -115,7 +131,14 @@ async function callJudge(term, transcript) {
   }
 
   const data = await response.json();
-  const content = data.content[0].text;
+  // Some models (e.g. extended-thinking models) prepend a "thinking" block
+  // before the "text" block, so find the text block by type rather than
+  // assuming index 0.
+  const textBlock = data.content.find(block => block.type === 'text');
+  if (!textBlock) {
+    throw new Error(`No text block in response: ${JSON.stringify(data.content)}`);
+  }
+  const content = textBlock.text;
 
   return { content, latency };
 }
