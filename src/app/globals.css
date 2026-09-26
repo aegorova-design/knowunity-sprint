@@ -46,6 +46,7 @@ a {
 .appFrame {
   width: min(390px, 100vw);
   margin-inline: auto;
-  height: 100dvh;
-  overflow: hidden;
+  min-height: 100dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
