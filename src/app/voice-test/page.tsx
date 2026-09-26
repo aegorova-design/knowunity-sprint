@@ -65,6 +65,7 @@ function VoiceTestApp() {
   const streamRef = useRef<MediaStream | null>(null);
   const startTimeRef = useRef<number>(0);
   const audioElementRef = useRef<HTMLAudioElement>(null);
+  const audioBlobRef = useRef<Blob | null>(null);
 
   const addDebugLog = (message: string) => {
     console.log('[voice-test]', message);
@@ -124,12 +125,15 @@ function VoiceTestApp() {
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           audioChunksRef.current.push(event.data);
+          addDebugLog(`Audio chunk received: ${event.data.size} bytes`);
         }
       };
 
-      mediaRecorder.start();
+      // Start with timeslice to ensure chunks arrive during recording on iOS
+      mediaRecorder.start(1000);
       setIsRecording(true);
       startTimeRef.current = Date.now();
+      addDebugLog('Recording started with 1000ms timeslice');
     } catch (err) {
       if (err instanceof DOMException && err.name === 'NotAllowedError') {
         setError('Microphone permission denied');
@@ -148,16 +152,23 @@ function VoiceTestApp() {
       setRecordingLength(Math.round(length / 1000 * 10) / 10); // Round to 1 decimal
 
       mediaRecorderRef.current.onstop = () => {
+        addDebugLog(`Stop event: ${audioChunksRef.current.length} chunks received`);
+
         if (audioChunksRef.current.length === 0) {
+          addDebugLog('ERROR: Empty recording - no chunks received');
           setError('Empty recording');
           return;
         }
 
+        // Build blob from all chunks and store for both playback and transcription
         const audioBlob = new Blob(audioChunksRef.current, { type: audioFormat || 'audio/webm' });
-        const audioUrl = URL.createObjectURL(audioBlob);
+        audioBlobRef.current = audioBlob;
+        addDebugLog(`Blob created: ${audioBlob.size} bytes, type=${audioBlob.type}`);
 
+        const audioUrl = URL.createObjectURL(audioBlob);
         if (audioElementRef.current) {
           audioElementRef.current.src = audioUrl;
+          addDebugLog(`Audio element src set, ready for playback`);
         }
       };
     }
@@ -165,6 +176,7 @@ function VoiceTestApp() {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
+      addDebugLog('Recording stopped, stream closed');
     }
   };
 
@@ -174,33 +186,19 @@ function VoiceTestApp() {
     try {
       addDebugLog('Transcribe tap received');
 
-      if (!audioElementRef.current || !audioElementRef.current.src) {
-        addDebugLog('ERROR: No audio element or src');
+      // Use the stored blob from recording, not the audio element src
+      if (!audioBlobRef.current) {
+        addDebugLog('ERROR: No blob stored - recording may not have completed');
         setError('No recording available');
         return;
       }
 
-      addDebugLog(`Audio src present: ${audioElementRef.current.src.substring(0, 20)}...`);
+      const blob = audioBlobRef.current;
+      addDebugLog(`Using stored blob: size=${blob.size}, type=${blob.type}`);
 
       setIsTranscribing(true);
       setError('');
       setTranscript('');
-
-      // Get blob from the audio URL (which is a blob URL)
-      let blob: Blob;
-      try {
-        addDebugLog('Fetching audio blob from URL...');
-        const response = await fetch(audioElementRef.current.src);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch audio blob: ${response.status}`);
-        }
-        blob = await response.blob();
-        addDebugLog(`Blob fetched: size=${blob.size}, type=${blob.type}`);
-      } catch (err) {
-        const errMsg = err instanceof Error ? err.message : String(err);
-        addDebugLog(`ERROR fetching blob: ${errMsg}`);
-        throw new Error(`Failed to retrieve recording: ${errMsg}`);
-      }
 
       if (blob.size === 0) {
         addDebugLog('ERROR: Blob size is 0');
@@ -306,22 +304,22 @@ function VoiceTestApp() {
       <div style={{ marginBottom: '20px' }}>
         <button
           onClick={transcribeAudio}
-          disabled={isTranscribing || !audioElementRef.current?.src}
+          disabled={isTranscribing || !audioBlobRef.current}
           style={{
             padding: '10px 20px',
             fontSize: '16px',
-            backgroundColor: isTranscribing ? '#ccc' : '#2196f3',
-            color: 'white',
+            backgroundColor: (isTranscribing || !audioBlobRef.current) ? '#ccc' : '#2196f3',
+            color: (isTranscribing || !audioBlobRef.current) ? '#999' : 'white',
             border: 'none',
-            cursor: isTranscribing ? 'default' : 'pointer',
+            cursor: (isTranscribing || !audioBlobRef.current) ? 'not-allowed' : 'pointer',
             borderRadius: '4px',
-            opacity: isTranscribing ? 0.6 : 1
+            opacity: (isTranscribing || !audioBlobRef.current) ? 0.5 : 1
           }}
         >
           {isTranscribing ? 'Transcribing...' : 'Transcribe'}
         </button>
         <div style={{ fontSize: '12px', marginTop: '5px', color: '#666' }}>
-          Status: {isTranscribing ? 'transcribing' : 'ready'} | Audio: {audioElementRef.current?.src ? 'yes' : 'no'} | Disabled: {isTranscribing || !audioElementRef.current?.src ? 'yes' : 'no'}
+          Status: {isTranscribing ? 'transcribing' : 'ready'} | Blob: {audioBlobRef.current ? `${Math.round(audioBlobRef.current.size / 1024)}KB` : 'no'} | Disabled: {isTranscribing || !audioBlobRef.current ? 'yes' : 'no'}
         </div>
       </div>
 
