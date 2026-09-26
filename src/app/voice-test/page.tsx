@@ -169,6 +169,8 @@ function VoiceTestApp() {
   };
 
   const transcribeAudio = async () => {
+    // Immediate logging - highest priority
+    console.log('[TRANSCRIBE] Button clicked');
     try {
       addDebugLog('Transcribe tap received');
 
@@ -318,6 +320,9 @@ function VoiceTestApp() {
         >
           {isTranscribing ? 'Transcribing...' : 'Transcribe'}
         </button>
+        <div style={{ fontSize: '12px', marginTop: '5px', color: '#666' }}>
+          Status: {isTranscribing ? 'transcribing' : 'ready'} | Audio: {audioElementRef.current?.src ? 'yes' : 'no'} | Disabled: {isTranscribing || !audioElementRef.current?.src ? 'yes' : 'no'}
+        </div>
       </div>
 
       {debugLog.length > 0 && (
