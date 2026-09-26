@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { JUDGE_SYSTEM_PROMPT, JUDGE_USER_TEMPLATE, rubric } from '@/lib/judge-config';
+import { JUDGE_MODEL, buildJudgeUserMessage, buildJudgeRequestBody, rubric } from '@/lib/judge-config';
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,9 +21,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const systemPrompt = JUDGE_SYSTEM_PROMPT;
-    const userTemplate = JUDGE_USER_TEMPLATE;
-
     // Find term in rubric
     const termData = (rubric as any).terms.find((t: any) => t.id === term);
     if (!termData) {
@@ -33,11 +30,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Build user message
-    let userMessage = userTemplate;
-    userMessage = userMessage.replace(/{{term_rubric_json}}/g, JSON.stringify(termData, null, 2));
-    userMessage = userMessage.replace(/{{voice_or_typed}}/g, 'voice');
-    userMessage = userMessage.replace(/{{transcript}}/g, transcript);
+    const userMessage = buildJudgeUserMessage(termData, transcript, 'voice');
 
     // Call Claude with retry
     let response = null;
@@ -52,17 +45,7 @@ export async function POST(request: NextRequest) {
             'content-type': 'application/json',
             'x-api-key': apiKey
           },
-          body: JSON.stringify({
-            model: 'claude-haiku-4-5',
-            max_tokens: 400,
-            system: systemPrompt,
-            messages: [
-              {
-                role: 'user',
-                content: userMessage
-              }
-            ]
-          })
+          body: JSON.stringify(buildJudgeRequestBody(userMessage, JUDGE_MODEL))
         });
 
         if (response.ok) {
