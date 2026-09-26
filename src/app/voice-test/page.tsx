@@ -380,7 +380,7 @@ function VoiceTestApp() {
   };
 
   return (
-    <div style={{ maxWidth: '600px', margin: '20px auto', padding: '20px', fontFamily: 'monospace' }}>
+    <div style={{ maxWidth: '600px', margin: '20px auto', padding: '20px', paddingBottom: 'max(120px, calc(120px + env(safe-area-inset-bottom)))', fontFamily: 'monospace' }}>
       <h1>Voice Test</h1>
 
       <div style={{ marginBottom: '20px' }}>
@@ -489,13 +489,30 @@ function VoiceTestApp() {
 
       {verdict && (
         <div style={{ marginBottom: '20px', padding: '10px', backgroundColor: '#e8f5e9', borderRadius: '4px', color: '#333' }}>
-          <strong style={{ color: '#333' }}>Judgment: {verdict}</strong>
+          <strong style={{ color: '#333' }}>Verdict: {verdict}</strong>
           {judgmentDetails && (
             <>
-              <div style={{ marginTop: '8px', fontSize: '14px' }}>
-                <div>Ideas hit: {(judgmentDetails.ideas_hit || []).join(', ') || '(none)'}</div>
-                <div>Hint target: {judgmentDetails.hint_target || '(none)'}</div>
-                {judgmentDetails.contradiction && <div>Contradiction: {judgmentDetails.contradiction}</div>}
+              <div style={{ marginTop: '8px', fontSize: '13px', lineHeight: '1.6' }}>
+                {judgmentDetails.ideas_hit && judgmentDetails.ideas_hit.length > 0 && (
+                  <div>Ideas hit: {judgmentDetails.ideas_hit.join(', ')}</div>
+                )}
+                {judgmentDetails.ideas_missing && judgmentDetails.ideas_missing.length > 0 && (
+                  <div>Ideas missing: {judgmentDetails.ideas_missing.join(', ')}</div>
+                )}
+                {judgmentDetails.bonus_hit && judgmentDetails.bonus_hit.length > 0 && (
+                  <div>Bonus hit: {judgmentDetails.bonus_hit.join(', ')}</div>
+                )}
+                {judgmentDetails.hint_target && (
+                  <div>Hint target: {judgmentDetails.hint_target}</div>
+                )}
+                {judgmentDetails.contradiction && (
+                  <div>Contradiction: {judgmentDetails.contradiction}</div>
+                )}
+                {judgmentDetails.reason && (
+                  <div style={{ marginTop: '8px', fontSize: '12px', color: '#555', fontStyle: 'italic' }}>
+                    {judgmentDetails.reason}
+                  </div>
+                )}
               </div>
             </>
           )}
