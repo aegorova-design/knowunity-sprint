@@ -156,36 +156,67 @@ function VoiceTestApp() {
 
     try {
       // Get blob from the audio URL (which is a blob URL)
-      const response = await fetch(audioElementRef.current.src);
-      const blob = await response.blob();
+      let blob: Blob;
+      try {
+        const response = await fetch(audioElementRef.current.src);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch audio blob: ${response.status}`);
+        }
+        blob = await response.blob();
+      } catch (err) {
+        throw new Error(`Failed to retrieve recording: ${err instanceof Error ? err.message : String(err)}`);
+      }
+
+      if (blob.size === 0) {
+        throw new Error('Empty recording');
+      }
+
+      // Determine file extension based on format
+      const fileExt = audioFormat === 'audio/mp4' ? 'm4a' : (audioFormat === 'audio/webm' ? 'webm' : 'webm');
+      const fileName = `recording.${fileExt}`;
 
       const formData = new FormData();
-      formData.append('audio', blob, `recording.${audioFormat === 'audio/mp4' ? 'm4a' : 'webm'}`);
+      formData.append('audio', blob, fileName);
 
+      let res: Response;
       const startTime = Date.now();
-      const res = await fetch('/api/voice-test/transcribe', {
-        method: 'POST',
-        body: formData
-      });
+      try {
+        res = await fetch('/api/voice-test/transcribe', {
+          method: 'POST',
+          body: formData
+        });
+      } catch (err) {
+        throw new Error(`Network error: ${err instanceof Error ? err.message : String(err)}`);
+      }
 
       const transcribeTime = Date.now() - startTime;
       setTranscriptionTime(transcribeTime);
 
-      if (!res.ok) {
-        const data = await res.json();
-        if (data.error === 'empty_recording') {
-          setError('Empty recording');
-        } else if (data.error === 'api_error') {
-          setError('Transcription API error');
-        } else {
-          setError('Transcription failed: ' + (data.error || res.statusText));
-        }
-      } else {
-        const data = await res.json();
-        setTranscript(data.transcript || '');
+      let data: any;
+      try {
+        data = await res.json();
+      } catch (err) {
+        throw new Error(`Invalid response from server: ${res.status} ${res.statusText}`);
       }
+
+      if (!res.ok) {
+        if (data.error === 'empty_recording') {
+          throw new Error('Empty recording');
+        } else if (data.error === 'api_error') {
+          throw new Error('OpenAI transcription API error');
+        } else {
+          throw new Error(`API error (${res.status}): ${data.error || data.message || res.statusText}`);
+        }
+      }
+
+      const transcript = data.transcript || '';
+      if (!transcript) {
+        throw new Error('No transcript returned from API');
+      }
+      setTranscript(transcript);
     } catch (err) {
-      setError('Transcription failed: ' + (err instanceof Error ? err.message : String(err)));
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      setError(errorMessage);
     } finally {
       setIsTranscribing(false);
     }
