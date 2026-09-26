@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import * as fs from 'fs';
-import * as path from 'path';
+import { JUDGE_SYSTEM_PROMPT, JUDGE_USER_TEMPLATE, rubric } from '@/lib/judge-config';
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,46 +21,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Load rubric
-    let rubric: any;
-    try {
-      const rubricPath = path.join(process.cwd(), 'judge', 'judging-rubric.json');
-      const rubricContent = fs.readFileSync(rubricPath, 'utf8');
-      rubric = JSON.parse(rubricContent);
-    } catch (err) {
-      console.error('Failed to load rubric:', err);
-      return NextResponse.json(
-        { error: 'Failed to load rubric' },
-        { status: 500 }
-      );
-    }
-
-    // Load prompt
-    let systemPrompt: string;
-    let userTemplate: string;
-    try {
-      const promptPath = path.join(process.cwd(), 'judge', 'judge-prompt.md');
-      const promptContent = fs.readFileSync(promptPath, 'utf8');
-
-      const systemMatch = promptContent.match(/## System prompt\s*\n\s*```\s*\n([\s\S]*?)\n```/);
-      const userMatch = promptContent.match(/## User message template\s*\n[\s\S]*?```\s*\n([\s\S]*?)\n```/);
-
-      if (!systemMatch || !userMatch) {
-        throw new Error('Could not parse prompt');
-      }
-
-      systemPrompt = systemMatch[1].trim();
-      userTemplate = userMatch[1].trim();
-    } catch (err) {
-      console.error('Failed to load prompt:', err);
-      return NextResponse.json(
-        { error: 'Failed to load prompt' },
-        { status: 500 }
-      );
-    }
+    const systemPrompt = JUDGE_SYSTEM_PROMPT;
+    const userTemplate = JUDGE_USER_TEMPLATE;
 
     // Find term in rubric
-    const termData = rubric.terms.find((t: any) => t.id === term);
+    const termData = (rubric as any).terms.find((t: any) => t.id === term);
     if (!termData) {
       return NextResponse.json(
         { error: `Term not found: ${term}` },
