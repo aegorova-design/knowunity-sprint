@@ -24,10 +24,10 @@ export async function POST(request: NextRequest) {
     // Prepare form data for OpenAI API
     const openaiFormData = new FormData();
     openaiFormData.append('file', audioFile);
-    openaiFormData.append('model', 'whisper-1');
+    openaiFormData.append('model', 'gpt-transcribe');
     openaiFormData.append('language', 'en');
-    // Pass keyword hints as prompt
-    openaiFormData.append('prompt', 'camouflage, mammal, hibernation');
+    // Pass keyword hints using gpt-transcribe's keyword hints feature
+    openaiFormData.append('keywords', 'camouflage, mammal, hibernation');
 
     // Call OpenAI Whisper API
     const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
