@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(mkdir -p /Users/anastasia/Desktop/knowunity-sprint/.claude; ls /Users/anastasia/Desktop/knowunity-sprint/.claude/launch.json 2>&1)"
+      "Bash(mkdir -p /Users/anastasia/Desktop/knowunity-sprint/.claude; ls /Users/anastasia/Desktop/knowunity-sprint/.claude/launch.json 2>&1)",
+      "Bash(node judge/run-tests.mjs)",
+      "Bash(node judge/run-tests.mjs claude-sonnet-5)",
+      "Bash(node -c judge/run-tests.mjs)",
+      "Bash(node -e ' *)",
+      "Bash(node -c judge/run-tests.mjs && rm -f /tmp/probe.mjs && node judge/run-tests.mjs claude-sonnet-5 2>&1)"
     ]
   },
   "enabledMcpjsonServers": [

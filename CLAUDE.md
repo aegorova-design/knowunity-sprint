@@ -42,7 +42,9 @@ When working on UI, use the storybook tools to read the component library before
 - `style-dictionary.config.mjs` — Style Dictionary build: reads `tokens/*.json`, writes `build/css/tokens.css`. Edit when the output format or variable naming needs to change.
 - `build/css/tokens.css` — generated CSS custom properties, tracked in git. Never hand-edit; change the token and run `npm run tokens`.
 - `reference/*.png` — screenshots of the shipped beta and existing app flows referenced in design-brief.md. Check when comparing against what's already live.
-- `package.json` — scripts (`dev`, `build`, `start`, `lint`, `tokens`) and dependencies.
+- `package.json` — scripts (`dev`, `build`, `start`, `lint`, `tokens`, `tokens:check`, `check:tokens`, `storybook`, `build-storybook`, `chromatic`) and dependencies.
+- `scripts/check-tokens.mjs` — run by `npm run tokens:check`. Fails if any CSS in `src/` reads a `var(--x)` that neither `build/css/tokens.css` nor the same file defines, and flags banned `var(--token, fallback)` forms.
+- `scripts/check-hex.mjs` — run by `npm run check:tokens`. Fails if any non-comment line in `src/` (stories excluded) carries a raw hex colour, printing file and line for each.
 - `tsconfig.json` — compiler options and the `@/*` path alias.
 - `next.config.ts` — Next.js config, currently empty.
 - `eslint.config.mjs` — lint rules (next/core-web-vitals + next/typescript).

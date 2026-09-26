@@ -9,6 +9,7 @@
     "lint": "eslint",
     "tokens": "style-dictionary build --config style-dictionary.config.mjs",
     "tokens:check": "node scripts/check-tokens.mjs",
+    "check:tokens": "node scripts/check-hex.mjs",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "chromatic": "node --env-file=.env.local ./node_modules/.bin/chromatic"

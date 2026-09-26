@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 
+import tokens from "../../tokens/tokens.json";
+
 import { greed } from "./fonts";
 import "./globals.css";
 
@@ -9,14 +11,18 @@ export const metadata: Metadata = {
     "Explain the key ideas from a section out loud, and Knowie answers in text.",
 };
 
+// --color-background-page (color.navy.950). Read from tokens/tokens.json
+// rather than hand-copied, so the two can't drift apart.
+const themeColorHex = tokens.color.navy["950"].$value.hex;
+
 // Next 16 keeps viewport separate from metadata, and both are Server Component
 // exports only. A page that takes 'use client' cannot carry either.
 export const viewport: Viewport = {
-  // Mirrors --color-background-page (color.navy.950) from build/css/tokens.css.
-  // It is a raw hex because this is browser chrome, not CSS: Safari reads the
-  // meta tag before any stylesheet, so a var() here would resolve to nothing.
-  // If that token changes, change this with it — nothing links the two.
-  themeColor: "#090c18",
+  // This is browser chrome, not CSS: Safari reads the meta tag before any
+  // stylesheet, so a var() here would resolve to nothing — the value has to
+  // be a literal at this call site, sourced from the token above instead of
+  // typed out a second time.
+  themeColor: themeColorHex,
   viewportFit: "cover",
   maximumScale: 1,
 };
