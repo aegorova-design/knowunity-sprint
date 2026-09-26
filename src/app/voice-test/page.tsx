@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 export default function VoiceTestPage() {
   const [passcode, setPasscode] = useState('');
@@ -58,12 +58,36 @@ function VoiceTestApp() {
   const [transcriptionTime, setTranscriptionTime] = useState(0);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [error, setError] = useState('');
+  const [debugLog, setDebugLog] = useState<string[]>([]);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
   const startTimeRef = useRef<number>(0);
   const audioElementRef = useRef<HTMLAudioElement>(null);
+
+  const addDebugLog = (message: string) => {
+    console.log('[voice-test]', message);
+    setDebugLog((prev) => [...prev.slice(-9), `${new Date().toLocaleTimeString()}: ${message}`]);
+  };
+
+  useEffect(() => {
+    const handleError = (event: ErrorEvent) => {
+      addDebugLog(`UNCAUGHT ERROR: ${event.message}`);
+    };
+
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      addDebugLog(`UNHANDLED REJECTION: ${event.reason}`);
+    };
+
+    window.addEventListener('error', handleError);
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+
+    return () => {
+      window.removeEventListener('error', handleError);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    };
+  }, []);
 
   const detectAudioFormat = (): 'audio/webm' | 'audio/mp4' => {
     const options = [
@@ -145,80 +169,102 @@ function VoiceTestApp() {
   };
 
   const transcribeAudio = async () => {
-    if (!audioElementRef.current || !audioElementRef.current.src) {
-      setError('No recording available');
-      return;
-    }
-
-    setIsTranscribing(true);
-    setError('');
-    setTranscript('');
-
     try {
+      addDebugLog('Transcribe tap received');
+
+      if (!audioElementRef.current || !audioElementRef.current.src) {
+        addDebugLog('ERROR: No audio element or src');
+        setError('No recording available');
+        return;
+      }
+
+      addDebugLog(`Audio src present: ${audioElementRef.current.src.substring(0, 20)}...`);
+
+      setIsTranscribing(true);
+      setError('');
+      setTranscript('');
+
       // Get blob from the audio URL (which is a blob URL)
       let blob: Blob;
       try {
+        addDebugLog('Fetching audio blob from URL...');
         const response = await fetch(audioElementRef.current.src);
         if (!response.ok) {
           throw new Error(`Failed to fetch audio blob: ${response.status}`);
         }
         blob = await response.blob();
+        addDebugLog(`Blob fetched: size=${blob.size}, type=${blob.type}`);
       } catch (err) {
-        throw new Error(`Failed to retrieve recording: ${err instanceof Error ? err.message : String(err)}`);
+        const errMsg = err instanceof Error ? err.message : String(err);
+        addDebugLog(`ERROR fetching blob: ${errMsg}`);
+        throw new Error(`Failed to retrieve recording: ${errMsg}`);
       }
 
       if (blob.size === 0) {
+        addDebugLog('ERROR: Blob size is 0');
         throw new Error('Empty recording');
       }
 
       // Determine file extension based on format
       const fileExt = audioFormat === 'audio/mp4' ? 'm4a' : (audioFormat === 'audio/webm' ? 'webm' : 'webm');
       const fileName = `recording.${fileExt}`;
+      addDebugLog(`File format: ${audioFormat}, extension: ${fileExt}`);
 
       const formData = new FormData();
       formData.append('audio', blob, fileName);
+      addDebugLog('FormData created with audio file');
 
       let res: Response;
       const startTime = Date.now();
       try {
+        addDebugLog('Sending fetch to /api/voice-test/transcribe...');
         res = await fetch('/api/voice-test/transcribe', {
           method: 'POST',
           body: formData
         });
+        addDebugLog(`Fetch response received: status=${res.status}`);
       } catch (err) {
-        throw new Error(`Network error: ${err instanceof Error ? err.message : String(err)}`);
+        const errMsg = err instanceof Error ? err.message : String(err);
+        addDebugLog(`ERROR: Fetch failed: ${errMsg}`);
+        throw new Error(`Network error: ${errMsg}`);
       }
 
       const transcribeTime = Date.now() - startTime;
       setTranscriptionTime(transcribeTime);
+      addDebugLog(`Transcription took ${transcribeTime}ms`);
 
       let data: any;
       try {
         data = await res.json();
+        addDebugLog(`Response JSON parsed`);
       } catch (err) {
+        const errMsg = err instanceof Error ? err.message : String(err);
+        addDebugLog(`ERROR: Failed to parse JSON: ${errMsg}`);
         throw new Error(`Invalid response from server: ${res.status} ${res.statusText}`);
       }
 
       if (!res.ok) {
-        if (data.error === 'empty_recording') {
-          throw new Error('Empty recording');
-        } else if (data.error === 'api_error') {
-          throw new Error('OpenAI transcription API error');
-        } else {
-          throw new Error(`API error (${res.status}): ${data.error || data.message || res.statusText}`);
-        }
+        const errorMsg = data.error === 'empty_recording' ? 'Empty recording' :
+                         data.error === 'api_error' ? 'OpenAI transcription API error' :
+                         `API error (${res.status}): ${data.error || data.message || res.statusText}`;
+        addDebugLog(`ERROR: ${errorMsg}`);
+        throw new Error(errorMsg);
       }
 
       const transcript = data.transcript || '';
       if (!transcript) {
+        addDebugLog('ERROR: No transcript in response');
         throw new Error('No transcript returned from API');
       }
+      addDebugLog(`Transcript received: ${transcript.substring(0, 30)}...`);
       setTranscript(transcript);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : String(err);
+      addDebugLog(`EXCEPTION: ${errorMessage}`);
       setError(errorMessage);
     } finally {
       setIsTranscribing(false);
+      addDebugLog('Transcribe operation complete');
     }
   };
 
@@ -274,6 +320,27 @@ function VoiceTestApp() {
         </button>
       </div>
 
+      {debugLog.length > 0 && (
+        <div style={{
+          marginBottom: '20px',
+          padding: '10px',
+          backgroundColor: '#f0f0f0',
+          borderRadius: '4px',
+          fontSize: '12px',
+          color: '#333',
+          maxHeight: '150px',
+          overflowY: 'auto',
+          border: '1px solid #ccc'
+        }}>
+          <strong style={{ color: '#333' }}>Debug Log:</strong>
+          {debugLog.map((log, idx) => (
+            <div key={idx} style={{ color: log.includes('ERROR') ? '#d32f2f' : '#333', marginTop: '4px' }}>
+              {log}
+            </div>
+          ))}
+        </div>
+      )}
+
       {error && (
         <div style={{ backgroundColor: '#ffebee', padding: '10px', marginBottom: '20px', color: '#c62828' }}>
           {error}
@@ -281,9 +348,9 @@ function VoiceTestApp() {
       )}
 
       {transcript && (
-        <div style={{ marginBottom: '20px', padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
-          <strong>Transcript:</strong>
-          <p>{transcript}</p>
+        <div style={{ marginBottom: '20px', padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '4px', color: '#333' }}>
+          <strong style={{ color: '#333' }}>Transcript:</strong>
+          <p style={{ color: '#333' }}>{transcript}</p>
           <small style={{ color: '#666' }}>
             Format: {audioFormat} | Recording: {recordingLength}s | Transcription time: {transcriptionTime}ms
           </small>
