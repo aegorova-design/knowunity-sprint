@@ -59,6 +59,12 @@ function VoiceTestApp() {
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [error, setError] = useState('');
   const [debugLog, setDebugLog] = useState<string[]>([]);
+  const [selectedTerm, setSelectedTerm] = useState<'camouflage' | 'mammal' | 'hibernation'>('camouflage');
+  const [verdict, setVerdict] = useState<string | null>(null);
+  const [judgmentDetails, setJudgmentDetails] = useState<any>(null);
+  const [isJudging, setIsJudging] = useState(false);
+  const [timings, setTimings] = useState<{ transcription: number; judge: number; total: number } | null>(null);
+  const totalStartTimeRef = useRef<number>(0);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -183,6 +189,10 @@ function VoiceTestApp() {
   const transcribeAudio = async () => {
     // Immediate logging - highest priority
     console.log('[TRANSCRIBE] Button clicked');
+    totalStartTimeRef.current = Date.now();
+    setVerdict(null);
+    setJudgmentDetails(null);
+
     try {
       addDebugLog('Transcribe tap received');
 
@@ -252,12 +262,32 @@ function VoiceTestApp() {
       }
 
       const transcript = data.transcript || '';
-      if (!transcript) {
-        addDebugLog('ERROR: No transcript in response');
-        throw new Error('No transcript returned from API');
-      }
-      addDebugLog(`Transcript received: ${transcript.substring(0, 30)}...`);
+      addDebugLog(`Transcript received: ${transcript || '(empty)'}`);
       setTranscript(transcript);
+
+      // If transcript is empty, mark as unclear without calling judge
+      if (!transcript) {
+        addDebugLog('Transcript is empty, setting verdict to unclear');
+        setVerdict('unclear');
+        setJudgmentDetails({
+          verdict: 'unclear',
+          ideas_hit: [],
+          ideas_missing: [],
+          bonus_hit: [],
+          contradiction: null,
+          hint_target: null,
+          reason: 'No speech detected'
+        });
+        const totalTime = Date.now() - totalStartTimeRef.current;
+        setTimings({
+          transcription: transcribeTime,
+          judge: 0,
+          total: totalTime
+        });
+      } else {
+        // Call judge with the transcript
+        await callJudge(transcript, transcribeTime);
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : String(err);
       addDebugLog(`EXCEPTION: ${errorMessage}`);
@@ -268,9 +298,109 @@ function VoiceTestApp() {
     }
   };
 
+  const callJudge = async (transcript: string, transcribeTime: number) => {
+    setIsJudging(true);
+    const judgeStartTime = Date.now();
+
+    try {
+      addDebugLog(`Calling /api/judge with term=${selectedTerm}...`);
+
+      let judgmentData = null;
+      let retries = 0;
+
+      // Retry once on empty/invalid response
+      while (retries < 2 && !judgmentData) {
+        try {
+          const res = await fetch('/api/judge', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              term: selectedTerm,
+              transcript
+            })
+          });
+
+          if (!res.ok) {
+            addDebugLog(`Judge API error: ${res.status}`);
+            if (retries < 1) {
+              retries++;
+              continue;
+            } else {
+              throw new Error(`Judge API error: ${res.status}`);
+            }
+          }
+
+          const data = await res.json();
+
+          if (!data.verdict) {
+            addDebugLog(`No verdict in response, retry ${retries + 1}`);
+            if (retries < 1) {
+              retries++;
+              continue;
+            } else {
+              throw new Error('No verdict in response');
+            }
+          }
+
+          judgmentData = data;
+          addDebugLog(`Judgment received: verdict=${data.verdict}`);
+        } catch (err) {
+          if (retries < 1) {
+            retries++;
+            addDebugLog(`Judge call failed, retrying...`);
+            continue;
+          } else {
+            throw err;
+          }
+        }
+      }
+
+      if (!judgmentData) {
+        throw new Error('Failed to get judgment');
+      }
+
+      setVerdict(judgmentData.verdict);
+      setJudgmentDetails(judgmentData);
+
+      const judgeTime = Date.now() - judgeStartTime;
+      const totalTime = Date.now() - totalStartTimeRef.current;
+      setTimings({
+        transcription: transcribeTime,
+        judge: judgeTime,
+        total: totalTime
+      });
+      addDebugLog(`Judgment complete: ${judgeTime}ms, total: ${totalTime}ms`);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      addDebugLog(`JUDGE ERROR: ${errorMessage}`);
+      setError('Knowie is taking a moment, try again.');
+    } finally {
+      setIsJudging(false);
+    }
+  };
+
   return (
     <div style={{ maxWidth: '600px', margin: '20px auto', padding: '20px', fontFamily: 'monospace' }}>
       <h1>Voice Test</h1>
+
+      <div style={{ marginBottom: '20px' }}>
+        <label style={{ display: 'block', marginBottom: '8px', color: '#333' }}>Term:</label>
+        <select
+          value={selectedTerm}
+          onChange={(e) => setSelectedTerm(e.target.value as 'camouflage' | 'mammal' | 'hibernation')}
+          style={{
+            width: '100%',
+            padding: '8px',
+            fontSize: '14px',
+            borderRadius: '4px',
+            border: '1px solid #ccc'
+          }}
+        >
+          <option value="camouflage">camouflage</option>
+          <option value="mammal">mammal</option>
+          <option value="hibernation">hibernation</option>
+        </select>
+      </div>
 
       <div style={{ marginBottom: '20px' }}>
         <button
@@ -354,9 +484,35 @@ function VoiceTestApp() {
         <div style={{ marginBottom: '20px', padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '4px', color: '#333' }}>
           <strong style={{ color: '#333' }}>Transcript:</strong>
           <p style={{ color: '#333' }}>{transcript}</p>
-          <small style={{ color: '#666' }}>
-            Format: {audioFormat} | Recording: {recordingLength}s | Transcription time: {transcriptionTime}ms
-          </small>
+        </div>
+      )}
+
+      {verdict && (
+        <div style={{ marginBottom: '20px', padding: '10px', backgroundColor: '#e8f5e9', borderRadius: '4px', color: '#333' }}>
+          <strong style={{ color: '#333' }}>Judgment: {verdict}</strong>
+          {judgmentDetails && (
+            <>
+              <div style={{ marginTop: '8px', fontSize: '14px' }}>
+                <div>Ideas hit: {(judgmentDetails.ideas_hit || []).join(', ') || '(none)'}</div>
+                <div>Hint target: {judgmentDetails.hint_target || '(none)'}</div>
+                {judgmentDetails.contradiction && <div>Contradiction: {judgmentDetails.contradiction}</div>}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {timings && (
+        <div style={{ marginBottom: '20px', padding: '10px', backgroundColor: '#e3f2fd', borderRadius: '4px', color: '#333', fontSize: '12px' }}>
+          <strong>Timings:</strong>
+          <div>Transcription: {timings.transcription}ms</div>
+          <div>Judge: {timings.judge}ms</div>
+          <div>Total: {timings.total}ms</div>
+          {audioFormat && recordingLength && transcriptionTime && (
+            <div style={{ marginTop: '8px', fontSize: '11px', color: '#666' }}>
+              Format: {audioFormat} | Recording: {recordingLength}s
+            </div>
+          )}
         </div>
       )}
     </div>
