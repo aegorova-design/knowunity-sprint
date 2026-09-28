@@ -28,7 +28,7 @@ export type PlanSection = {
   result?: PlanResult;
 };
 
-export const SUBJECT = 'World History';
+export const SUBJECT = 'Life Science';
 
 /** The voice step's caption, identical on every section. */
 const VOICE_CAPTION = 'Explain 3 terms from this section out loud, ~2 min';
@@ -60,20 +60,23 @@ const voice = (): PlanStep => ({
 /** Nothing started — every step still to do. */
 export const PLAN_NOTHING_STARTED: PlanSection[] = [
   {
-    title: 'The feudal system',
+    // Rubric's own `topic` field (judge/judging-rubric.json), not a separate
+    // section name invented here — the three learning steps below are this
+    // section's voice capstone's three terms.
+    title: 'Nature and animals',
     learning: [
-      learning('What feudalism was', 'NotStarted'),
-      learning('Lords, vassals and fiefs', 'NotStarted'),
-      learning('Life on the manor', 'NotStarted'),
+      learning('How camouflage works', 'NotStarted'),
+      learning('Why animals hibernate', 'NotStarted'),
+      learning('What makes a mammal', 'NotStarted'),
     ],
     voice: voice(),
   },
   {
-    title: 'The Black Death',
+    title: 'Ecosystems and food chains',
     learning: [
-      learning('How the plague spread', 'NotStarted'),
-      learning('Life after the plague', 'NotStarted'),
-      learning('Wages, land and labour', 'NotStarted'),
+      learning('What a food chain is', 'NotStarted'),
+      learning('Producers and consumers', 'NotStarted'),
+      learning('Energy moving through an ecosystem', 'NotStarted'),
     ],
     voice: voice(),
   },
@@ -84,9 +87,9 @@ export const PLAN_IN_PROGRESS: PlanSection[] = [
   {
     ...PLAN_NOTHING_STARTED[0],
     learning: [
-      learning('What feudalism was', 'Completed', 'Done'),
-      learning('Lords, vassals and fiefs', 'InProgress', 'Study and quiz, in progress'),
-      learning('Life on the manor', 'InProgress', 'Study and quiz, in progress'),
+      learning('How camouflage works', 'Completed', 'Done'),
+      learning('Why animals hibernate', 'InProgress', 'Study and quiz, in progress'),
+      learning('What makes a mammal', 'InProgress', 'Study and quiz, in progress'),
     ],
   },
   PLAN_NOTHING_STARTED[1],
@@ -127,9 +130,9 @@ const DONE_SECTION = (result: PlanResult): PlanSection => ({
   ...PLAN_NOTHING_STARTED[0],
   result,
   learning: [
-    learning('What feudalism was', 'Completed', 'Done'),
-    learning('Lords, vassals and fiefs', 'Completed', 'Done'),
-    learning('Life on the manor', 'Completed', 'Done'),
+    learning('How camouflage works', 'Completed', 'Done'),
+    learning('Why animals hibernate', 'Completed', 'Done'),
+    learning('What makes a mammal', 'Completed', 'Done'),
   ],
   voice: { ...voice(), state: 'Completed', caption: 'Done' },
 });
@@ -155,7 +158,7 @@ export const PLAN_TO_REVISIT: PlanSection[] = [
     status: '1 of 3 on your own',
     message: {
       state: 'ToRevisit',
-      message: 'Manorialism needed a hint. Serfdom was revealed.',
+      message: 'Mammal needed a hint. Hibernation was revealed.',
       helper: 'Try them on your own in a couple of days.',
       action: 'Do it now anyway',
     },

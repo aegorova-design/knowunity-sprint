@@ -4,8 +4,24 @@
  * the same way. `[term]` is the position in the session — 1, 2, 3 — not the
  * term's name, per SPEC.md.
  *
- * The three terms are the ones the happy path in SPEC.md walks through.
+ * The three terms are camouflage, hibernation and mammal — the same three
+ * `judge/judging-rubric.json` defines, imported here through `judge-config.ts`
+ * rather than re-typed. `question`, `reference_answer` and each key idea's
+ * `label` come straight off the rubric, so demo mode's copy and real mode's
+ * judging both describe the same term rather than two hand-maintained
+ * versions that can drift apart. Only the scripted dialogue below — the
+ * `heard` quotes, the hint text and the "I don't know" nudge — is authored
+ * here: the rubric has no multi-turn script, because demo mode's script and
+ * real mode's judging are deliberately two different paths (see script.ts).
+ *
+ * Positions were assigned to match the scripted ladder each one runs:
+ * camouflage passes unaided (position 1), hibernation runs the full ladder to
+ * a reveal (position 2, by design-owner call), mammal passes after one hint
+ * (position 3). The rubric's own `expected_difficulty` field agrees with this
+ * ordering — unaided, hardest, hint — which is what suggested it.
  */
+
+import { rubric } from '@/lib/judge-config';
 
 export const TERM_POSITIONS = ['1', '2', '3'] as const;
 
@@ -29,8 +45,10 @@ export type Term = {
   /**
    * What the mocked recogniser "heard", by attempt: `heard[0]` is the take
    * `11` quotes back, `heard[1]` the one `12` quotes, `heard[2]` the one `12b`
-   * quotes. Judging is hard-coded (sprint-context.md), so the transcript is
-   * scripted too — nothing the student says changes it.
+   * quotes. Demo mode's judging is scripted (script.ts), so the transcript is
+   * scripted too — nothing the student says changes it in demo mode. Real
+   * mode shows the actual transcript instead; see the recording/checking
+   * screens.
    *
    * Three, not two, because `12b Not quite, last attempt` follows a take of
    * its own. The frame reuses `12`'s words there, which would show a student
@@ -43,24 +61,31 @@ export type Term = {
    */
   heard: readonly [string, string, string];
   /**
-   * The hint ladder's two rungs — `11 Not quite, hint 1 of 2` shows the first,
-   * `12 Partial, hint 2 of 2` the second. Each one answers the take above it
-   * rather than restating the question.
+   * The hint ladder's two rungs in demo mode — `11 Not quite, hint 1 of 2`
+   * shows the first, `12 Partial, hint 2 of 2` the second. Each one answers
+   * the take above it rather than restating the question.
+   *
+   * Real mode's hints come from a different place: `rubric.terms[x].hints`,
+   * keyed by idea and picked by the judge's `hint_target`, not by attempt
+   * number. See sprint plan, stage D.
    */
   hints: readonly [string, string];
   /**
-   * The answer itself, as `13 Answer revealed` prints it. It names all four
-   * key ideas in prose, because the chips beside it are the same four in a
-   * word each — the block is what makes them mean something.
+   * The answer itself, as `13 Answer revealed` prints it — `reference_answer`
+   * off the rubric, unedited.
    */
   answer: string;
   /**
-   * The key ideas a full answer covers — what `10 Got it` ticks off as chips
-   * and what `13 Answer revealed` lists under the answer. Four per term, which
-   * is what every Mockups v2 frame that draws them draws.
+   * The term's key ideas — what `10 Got it` ticks off as chips and what
+   * `13 Answer revealed` lists under the answer. Read off the rubric's own
+   * `type: "key"` ideas for this term, in rubric order; bonus ideas (mammal's
+   * "Hair or fur") are left out, because these chips are what a pass actually
+   * requires, not everything the judge can notice.
    *
-   * They are the judging model made visible, so they live with the term rather
-   * than with the screen that shows them: three screens show the same four.
+   * Camouflage has two, hibernation three, mammal two — not a fixed four the
+   * way the original Mockups v2 frames drew. Padding to four with an idea the
+   * rubric does not have would say the judge checks something it does not; a
+   * design-owner call, flagged rather than buried.
    */
   keyIdeas: readonly string[];
 };
@@ -70,88 +95,93 @@ const PROMPT_CAPTION = 'Explain it like you would to a classmate.';
 
 export const TERM_PROMPT_CAPTION = PROMPT_CAPTION;
 
+type RubricTerm = (typeof rubric.terms)[number];
+
+function rubricTerm(id: string): RubricTerm {
+  const found = rubric.terms.find((term) => term.id === id);
+  if (!found) throw new Error(`Rubric term not found: ${id}`);
+  return found;
+}
+
+/** "What is camouflage?" -> "In your own words, what is camouflage?" */
+function promptFor(term: RubricTerm): string {
+  return `In your own words, ${term.question.charAt(0).toLowerCase()}${term.question.slice(1)}`;
+}
+
+function keyIdeaLabels(term: RubricTerm): readonly string[] {
+  return term.ideas.filter((idea) => idea.type === 'key').map((idea) => idea.label);
+}
+
+const CAMOUFLAGE = rubricTerm('camouflage');
+const HIBERNATION = rubricTerm('hibernation');
+const MAMMAL = rubricTerm('mammal');
+
 export const TERMS: Record<TermPosition, Term> = {
   '1': {
     position: '1',
-    name: 'Feudalism',
-    prompt: 'In your own words, what does feudalism mean?',
-    unknownHint: 'Think about what a lord handed out, and what he expected back for it.',
-    // Both takes and both rungs read off the Mockups v2 frames "11 Not quite,
-    // hint 1 of 2" (13662:14538) and "12 Partial, hint 2 of 2" (13662:14543),
-    // which draw this term even though the script never sends it here — term 1
-    // passes. The typed path can still reach it, on an answer under 20
-    // characters, and then this is the copy that shows.
+    name: 'Camouflage',
+    prompt: promptFor(CAMOUFLAGE),
+    unknownHint: "Think about how the animal's colours or shape help it avoid being spotted.",
+    // The scripted run never sends term 1 through the ladder — it passes on
+    // the first attempt — so these three only surface on the typed path, on
+    // an answer under 20 characters. Written to plausibly fail anyway: the
+    // first echoes the rubric's own listed contradiction (bright colours to
+    // be seen, not to hide), the second and third have "blends in" but never
+    // say why that matters.
     heard: [
-      '“Feudalism was when people voted for local leaders who made laws for their area.”',
-      '“Feudalism is when the king gives land to nobles, and peasants work it in exchange for protection.”',
-      '“The nobles paid the king taxes out of the land, and the peasants did all the farming.”',
+      '“Camouflage is when an animal has really bright colours so predators notice it and stay away.”',
+      '“It’s when an animal’s colours match where it lives, so it’s harder to see.”',
+      '“The animal blends into the background using its colours and shape.”',
     ],
     hints: [
-      'Nobody voted. Think about land. Who controlled it, and what did other people give in exchange for using it?',
-      'What did the nobles give the king back? It was not money.',
+      'Bright colours that stand out are the opposite of camouflage. Think about matching, not standing out.',
+      'You have the blending in part. Now think about why an animal would want to be hard to see.',
     ],
-    // Read off the Mockups v2 frame "13 Answer revealed" (13662:14544).
-    answer:
-      'Land was traded for loyalty and service. Nobles held land from the king and owed him support, and peasants worked that land in exchange for protection.',
-    // Read off the Mockups v2 frame "10 Got it" (13662:14537). Frame 13 lists
-    // the same four in a different order; one order is kept for both, because
-    // the set is what matters and a reshuffle between two screens showing the
-    // same term would read as a change.
-    keyIdeas: ['Land', 'Loyalty and service', 'Protection', 'Peasant labour'],
+    answer: CAMOUFLAGE.reference_answer,
+    keyIdeas: keyIdeaLabels(CAMOUFLAGE),
   },
   '2': {
     position: '2',
-    name: 'Serfdom',
-    prompt: 'In your own words, what does serfdom mean?',
-    unknownHint: 'Think about who was tied to the land, and what that stopped them doing.',
-    // Written here, not read off a frame: every Mockups v2 frame that draws a
-    // take draws Feudalism's, and this is the term the script actually walks
-    // down the ladder. Pitched to miss one key idea at a time — the first take
-    // has the wrong idea, the second has three of the four. A design-owner
-    // call, flagged rather than buried.
+    name: 'Hibernation',
+    prompt: promptFor(HIBERNATION),
+    unknownHint: "Think about what an animal's body does through the coldest months, and why.",
+    // Written to run the full ladder: the first take borrows the rubric's own
+    // listed contradiction (migration, not hibernation) for an honest Miss;
+    // the second has the state but not the reason, for a Partial; the third
+    // is a different wrong-ish take, not a repeat of the second, per the
+    // three-takes rule above.
     heard: [
-      '“Serfdom is when people were slaves and the lord could sell them whenever he wanted.”',
-      '“Serfs were peasants who had to stay on the land and farm it for the lord.”',
-      '“Serfs stayed on the land and farmed it, and they handed the lord part of what they grew.”',
+      '“Hibernation is when animals fly south for the winter to find food.”',
+      '“It’s when an animal goes into a long sleep through the winter.”',
+      '“Animals hibernate because it’s too cold to move around, so they just doze off in their den.”',
     ],
     hints: [
-      'Not slaves — a serf came with the land rather than being owned apart from it. What could they not do, and what were they still allowed to keep?',
-      'That is most of it. What did the serf get back from the lord in return for the work?',
+      "Not migration — the animal doesn't go anywhere. Think about what it's doing, and where it stays.",
+      'That is the state. Now think about what happens inside its body, or why it needs to do this at all.',
     ],
-    // Written here: no frame draws Serfdom's answer. Named so that each of
-    // the four chips below has a clause of its own, which is what the frame's
-    // Feudalism answer does.
-    answer:
-      'Serfs were bound to the land and could not leave it. They owed the lord labour and a share of the harvest, and kept in return the right to farm their own strips, and his protection.',
-    // Read off the Mockups v2 frame "18 Summary, term tapped" (13662:14542),
-    // the one frame that draws Serfdom's own chips rather than Feudalism's.
-    keyIdeas: ['Bound to the land', 'Owed labour', 'Right to farm', 'Protection'],
+    answer: HIBERNATION.reference_answer,
+    keyIdeas: keyIdeaLabels(HIBERNATION),
   },
   '3': {
     position: '3',
-    name: 'Manorialism',
-    prompt: 'In your own words, what does manorialism mean?',
-    unknownHint: 'Think about the estate itself — who worked it, and who it had to feed.',
-    // Written here too, and for the same reason. The script only takes this
-    // term to the first rung — attempt 2 passes — so the second take and the
-    // second hint are there for the typed path and for completeness.
+    name: 'Mammal',
+    prompt: promptFor(MAMMAL),
+    unknownHint: "Think about what's special about how a mammal mother feeds and keeps her baby warm.",
+    // The script only takes this term to the first rung — attempt 2 passes —
+    // so the second take and second hint exist for the typed path and for
+    // completeness. The third take leans on the rubric's own "neutral" fact
+    // (live birth) that neither helps nor hurts a real verdict.
     heard: [
-      '“Manorialism is basically the same as feudalism, it is about kings and knights.”',
-      '“It is the manor, where the lord lived and the peasants farmed the land around it.”',
-      '“The manor grew crops and sold them at the market in the nearest town.”',
+      '“A mammal is an animal that has fur and lives on land.”',
+      '“A mammal is a warm-blooded animal, and the mothers feed their babies milk.”',
+      '“Mammals are animals that give birth to live babies instead of laying eggs.”',
     ],
     hints: [
-      'Feudalism is the deal between the lords. Manorialism is the place it happened. Think about one estate, and who worked which part of it.',
-      'You have the place. Now think about what that estate had to produce, and who it had to feed.',
+      "Fur is a clue, but think about what a mammal mother gives her baby to eat right after it's born.",
+      'You have the milk and the warmth. Think about whether there is anything else mammals usually have.',
     ],
-    // Written here too, and named against the same four chips.
-    answer:
-      "The manor was the estate itself: the lord's own demesne, worked for him, and the plots the peasants farmed for themselves. Between them it had to feed everyone on it.",
-    // Written here, not read off a frame: no Mockups v2 frame draws
-    // Manorialism's chips — every one of them draws Feudalism's. Kept parallel
-    // to the other two in register and length, and pitched at the same grain
-    // as this term's own hint. A design-owner call, flagged rather than buried.
-    keyIdeas: ['The estate', "Lord's demesne", 'Peasant plots', 'Self-sufficient'],
+    answer: MAMMAL.reference_answer,
+    keyIdeas: keyIdeaLabels(MAMMAL),
   },
 };
 
