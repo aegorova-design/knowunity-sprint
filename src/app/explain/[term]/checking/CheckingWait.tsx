@@ -44,7 +44,7 @@ import { useIsDemoMode } from '../../demoMode';
 import { withQuery } from '../../href';
 import { WAIT_MS } from '../../script';
 import type { TermPosition } from '../../session';
-import { readTurn, setJudgeResult } from '../../turnStore';
+import { readTurn, recordHintTarget, setJudgeResult } from '../../turnStore';
 import { realVerdictSegment } from '../../realVerdict';
 import { VoicePasscodePrompt } from '../../VoicePasscodePrompt';
 
@@ -210,6 +210,10 @@ export function CheckingWait({
         if (cancelled) return;
 
         setJudgeResult(transcript, verdict);
+        // Counted here, once, right as the verdict arrives — stage D's rule:
+        // hint level is per idea, by how many times that idea specifically
+        // has been targeted, which only this running count can answer.
+        if (verdict.hint_target) recordHintTarget(currentTerm, verdict.hint_target);
         await settle();
         goTo(realVerdictSegment(currentAttempt, verdict.verdict));
       } catch {

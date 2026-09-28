@@ -3,9 +3,8 @@
 /**
  * The verdict body on `12 Partial, hint 2 of 2` — demo mode's scripted
  * card, or real mode's actual transcript and hint. See `HintOneBody.tsx` for
- * why this branch has to live in a client component, and for the same
- * caveat on real mode's hint text: it is a placeholder (the idea's first
- * hint level, not yet the per-idea rung the rule wants — sprint plan stage D).
+ * why this branch has to live in a client component, and for how the hint
+ * level is picked (stage D: per idea, by how many times it's been targeted).
  */
 
 import { useRouter } from 'next/navigation';
@@ -18,7 +17,7 @@ import { rubric } from '@/lib/judge-config';
 
 import { useIsDemoMode } from '../../demoMode';
 import type { Term } from '../../session';
-import { readTurn } from '../../turnStore';
+import { hintLevelFor, readTurn } from '../../turnStore';
 
 import '../../verdictBody.css';
 
@@ -70,7 +69,7 @@ export function HintTwoBody({ term }: { term: Term }) {
   const hintTarget = turn.verdict?.hint_target;
   const rubricTerm = rubric.terms.find((t) => t.id === term.rubricId);
   const hints = rubricTerm?.hints as Record<string, readonly [string, string]> | undefined;
-  const hintText = hintTarget ? hints?.[hintTarget]?.[0] : undefined;
+  const hintText = hintTarget ? hints?.[hintTarget]?.[hintLevelFor(term.position, hintTarget)] : undefined;
 
   return (
     <div className="verdictBody">

@@ -9,12 +9,10 @@
  * the buttons around this stay there, since their hrefs are attempt
  * arithmetic only and do not depend on which mode sent the student here.
  *
- * **Real mode's hint text is a placeholder**, not the full rule: it always
- * shows the targeted idea's first hint level, regardless of whether that
- * idea has already been nudged once before. The exact rule — "hint level is
- * per idea: how many times that idea has been targeted" — is sprint plan
- * stage D. What's real here is the verdict pose and the actual transcript;
- * getting the right rung of the right idea's hint is the next stage's job.
+ * Real mode's hint text is picked by `turnStore.hintLevelFor` — the idea's
+ * first level the first time it's targeted, the second level every time
+ * after (stage D). `CheckingWait` is what counts the targeting; this only
+ * reads the count.
  */
 
 import { useRouter } from 'next/navigation';
@@ -27,7 +25,7 @@ import { rubric } from '@/lib/judge-config';
 
 import { useIsDemoMode } from '../../demoMode';
 import type { Term } from '../../session';
-import { readTurn } from '../../turnStore';
+import { hintLevelFor, readTurn } from '../../turnStore';
 
 import '../../verdictBody.css';
 
@@ -90,7 +88,7 @@ export function HintOneBody({ term }: { term: Term }) {
   const hintTarget = turn.verdict?.hint_target;
   const rubricTerm = rubric.terms.find((t) => t.id === term.rubricId);
   const hints = rubricTerm?.hints as Record<string, readonly [string, string]> | undefined;
-  const hintText = hintTarget ? hints?.[hintTarget]?.[0] : undefined;
+  const hintText = hintTarget ? hints?.[hintTarget]?.[hintLevelFor(term.position, hintTarget)] : undefined;
 
   return (
     <div className="verdictBody">
