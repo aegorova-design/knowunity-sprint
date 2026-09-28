@@ -6,8 +6,9 @@
  *
  * The screen's job is to hand back two things: what Knowie heard, so the
  * student can see where it went wrong, and a nudge that answers *that* rather
- * than restating the question. Both are scripted per term — recognition and
- * judging are hard-coded (sprint-context.md), so the transcript is too.
+ * than restating the question. Demo mode scripts both per term; real mode
+ * shows the actual transcript and a hint picked from the judge's
+ * `hint_target` — see `HintOneBody.tsx`.
  *
  * **No key-idea chips here.** SPEC.md is explicit: on a hint screen they give
  * the answer away. The chips only come out once the term is resolved.
@@ -32,10 +33,8 @@
 
 import { notFound } from 'next/navigation';
 
-import { AnswerBlock } from '@/components/answer-block/AnswerBlock';
 import { Button } from '@/components/button/Button';
 import { Scaffold } from '@/components/scaffold/Scaffold';
-import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
 
 import { ActionStack } from '../../ActionStack';
 import { ButtonPair } from '../../ButtonPair';
@@ -43,8 +42,7 @@ import { withQuery } from '../../href';
 import { FIRST_ATTEMPT } from '../../script';
 import { TERMS, isTermPosition, nextTermHref } from '../../session';
 import { SessionAppBar } from '../SessionAppBar';
-
-import '../../verdictBody.css';
+import { HintOneBody } from './HintOneBody';
 
 export default async function HintOnePage({ params }: { params: Promise<{ term: string }> }) {
   const { term } = await params;
@@ -59,39 +57,7 @@ export default async function HintOnePage({ params }: { params: Promise<{ term: 
     <Scaffold
       size="iPhone 13"
       topNavigation={<SessionAppBar term={term} skipHref={nextTermHref(term)} />}
-      middleContent={
-        <div className="verdictBody">
-          {/* verdict="Miss" sets the pose and the title's colour together, so
-              the coral never carries the result on its own — "Not quite" and
-              Knowie's pose say it too.
-
-              **The caption is not frame 11's.** The two frames' captions are
-              swapped: frame 11 carries "You have three of the four key ideas"
-              over a take about people voting for local leaders, and frame 12
-              carries "That's a different idea" over a take that is nearly
-              right. Every other layer on each frame agrees with itself — the
-              title, the take and the hint label — so the caption is the one
-              that moved. Un-swapped here on the design owner's call.
-
-              One word is also cut. The caption arrives reading "Here's a
-              **bigger** nudge", which is what it would have said on the second
-              rung; on the first there is nothing for it to be bigger than. */}
-          <VerdictHeader
-            verdict="Miss"
-            title="Not quite"
-            caption="That&rsquo;s a different idea. Here&rsquo;s a nudge."
-            titleAs="h1"
-          />
-
-          {/* Figma "cards": the take quoted back, then the nudge that answers
-              it. Order matters — the student reads what they said first, so
-              the hint lands against it rather than in the abstract. */}
-          <div className="verdictCards">
-            <AnswerBlock kind="Said" label="What Knowie heard" body={current.heard[0]} />
-            <AnswerBlock kind="Hint" label="Hint 1 of 2" body={current.hints[0]} />
-          </div>
-        </div>
-      }
+      middleContent={<HintOneBody term={current} />}
       bottomContent={
         <ActionStack
           /* The screen's one Primary. Another go at the mic, on the next rung

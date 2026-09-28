@@ -29,6 +29,10 @@ export type TermPosition = (typeof TERM_POSITIONS)[number];
 
 export type Term = {
   position: TermPosition;
+  /** The rubric's own id (judge/judging-rubric.json) — what real mode sends
+   *  to `/api/judge` as `term`. Not the same as `position`: the rubric knows
+   *  nothing about session order. */
+  rubricId: string;
   /** The term itself, as the summary screen lists it. */
   name: string;
   /** The question Knowie asks, as the prompt heading. */
@@ -119,6 +123,7 @@ const MAMMAL = rubricTerm('mammal');
 export const TERMS: Record<TermPosition, Term> = {
   '1': {
     position: '1',
+    rubricId: CAMOUFLAGE.id,
     name: 'Camouflage',
     prompt: promptFor(CAMOUFLAGE),
     unknownHint: "Think about how the animal's colours or shape help it avoid being spotted.",
@@ -142,6 +147,7 @@ export const TERMS: Record<TermPosition, Term> = {
   },
   '2': {
     position: '2',
+    rubricId: HIBERNATION.id,
     name: 'Hibernation',
     prompt: promptFor(HIBERNATION),
     unknownHint: "Think about what an animal's body does through the coldest months, and why.",
@@ -164,6 +170,7 @@ export const TERMS: Record<TermPosition, Term> = {
   },
   '3': {
     position: '3',
+    rubricId: MAMMAL.id,
     name: 'Mammal',
     prompt: promptFor(MAMMAL),
     unknownHint: "Think about what's special about how a mammal mother feeds and keeps her baby warm.",

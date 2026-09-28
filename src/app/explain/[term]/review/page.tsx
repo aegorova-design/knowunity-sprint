@@ -28,6 +28,7 @@ import { Scaffold } from '@/components/scaffold/Scaffold';
 
 import { ActionStack } from '../../ActionStack';
 import { ButtonPair } from '../../ButtonPair';
+import { PendingAnswerGuard } from '../../PendingAnswerGuard';
 import { withQuery } from '../../href';
 import { parseAttempt } from '../../script';
 import { TERMS, formatTakeLength, isTermPosition, nextTermHref } from '../../session';
@@ -70,7 +71,12 @@ export default async function ReviewPage({
       topNavigation={<SessionAppBar term={term} skipHref={nextTermHref(term)} />}
       // The question stays up while the student listens back, so they can hear
       // their answer against what was asked. Same placement as 06 and 07.
-      middleContent={<TermPrompt prompt={TERMS[term].prompt} />}
+      middleContent={
+        <>
+          <PendingAnswerGuard term={term} />
+          <TermPrompt prompt={TERMS[term].prompt} />
+        </>
+      }
       bottomContent={
         // Figma's "bottom stack": the player over the action group.
         <div className="reviewScreen-bottom">

@@ -32,7 +32,8 @@ import { notFound } from 'next/navigation';
 
 import { Scaffold } from '@/components/scaffold/Scaffold';
 
-import { isTermPosition } from '../../session';
+import { PendingAnswerGuard } from '../../PendingAnswerGuard';
+import { TERMS, isTermPosition } from '../../session';
 import { SLOW_AFTER_MS, WAIT_MS, isSlowWait, parseAttempt } from '../../script';
 import { SessionAppBar } from '../SessionAppBar';
 import { CheckingWait } from './CheckingWait';
@@ -57,14 +58,23 @@ export default async function CheckingPage({
       size="iPhone 13"
       topNavigation={<SessionAppBar term={term} skipHref="" skipState="Disabled" />}
       middleContent={
-        <CheckingWait
-          resolveAfterMs={slow ? SLOW_AFTER_MS : WAIT_MS}
-          resolveHref={
-            slow
-              ? `/explain/${term}/checking/slow${queryString(query)}`
-              : verdictHref(term, attempt, query)
-          }
-        />
+        <>
+          <PendingAnswerGuard term={term} />
+          <CheckingWait
+            resolveAfterMs={slow ? SLOW_AFTER_MS : WAIT_MS}
+            resolveHref={
+              slow
+                ? `/explain/${term}/checking/slow${queryString(query)}`
+                : verdictHref(term, attempt, query)
+            }
+            // Real mode ignores the two props above entirely and runs the
+            // actual transcribe/judge call instead — see CheckingWait. Demo
+            // mode ignores these three.
+            term={term}
+            rubricId={TERMS[term].rubricId}
+            attempt={attempt}
+          />
+        </>
       }
     />
   );

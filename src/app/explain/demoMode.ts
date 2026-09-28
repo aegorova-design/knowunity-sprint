@@ -11,9 +11,11 @@
  * leaves whatever was last saved untouched.
  *
  * `sessionStorage`, not an in-memory store: unlike the current turn's working
- * state (typedAnswerStore.ts), this is meant to survive a reload — a demo
- * that dies on a refresh mid-walkthrough is not a usable demo mode.
+ * state (turnStore.ts), this is meant to survive a reload — a demo that dies
+ * on a refresh mid-walkthrough is not a usable demo mode.
  */
+
+import { useSyncExternalStore } from 'react';
 
 const STORAGE_KEY = 'explain:demoMode';
 
@@ -54,4 +56,20 @@ export function applyDemoParam(demoParam: string | null): void {
 
 export function readDemoMode(): boolean {
   return readStoredFlag();
+}
+
+function subscribeToNothing() {
+  return () => {};
+}
+
+/**
+ * Hydration-safe read of the flag for any client component that needs to
+ * branch on it (`DemoModeGate` inlines the same pattern for the badge
+ * itself). `getServerSnapshot` always says "off" — storage does not exist on
+ * the server, and matching that on the very first client render is what
+ * avoids a hydration mismatch when a previous navigation already saved the
+ * flag on.
+ */
+export function useIsDemoMode(): boolean {
+  return useSyncExternalStore(subscribeToNothing, readDemoMode, () => false);
 }

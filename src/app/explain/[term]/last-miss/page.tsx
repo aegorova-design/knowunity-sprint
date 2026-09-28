@@ -27,18 +27,15 @@
 
 import { notFound } from 'next/navigation';
 
-import { AnswerBlock } from '@/components/answer-block/AnswerBlock';
 import { Button } from '@/components/button/Button';
 import { Scaffold } from '@/components/scaffold/Scaffold';
-import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
 
 import { ActionStack } from '../../ActionStack';
 import { withQuery } from '../../href';
 import { parseAttempt } from '../../script';
 import { TERMS, isTermPosition } from '../../session';
 import { SessionAppBar } from '../SessionAppBar';
-
-import '../../verdictBody.css';
+import { LastMissBody } from './LastMissBody';
 
 export default async function LastMissPage({
   params,
@@ -59,27 +56,7 @@ export default async function LastMissPage({
     <Scaffold
       size="iPhone 13"
       topNavigation={<SessionAppBar term={term} skipHref="" skipState="Disabled" />}
-      middleContent={
-        <div className="verdictBody">
-          {/* Still a Miss, and still said in a word and a pose as well as a
-              colour. The caption does the work SPEC.md asks of this screen:
-              it names the end of the ladder and turns it into an offer, "let's
-              look at it together" rather than "you failed". */}
-          <VerdictHeader
-            verdict="Miss"
-            title="Not quite"
-            caption="That was the last hint. Let&rsquo;s look at it together."
-            titleAs="h1"
-          />
-
-          {/* One card. The third take, not the second — the frame reuses the
-              take from `12`, which would show the student their previous
-              answer straight after speaking again. See `component-gaps.md`. */}
-          <div className="verdictCards">
-            <AnswerBlock kind="Said" label="What Knowie heard" body={current.heard[2]} />
-          </div>
-        </div>
-      }
+      middleContent={<LastMissBody term={current} />}
       bottomContent={
         <ActionStack
           /* The screen's one Primary and its only action, with nothing under

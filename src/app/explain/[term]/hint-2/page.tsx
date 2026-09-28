@@ -23,10 +23,8 @@
 
 import { notFound } from 'next/navigation';
 
-import { AnswerBlock } from '@/components/answer-block/AnswerBlock';
 import { Button } from '@/components/button/Button';
 import { Scaffold } from '@/components/scaffold/Scaffold';
-import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
 
 import { ActionStack } from '../../ActionStack';
 import { ButtonPair } from '../../ButtonPair';
@@ -34,8 +32,7 @@ import { withQuery } from '../../href';
 import { FIRST_ATTEMPT } from '../../script';
 import { TERMS, isTermPosition, nextTermHref } from '../../session';
 import { SessionAppBar } from '../SessionAppBar';
-
-import '../../verdictBody.css';
+import { HintTwoBody } from './HintTwoBody';
 
 export default async function HintTwoPage({ params }: { params: Promise<{ term: string }> }) {
   const { term } = await params;
@@ -52,30 +49,7 @@ export default async function HintTwoPage({ params }: { params: Promise<{ term: 
       // Skip rule lists 12 among the live screens, and the bar has not moved
       // because nothing has resolved.
       topNavigation={<SessionAppBar term={term} skipHref={nextTermHref(term)} />}
-      middleContent={
-        <div className="verdictBody">
-          {/* The caption is frame 11's, not this frame's. The two frames'
-              captions are swapped — frame 12 carries "That's a different
-              idea" over a take that is nearly right, while frame 11 carries
-              this line over a take about people voting. Titles, takes and
-              hint labels all agree with their own frame, so the caption is
-              the one that moved. Un-swapped on the design owner's call. */}
-          <VerdictHeader
-            verdict="Partial"
-            title="Almost there"
-            caption="You have three of the four key ideas."
-            titleAs="h1"
-          />
-
-          <div className="verdictCards">
-            <AnswerBlock kind="Said" label="What Knowie heard" body={current.heard[1]} />
-            {/* "the last one" is the warning that the ladder is running out.
-                It is the label's job, not the caption's — the caption is busy
-                saying how close the answer already is. */}
-            <AnswerBlock kind="Hint" label="Hint 2 of 2, the last one" body={current.hints[1]} />
-          </div>
-        </div>
-      }
+      middleContent={<HintTwoBody term={current} />}
       bottomContent={
         <ActionStack
           primary={

@@ -20,7 +20,7 @@ import { TextField } from '@/components/text-field/TextField';
 import { ActionStack } from '../../ActionStack';
 import { ButtonPair } from '../../ButtonPair';
 import { withQuery } from '../../href';
-import { setTypedAnswer } from '../../typedAnswerStore';
+import { setTypedAnswer } from '../../turnStore';
 
 import './typeScreen.css';
 

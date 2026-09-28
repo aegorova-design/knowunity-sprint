@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
     }
 
-    const { term, transcript } = await request.json();
+    const { term, transcript, inputMode } = await request.json();
 
     if (!term || !transcript) {
       return NextResponse.json(
@@ -35,7 +35,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const userMessage = buildJudgeUserMessage(termData, transcript, 'voice');
+    // Typed answers skip transcription and go to the same judge, but as
+    // 'typed' — the system prompt reads a typed answer literally instead of
+    // allowing for a mishearing, which only makes sense for actual speech.
+    const userMessage = buildJudgeUserMessage(
+      termData,
+      transcript,
+      inputMode === 'typed' ? 'typed' : 'voice'
+    );
 
     // Call Claude with retry
     let response = null;

@@ -13,24 +13,11 @@
  */
 
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useSyncExternalStore } from 'react';
+import { useEffect } from 'react';
 
-import { applyDemoParam, readDemoMode } from './demoMode';
+import { applyDemoParam, useIsDemoMode } from './demoMode';
 
 import './demoBadge.css';
-
-/**
- * No real subscription: sessionStorage fires no event for a same-tab write,
- * and the one thing that changes it here (`applyDemoParam`, below) already
- * runs from a prop change that re-renders this component on its own. Only
- * `getSnapshot`/`getServerSnapshot` are load-bearing — they are what keep the
- * very first client render matching the server's (always "off": storage does
- * not exist there) instead of throwing a hydration mismatch the moment a
- * previous navigation had already saved the flag on.
- */
-function subscribeToNothing() {
-  return () => {};
-}
 
 export function DemoModeGate() {
   const demoParam = useSearchParams().get('demo');
@@ -41,7 +28,7 @@ export function DemoModeGate() {
     applyDemoParam(demoParam);
   }, [demoParam]);
 
-  const storedDemo = useSyncExternalStore(subscribeToNothing, readDemoMode, () => false);
+  const storedDemo = useIsDemoMode();
 
   // An explicit `?demo=` on this URL wins outright; with none present, this
   // falls back to whatever a previous navigation already saved.
