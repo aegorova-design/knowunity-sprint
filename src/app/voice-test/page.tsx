@@ -5,7 +5,30 @@ import { useState, useRef, useEffect } from 'react';
 export default function VoiceTestPage() {
   const [passcode, setPasscode] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // Distinct from isAuthenticated: without this, a reload shows the passcode
+  // form for a beat before the session check comes back, and briefly reading
+  // "not authenticated" is what a false denial looks like.
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    // The passcode cookie is httpOnly (deliberately unreadable from here), so
+    // whether this browser session is already unlocked has to be asked of
+    // the server rather than read out of local state — the whole point of
+    // "entered once per session" surviving a reload.
+    let cancelled = false;
+    fetch('/api/voice-test/verify')
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled && data.authenticated) setIsAuthenticated(true);
+      })
+      .finally(() => {
+        if (!cancelled) setIsCheckingSession(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handlePasscodeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +48,14 @@ export default function VoiceTestPage() {
       setError('Verification failed');
     }
   };
+
+  if (isCheckingSession) {
+    return (
+      <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', fontFamily: 'monospace' }}>
+        <h1>Voice Test</h1>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return (

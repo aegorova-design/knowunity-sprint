@@ -1,0 +1,27 @@
+/* demoBadge — a component-gaps.md entry, not a Storybook component: neither
+   statusTag (locked to the four term-outcome variants) nor chips (an
+   interactive button, not a passive label) fits a persistent mode indicator.
+   Built inline from tokens, the way every other screen-level gap is. */
+
+.explainDemoBadge {
+  /* No explicit z-index, matching sheetPanel.css's own approach: fixed
+     positioning already creates a stacking context, and painting last in the
+     DOM (the layout renders this after `children`) is enough to sit on top
+     without inventing a stacking number nothing else in the app uses. */
+  position: fixed;
+  top: max(var(--space-1200), env(safe-area-inset-top));
+  right: var(--space-200);
+  padding: var(--space-050) var(--space-200);
+  border-radius: var(--radius-full);
+  border: var(--stroke-border) solid var(--color-border-default);
+  background: var(--color-background-floating);
+  color: var(--color-text-warning);
+  font-family: var(--greed-caption-s-bold-font-family);
+  font-size: var(--greed-caption-s-bold-font-size);
+  font-weight: var(--greed-caption-s-bold-font-weight);
+  letter-spacing: var(--greed-caption-s-bold-letter-spacing);
+  line-height: var(--greed-caption-s-bold-line-height);
+  /* Informational only — nothing to tap, and nothing under it should be
+     harder to reach because a label is sitting on top of it. */
+  pointer-events: none;
+}

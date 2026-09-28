@@ -20,6 +20,7 @@ import { TextField } from '@/components/text-field/TextField';
 import { ActionStack } from '../../ActionStack';
 import { ButtonPair } from '../../ButtonPair';
 import { withQuery } from '../../href';
+import { setTypedAnswer } from '../../typedAnswerStore';
 
 import './typeScreen.css';
 
@@ -85,8 +86,12 @@ export function TypeScreen({
                 showRightIcon
                 rightIcon="arrow-right"
                 state={isEmpty ? 'Disabled' : 'Default'}
-                // The length goes with it: SPEC.md judges a typed answer on
-                // length alone, and the checking screen is where that is read.
+                // The length rides on the URL — the scripted checking screen
+                // still reads it synchronously, server-side, to pick a demo
+                // verdict. The words themselves go to the in-memory store
+                // instead: real mode's judge (stage C) reads the student's
+                // actual answer from there, never from the URL.
+                onClick={isEmpty ? undefined : () => setTypedAnswer(answer.trim())}
                 href={
                   isEmpty ? undefined : withQuery(sendHref, { typed: answer.trim().length })
                 }

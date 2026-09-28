@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { hasVoiceSession } from '@/lib/voicePasscode';
+
 export async function POST(request: NextRequest) {
   try {
+    if (!(await hasVoiceSession())) {
+      return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+    }
+
     const formData = await request.formData();
     const audioFile = formData.get('audio') as File;
 

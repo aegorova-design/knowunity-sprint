@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { JUDGE_MODEL, buildJudgeUserMessage, buildJudgeRequestBody, rubric } from '@/lib/judge-config';
+import { hasVoiceSession } from '@/lib/voicePasscode';
 
 export async function POST(request: NextRequest) {
   try {
+    if (!(await hasVoiceSession())) {
+      return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+    }
+
     const { term, transcript } = await request.json();
 
     if (!term || !transcript) {

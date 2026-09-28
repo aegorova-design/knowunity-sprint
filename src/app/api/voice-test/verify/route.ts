@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { grantVoiceSession, hasVoiceSession } from '@/lib/voicePasscode';
+
 export async function POST(request: NextRequest) {
   const { passcode } = await request.json();
 
@@ -13,6 +15,9 @@ export async function POST(request: NextRequest) {
   }
 
   if (passcode === correctPasscode) {
+    // The pass itself — every transcribe and judge call checks for this,
+    // not for the passcode again.
+    await grantVoiceSession();
     return NextResponse.json({ ok: true });
   } else {
     return NextResponse.json(
@@ -20,4 +25,13 @@ export async function POST(request: NextRequest) {
       { status: 401 }
     );
   }
+}
+
+/**
+ * Whether this browser session already has a valid session cookie —
+ * "entered once per session" needs somewhere to ask that survives a reload,
+ * since the passcode form used to hold the answer in React state alone.
+ */
+export async function GET() {
+  return NextResponse.json({ authenticated: await hasVoiceSession() });
 }
