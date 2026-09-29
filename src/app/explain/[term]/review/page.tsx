@@ -10,7 +10,9 @@
  * that same duration."
  *
  * No transcript, per SPEC.md: correcting one turns the loop into an editing
- * step. The student checks the take by listening to it.
+ * step. The student checks the take by listening to it — for real, in real
+ * mode (sprint plan, stage E; see `ReviewPlayback.tsx`), same as demo mode's
+ * decorative animation always was.
  *
  * Skip is live — the take has not been sent, so the student can still act on
  * this term — per SPEC.md's Skip rule, which lists 08 among the live screens.
@@ -31,8 +33,8 @@ import { ButtonPair } from '../../ButtonPair';
 import { PendingAnswerGuard } from '../../PendingAnswerGuard';
 import { withQuery } from '../../href';
 import { parseAttempt } from '../../script';
+import { ReviewPlayback } from '../../ReviewPlayback';
 import { TERMS, formatTakeLength, isTermPosition, nextTermHref } from '../../session';
-import { TakePlayback } from '../../TakePlayback';
 import { SessionAppBar } from '../SessionAppBar';
 import { TermPrompt } from '../TermPrompt';
 
@@ -80,7 +82,7 @@ export default async function ReviewPage({
       bottomContent={
         // Figma's "bottom stack": the player over the action group.
         <div className="reviewScreen-bottom">
-          <TakePlayback seconds={seconds} duration={formatTakeLength(seconds)} />
+          <ReviewPlayback seconds={seconds} duration={formatTakeLength(seconds)} />
 
           <ActionStack
             primary={
