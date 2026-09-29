@@ -40,7 +40,7 @@ import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/skeleton/Skeleton';
 import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
 
-import { useIsDemoMode } from '../../demoMode';
+import { readDemoMode, useIsDemoMode } from '../../demoMode';
 import { withQuery } from '../../href';
 import { WAIT_MS } from '../../script';
 import type { TermPosition } from '../../session';
@@ -111,7 +111,7 @@ export function CheckingWait({
 
   // Real mode's wait: an actual transcribe + judge round trip.
   useEffect(() => {
-    if (isDemo) return;
+    if (isDemo || readDemoMode()) return;
     if (term === undefined || rubricId === undefined || attempt === undefined) return;
 
     // Captured as plain locals: TypeScript's narrowing above does not survive
@@ -209,7 +209,7 @@ export function CheckingWait({
         const verdict = await judgeRes.json();
         if (cancelled) return;
 
-        setJudgeResult(transcript, verdict);
+        setJudgeResult(currentTerm, transcript, verdict);
         // Counted here, once, right as the verdict arrives — stage D's rule:
         // hint level is per idea, by how many times that idea specifically
         // has been targeted, which only this running count can answer.

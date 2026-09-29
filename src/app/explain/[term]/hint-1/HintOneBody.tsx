@@ -23,7 +23,7 @@ import { VerdictHeader, type VerdictHeaderVerdict } from '@/components/verdict-h
 
 import { rubric } from '@/lib/judge-config';
 
-import { useIsDemoMode } from '../../demoMode';
+import { readDemoMode, useIsDemoMode } from '../../demoMode';
 import type { Term } from '../../session';
 import { hintLevelFor, readTurn } from '../../turnStore';
 
@@ -43,7 +43,7 @@ export function HintOneBody({ term }: { term: Term }) {
   // Real mode's verdict lives only in turnStore — a reload lost it if it is
   // gone. Sprint plan, stage C: "on reload mid-term, return to Idle."
   useEffect(() => {
-    if (isDemo) return;
+    if (readDemoMode()) return;
     if (readTurn().verdict === null) router.replace(`/explain/${term.position}`);
   }, [isDemo, term.position, router]);
 

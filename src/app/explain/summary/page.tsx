@@ -7,9 +7,9 @@
  * **The claim is the screen.** SPEC.md's whole reason for this feature is the
  * line at the top: the section is left carrying a count of terms explained
  * unaided. So the headline, the XP total and the three rows all read from one
- * table — `SESSION_OUTCOMES` in `script.ts` — and the total is summed rather
- * than printed, so the number at the top can never disagree with the rows
- * under it.
+ * table — `useSessionOutcomes` in `outcomes.ts`: the script in demo mode, what
+ * the session recorded in real mode — and the total is summed rather than
+ * printed, so the number at the top can never disagree with the rows under it.
  *
  * **Every row leads to its own sheet**, `18 Summary, term tapped`. `termRow`
  * has no `href`, so the push happens in `SummaryRows`.

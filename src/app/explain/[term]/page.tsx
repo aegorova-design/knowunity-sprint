@@ -16,6 +16,7 @@ import { notFound } from 'next/navigation';
 
 import { Scaffold } from '@/components/scaffold/Scaffold';
 
+import { SessionStart } from '../SessionStart';
 import { TERMS, isTermPosition, nextTermHref } from '../session';
 import { IdleActions, IdleContent } from './IdleScreen';
 import { SessionAppBar } from './SessionAppBar';
@@ -30,7 +31,12 @@ export default async function IdlePage({ params }: { params: Promise<{ term: str
     <Scaffold
       size="iPhone 13"
       topNavigation={<SessionAppBar term={term} skipHref={nextTermHref(term)} />}
-      middleContent={<IdleContent prompt={current.prompt} />}
+      middleContent={
+        <>
+          {term === '1' ? <SessionStart /> : null}
+          <IdleContent prompt={current.prompt} />
+        </>
+      }
       bottomContent={<IdleActions term={term} />}
     />
   );

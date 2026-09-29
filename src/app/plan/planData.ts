@@ -148,6 +148,9 @@ const DONE_SECTION = (result: PlanResult): PlanSection => ({
  * Thursday" was `mascotMessage`'s own default left unchanged, and it named a
  * count the header contradicts.
  *
+ * The status and message below are the scripted run's. `ToRevisitScreen`
+ * replaces both with the session's own, which reproduces these in demo mode.
+ *
  * `showHelper` is forced on where this is drawn: SPEC.md screen 5 — "The
  * scheduling line is the calibration mechanism, so it cannot be hidden on the
  * screen that has something to schedule." The frame has it off.

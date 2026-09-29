@@ -18,7 +18,7 @@ import { useEffect } from 'react';
 import { AnswerBlock } from '@/components/answer-block/AnswerBlock';
 import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
 
-import { useIsDemoMode } from '../../demoMode';
+import { readDemoMode, useIsDemoMode } from '../../demoMode';
 import type { Term } from '../../session';
 import { readTurn } from '../../turnStore';
 
@@ -29,7 +29,7 @@ export function LastMissBody({ term }: { term: Term }) {
   const isDemo = useIsDemoMode();
 
   useEffect(() => {
-    if (isDemo) return;
+    if (readDemoMode()) return;
     if (readTurn().verdict === null) router.replace(`/explain/${term.position}`);
   }, [isDemo, term.position, router]);
 

@@ -4,6 +4,9 @@
  *
  * Matches the Mockups v2 frame "19 Plan, 1 of 3 unaided" (13662:14553).
  *
+ * The result on the section — the unaided count and Knowie's line — comes
+ * from the session, not `planData.ts`; see `ToRevisitScreen`.
+ *
  * **This is the screen the feature exists for.** The section is left carrying
  * a count of terms explained unaided, and Knowie names the date the ones that
  * needed help come back — which is what pulls the student back before the
@@ -27,14 +30,12 @@
  * sprint, so the click-through jumps the middle.
  */
 
-import { PlanScreen } from '../PlanScreen';
-import { PLAN_TO_REVISIT } from '../planData';
 import { PLAN_TO_REVISIT_HREF } from '../planHref';
+import { ToRevisitScreen } from '../ToRevisitScreen';
 
 export default function PlanToRevisitPage() {
   return (
-    <PlanScreen
-      sections={PLAN_TO_REVISIT}
+    <ToRevisitScreen
       voiceHref="/explain/1"
       homeHref="/home/revisit"
       planHref={PLAN_TO_REVISIT_HREF}

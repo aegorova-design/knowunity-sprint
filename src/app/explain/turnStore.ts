@@ -31,6 +31,12 @@ type TurnState = {
   /** Set once the checking screen has an answer back from the judge. */
   transcript: string | null;
   verdict: JudgeVerdict | null;
+  /**
+   * The term that verdict belongs to. A skip is a plain link and clears
+   * nothing, so without this the next term could read the last one's
+   * transcript as its own.
+   */
+  term: string | null;
 };
 
 const EMPTY_STATE: TurnState = {
@@ -39,6 +45,7 @@ const EMPTY_STATE: TurnState = {
   audioSeconds: 0,
   transcript: null,
   verdict: null,
+  term: null,
 };
 
 let state: TurnState = EMPTY_STATE;
@@ -52,8 +59,8 @@ export function setAudioTake(blob: Blob, seconds: number): void {
 }
 
 /** Called once the checking screen has a real transcript and verdict. */
-export function setJudgeResult(transcript: string, verdict: JudgeVerdict): void {
-  state = { ...state, transcript, verdict };
+export function setJudgeResult(term: string, transcript: string, verdict: JudgeVerdict): void {
+  state = { ...state, transcript, verdict, term };
 }
 
 export function readTurn(): Readonly<TurnState> {
@@ -98,4 +105,11 @@ export function recordHintTarget(term: string, ideaId: string): void {
 export function hintLevelFor(term: string, ideaId: string): 0 | 1 {
   if (hintTargetCountsTerm !== term) return 0;
   return (hintTargetCounts[ideaId] ?? 0) >= 2 ? 1 : 0;
+}
+
+/** A new session: nothing from the last run carries over. */
+export function resetTurnStore(): void {
+  state = EMPTY_STATE;
+  hintTargetCounts = {};
+  hintTargetCountsTerm = null;
 }

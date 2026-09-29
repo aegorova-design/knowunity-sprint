@@ -44,32 +44,48 @@ function writeStoredFlag(on: boolean): void {
   }
 }
 
+/** Fired when `applyDemoParam` changes the saved flag, so readers re-render. */
+const CHANGE_EVENT = 'explain:demomodechange';
+
 /**
  * Reads `?demo=` off a search-params object and applies it to storage if
- * present. Called once on mount from `DemoModeGate`, which is the only place
- * that needs to know the URL — every other reader just wants the flag.
+ * present. Called on every navigation from `DemoModeGate`.
  */
 export function applyDemoParam(demoParam: string | null): void {
-  if (demoParam === '1') writeStoredFlag(true);
-  else if (demoParam === '0') writeStoredFlag(false);
+  if (demoParam !== '1' && demoParam !== '0') return;
+  const on = demoParam === '1';
+  if (on === readStoredFlag()) return;
+  writeStoredFlag(on);
+  window.dispatchEvent(new Event(CHANGE_EVENT));
 }
 
+/**
+ * The flag. An explicit `?demo=` on the current URL wins over what is saved:
+ * `DemoModeGate` saves it in an effect, and the page carrying the param
+ * renders and runs its own effects before that one does — without this, the
+ * one page a demo is entered on would render, and act, in real mode.
+ */
 export function readDemoMode(): boolean {
+  if (typeof window === 'undefined') return false;
+  const param = new URLSearchParams(window.location.search).get('demo');
+  if (param === '1') return true;
+  if (param === '0') return false;
   return readStoredFlag();
 }
 
-function subscribeToNothing() {
-  return () => {};
+function subscribe(onChange: () => void) {
+  window.addEventListener(CHANGE_EVENT, onChange);
+  return () => window.removeEventListener(CHANGE_EVENT, onChange);
 }
 
 /**
  * Hydration-safe read of the flag for any client component that needs to
- * branch on it (`DemoModeGate` inlines the same pattern for the badge
- * itself). `getServerSnapshot` always says "off" — storage does not exist on
- * the server, and matching that on the very first client render is what
- * avoids a hydration mismatch when a previous navigation already saved the
- * flag on.
+ * branch on it. `getServerSnapshot` always says "off" — storage does not
+ * exist on the server, and matching that on the very first client render is
+ * what avoids a hydration mismatch. That also means the first render of a
+ * hard load reads "off" whatever the flag is, so effects that must not run in
+ * demo mode check `readDemoMode()` themselves rather than this.
  */
 export function useIsDemoMode(): boolean {
-  return useSyncExternalStore(subscribeToNothing, readDemoMode, () => false);
+  return useSyncExternalStore(subscribe, readDemoMode, () => false);
 }

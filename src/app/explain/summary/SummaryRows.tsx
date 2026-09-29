@@ -16,16 +16,17 @@ import { useRouter } from 'next/navigation';
 
 import { TermRow } from '@/components/term-row/TermRow';
 
-import { SESSION_OUTCOMES, xpLabel } from '../script';
+import type { SessionOutcomes } from '../outcomes';
+import { xpLabel } from '../script';
 import { TERMS, TERM_POSITIONS } from '../session';
 
-export function SummaryRows() {
+export function SummaryRows({ outcomes }: { outcomes: SessionOutcomes }) {
   const router = useRouter();
 
   return (
     <>
       {TERM_POSITIONS.map((position) => {
-        const outcome = SESSION_OUTCOMES[position];
+        const outcome = outcomes[position];
 
         return (
           <TermRow

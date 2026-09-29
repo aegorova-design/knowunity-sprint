@@ -36,6 +36,7 @@ import { Scaffold } from '@/components/scaffold/Scaffold';
 import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
 
 import { CoveredIdeas } from '../../CoveredIdeas';
+import { RecordOutcome } from '../../RecordOutcome';
 import { VerdictActions } from '../../VerdictActions';
 import { FIRST_ATTEMPT, hintedXp, parseAttempt, xpLabel } from '../../script';
 import { TERMS, isTermPosition, nextTermHref, nextTermLabel } from '../../session';
@@ -96,6 +97,7 @@ export default async function PassHintedPage({
       topNavigation={<SessionAppBar term={term} skipHref="" skipState="Disabled" resolved />}
       middleContent={
         <div className="verdictBody">
+          <RecordOutcome term={term} variant="Hinted" xp={xp} />
           {/* Still a Pass: a hint changes what it was worth, not whether the
               student got there. The pose and the title's colour come with the
               verdict, so the green never carries the result on its own. */}

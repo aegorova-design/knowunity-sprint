@@ -28,6 +28,7 @@ import { Scaffold } from '@/components/scaffold/Scaffold';
 import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
 
 import { CoveredIdeas } from '../../CoveredIdeas';
+import { RecordOutcome } from '../../RecordOutcome';
 import { VerdictActions } from '../../VerdictActions';
 import { UNAIDED_XP, xpLabel } from '../../script';
 import { TERMS, isTermPosition, nextTermHref, nextTermLabel } from '../../session';
@@ -47,6 +48,7 @@ export default async function PassPage({ params }: { params: Promise<{ term: str
       topNavigation={<SessionAppBar term={term} skipHref="" skipState="Disabled" resolved />}
       middleContent={
         <div className="verdictBody">
+          <RecordOutcome term={term} variant="Unaided" xp={UNAIDED_XP} />
           {/* verdict="Pass" sets the pose and the title's colour together, so
               the green is never the only thing saying this went well — the
               word "You got it" and Knowie's pose say it too. */}

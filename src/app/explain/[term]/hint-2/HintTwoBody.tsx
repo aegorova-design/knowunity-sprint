@@ -15,7 +15,7 @@ import { VerdictHeader, type VerdictHeaderVerdict } from '@/components/verdict-h
 
 import { rubric } from '@/lib/judge-config';
 
-import { useIsDemoMode } from '../../demoMode';
+import { readDemoMode, useIsDemoMode } from '../../demoMode';
 import type { Term } from '../../session';
 import { hintLevelFor, readTurn } from '../../turnStore';
 
@@ -33,7 +33,7 @@ export function HintTwoBody({ term }: { term: Term }) {
   const isDemo = useIsDemoMode();
 
   useEffect(() => {
-    if (isDemo) return;
+    if (readDemoMode()) return;
     if (readTurn().verdict === null) router.replace(`/explain/${term.position}`);
   }, [isDemo, term.position, router]);
 

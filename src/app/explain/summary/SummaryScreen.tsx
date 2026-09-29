@@ -1,3 +1,5 @@
+'use client';
+
 /**
  * What `17 Summary` shows — the three slots that `18 Summary, term tapped`
  * shows again underneath its sheet.
@@ -6,6 +8,12 @@
  * route could draw the screen it covers instead of drawing a second copy of
  * it, which is the shape `IdleScreen.tsx` and `PermissionDenied.tsx` already
  * have for their own sheets.
+ *
+ * Every number here comes from `useSessionOutcomes` — the script in demo
+ * mode, what the session recorded in real mode (`outcomes.ts`). While that
+ * is not yet known (the server render, and the first client render of a hard
+ * load) the outcome-shaped parts render nothing rather than a number that is
+ * about to change.
  *
  * `behindSheet` marks the covered controls inert. Covered is not unreachable:
  * without it, Tab still walks the three rows, Continue and Redo while a sheet
@@ -19,50 +27,51 @@ import { IconSlot } from '@/components/icon-slot/IconSlot';
 import { ProgressIndicator } from '@/components/progress-indicator/ProgressIndicator';
 
 import { CloseButton } from '../navigation';
-import { SESSION_OUTCOMES } from '../script';
-import { PROGRESS_LABEL, TERM_COUNT, TERM_POSITIONS } from '../session';
+import {
+  continueHref,
+  totalXp,
+  unaidedCount,
+  useSessionOutcomes,
+  type SessionOutcomes,
+} from '../outcomes';
+import { PROGRESS_LABEL, TERM_COUNT } from '../session';
 import { SummaryRows } from './SummaryRows';
 
 import './summaryScreen.css';
 
-/** Terms the student got without help — the number the claim reports. */
-const UNAIDED = TERM_POSITIONS.filter(
-  (position) => SESSION_OUTCOMES[position].variant === 'Unaided',
-).length;
-
 /**
- * Terms that needed help — the number Redo offers to run again. Derived, not
- * written down, for the same reason the XP total is: it is the complement of
- * the claim directly above it, so the button can never offer a count the
- * headline contradicts.
+ * Terms that needed help — the number Redo offers to run again. The
+ * complement of the claim directly above it, so the button can never offer a
+ * count the headline contradicts.
  *
  * The frame says "Redo 3 terms". The design owner narrowed it to the terms
- * that did not land on their own, which on the scripted run is 2.
+ * that did not land on their own, which on the scripted run is 2. A real run
+ * that lands all three has nothing to narrow to, so it offers the frame's
+ * "Redo 3 terms" back.
  */
-const NEEDS_REDO = TERM_COUNT - UNAIDED;
-
-/** What the session collected, summed off the rows rather than written down. */
-const TOTAL_XP = TERM_POSITIONS.reduce(
-  (total, position) => total + SESSION_OUTCOMES[position].xp,
-  0,
-);
+function redoLabel(outcomes: SessionOutcomes): string {
+  const count = TERM_COUNT - unaidedCount(outcomes) || TERM_COUNT;
+  return `Redo ${count} ${count === 1 ? 'term' : 'terms'}`;
+}
 
 /**
- * Where Continue goes. SPEC.md: `/plan/to-revisit` when terms are coming back,
- * `/plan/mastered` when none are. A scripted run is 1 of 3, so it is the
- * former every time — the branch is here because the rule is, not because the
- * script exercises both.
+ * Where Continue and Close go before the outcomes are known. `/plan/to-revisit`
+ * is where every scripted run and most real ones land; it is replaced as soon
+ * as the real destination can be read.
  */
-export const CONTINUE_HREF = UNAIDED === TERM_COUNT ? '/plan/mastered' : '/plan/to-revisit';
+const FALLBACK_CONTINUE_HREF = '/plan/to-revisit';
 
 export function SummaryBar({ behindSheet = false }: { behindSheet?: boolean }) {
+  const outcomes = useSessionOutcomes();
+  const closeHref = outcomes ? continueHref(outcomes) : FALLBACK_CONTINUE_HREF;
+
   // Wrapped rather than given `inert` itself, the way SessionAppBar does it:
   // the prop is not one appBar documents.
   const bar = (
     <AppBar
       variant="leftAndRightButton"
       aria-label="Session navigation"
-      left={<CloseButton href={CONTINUE_HREF} label="Close" />}
+      left={<CloseButton href={closeHref} label="Close" />}
       Slot={
         <ProgressIndicator
           variant="Primary"
@@ -86,12 +95,16 @@ export function SummaryBar({ behindSheet = false }: { behindSheet?: boolean }) {
 }
 
 export function SummaryContent({ behindSheet = false }: { behindSheet?: boolean }) {
+  const outcomes = useSessionOutcomes();
+
+  if (!outcomes) return <div className="summaryScreen" />;
+
   return (
     <div className="summaryScreen" inert={behindSheet || undefined}>
       {/* The claim. Headline L, centred — a step `textBlock` has no variant
           for, so it is the screen's own h1. See component-gaps.md. */}
       <h1 className="summaryScreen-claim">
-        You explained {UNAIDED} of {TERM_COUNT} without help.
+        You explained {unaidedCount(outcomes)} of {TERM_COUNT} without help.
       </h1>
 
       {/* The XP total, in the frame's outlined pill. Not a component:
@@ -114,12 +127,12 @@ export function SummaryContent({ behindSheet = false }: { behindSheet?: boolean 
             <img src="/icons/bolt.svg" alt="" draggable={false} />
           </IconSlot>
         </span>
-        +{TOTAL_XP} XP collected
+        +{totalXp(outcomes)} XP collected
       </p>
 
       <div className="summaryScreen-terms">
         <div className="summaryScreen-rows">
-          <SummaryRows />
+          <SummaryRows outcomes={outcomes} />
         </div>
 
         <p className="summaryScreen-tapHint">
@@ -131,13 +144,16 @@ export function SummaryContent({ behindSheet = false }: { behindSheet?: boolean 
 }
 
 export function SummaryActions({ behindSheet = false }: { behindSheet?: boolean }) {
+  const outcomes = useSessionOutcomes();
+  const href = outcomes ? continueHref(outcomes) : FALLBACK_CONTINUE_HREF;
+
   return (
     <div inert={behindSheet || undefined}>
       <ButtonGroup
         variant="Vertical"
         size="L"
         /* The screen's one Primary. */
-        primary={<Button variant="Primary" size="L" CTA="Continue" href={CONTINUE_HREF} />}
+        primary={<Button variant="Primary" size="L" CTA="Continue" href={href} />}
         /* A fresh run of the terms that needed help. SPEC.md: "Redo awards
            full XP" — nothing is discounted for having been seen.
 
@@ -148,7 +164,7 @@ export function SummaryActions({ behindSheet = false }: { behindSheet?: boolean 
           <Button
             variant="Secondary"
             size="M"
-            CTA={`Redo ${NEEDS_REDO} terms`}
+            CTA={outcomes ? redoLabel(outcomes) : 'Redo'}
             showLeftIcon
             leftIcon="refresh-ccw-01"
             href="/explain/1"

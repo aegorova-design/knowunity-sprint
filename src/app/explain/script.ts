@@ -191,18 +191,3 @@ export function attemptsTaken(position: TermPosition): number {
  * per-term session state, which this sprint does not have.
  */
 export const SUMMARY_TAKE_SECONDS = 34;
-
-/**
- * Whether a term has a take to play back at all.
- *
- * SPEC.md screen 27: a skipped or typed term shows the answer alone, with no
- * player — "`TakePlayer` must never appear where the student did not record.
- * That is the component's own rule." Skipped is the outcome that says so; a
- * typed answer is not recorded anywhere, because `SESSION_OUTCOMES` carries
- * the verdict and not how it arrived. So in the scripted run this is true for
- * all three terms, and the second shape waits on a session that remembers
- * more than the script does.
- */
-export function hasTake(position: TermPosition): boolean {
-  return SESSION_OUTCOMES[position].variant !== 'Skipped';
-}

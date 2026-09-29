@@ -28,7 +28,7 @@ import { Button } from '@/components/button/Button';
 import { RecordButton } from '@/components/record-button/RecordButton';
 import { Waveform } from '@/components/waveform/Waveform';
 
-import { useIsDemoMode } from '../../demoMode';
+import { readDemoMode, useIsDemoMode } from '../../demoMode';
 import { withQuery } from '../../href';
 import { formatTakeLength } from '../../session';
 import { setAudioTake } from '../../turnStore';
@@ -81,7 +81,10 @@ export function RecordingTake({
   }, []);
 
   useEffect(() => {
-    if (isDemo) return; // Demo mode never touches the mic.
+    // Storage, not `isDemo`: on a hard load the hook reads "off" until
+    // hydration settles, and this runs once — it must not ask for the mic in
+    // demo mode in that window.
+    if (readDemoMode()) return;
 
     let cancelled = false;
 

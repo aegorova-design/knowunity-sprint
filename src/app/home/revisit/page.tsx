@@ -14,9 +14,9 @@
  *
  * **It counts the terms that are actually due.** SPEC.md and the frame both
  * word it "1 term to revisit", which the scripted run contradicts: it ends
- * 1 of 3, leaving Serfdom revealed and Manorialism hinted. Two terms come
- * back, which is what `19` schedules and what `20b` reports, so the count is
- * derived off `SESSION_OUTCOMES` rather than written down.
+ * 1 of 3. The count is every term the session did not leave unaided — the
+ * script's in demo mode, the real session's in real mode — which is what
+ * `19` schedules and what `20b` reports. See `RevisitHeader`.
  *
  * Explain out loud is the Primary here and Continue studying is demoted to a
  * Tertiary text link, which is the whole point of the screen: the terms are
@@ -31,22 +31,12 @@
 import { BottomNav } from '@/components/bottom-nav/BottomNav';
 import { Button } from '@/components/button/Button';
 import { Scaffold } from '@/components/scaffold/Scaffold';
-import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
 
-import { SESSION_OUTCOMES } from '../../explain/script';
-import { TERM_POSITIONS } from '../../explain/session';
 import { PLAN_TO_REVISIT_HREF } from '../../plan/planHref';
 import { ChromeStrip } from '../../_chrome/ChromeStrip';
+import { RevisitHeader } from './RevisitHeader';
 
 import '../../home.css';
-
-/** Terms the first session did not leave unaided — the ones coming back. */
-const DUE = TERM_POSITIONS.filter(
-  (position) => SESSION_OUTCOMES[position].variant !== 'Unaided',
-).length;
-
-/** "2 terms to revisit", or "1 term" if a run ever leaves only one. */
-const DUE_CAPTION = `${DUE} ${DUE === 1 ? 'term' : 'terms'} to revisit`;
 
 export default function HomeRevisitPage() {
   return (
@@ -57,12 +47,7 @@ export default function HomeRevisitPage() {
           <div className="home-examCard">
             {/* Neutral, as on 01: Knowie and a headline rather than a result.
                 The caption stays on here — it is what says a term is due. */}
-            <VerdictHeader
-              verdict="Neutral"
-              titleAs="h1"
-              title="Your History exam is in 5 days"
-              caption={DUE_CAPTION}
-            />
+            <RevisitHeader />
 
             <div className="home-actions">
               {/* **Stubbed for the stakeholder walkthrough.** It goes

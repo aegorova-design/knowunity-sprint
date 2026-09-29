@@ -10,11 +10,11 @@
  * XP." So there are no `termRow`s, no XP pill and no Redo here — Knowie says
  * what happened and names the next check, and Done is the only way on.
  *
- * **It reports both terms the first session left behind**, not one. The
- * scripted run ends 1 of 3: Serfdom revealed and Manorialism hinted, which is
- * what `19` names and what comes back here. The student recalls both, which is
- * what makes `21 Plan, section mastered` — "You got all 3 terms right" — true
- * on the other side of Done. The recall itself is not built; see the stubs.
+ * **It reports every term the session left behind**, not one — the script's
+ * two in demo mode, whatever the real session left in real mode. See
+ * `RevisitDoneHeading`. The student recalls them all, which is what makes
+ * `21 Plan, section mastered` — "You got all 3 terms right" — true on the
+ * other side of Done. The recall itself is not built; see the stubs.
  *
  * **Done goes to `/plan/mastered`.** The term that was outstanding came back
  * unaided, so the section's latest session is now all-unaided — which is what
@@ -44,27 +44,8 @@ import { Button } from '@/components/button/Button';
 import { Scaffold } from '@/components/scaffold/Scaffold';
 
 import { ActionStack } from '../ActionStack';
-import { MascotHeading } from '../MascotHeading';
 import { CloseButton } from '../navigation';
-import { SESSION_OUTCOMES } from '../script';
-import { TERMS, TERM_POSITIONS } from '../session';
-
-/**
- * The terms a revisit brings back: every one the first session did not leave
- * unaided. Derived off `SESSION_OUTCOMES` rather than written down, the way
- * the summary's totals are, so this screen can never name a different set from
- * the one `17` and `19` report.
- *
- * The scripted run leaves two — Serfdom revealed, Manorialism hinted — which
- * is what "both" in the title rests on. A script that left some other number
- * would need that word to carry the count instead.
- */
-const REVISITED = TERM_POSITIONS.filter(
-  (position) => SESSION_OUTCOMES[position].variant !== 'Unaided',
-).map((position) => TERMS[position].name);
-
-/** "Serfdom and Manorialism", in the order the session ran them. */
-const REVISITED_NAMES = REVISITED.join(' and ');
+import { RevisitDoneHeading } from './RevisitDoneHeading';
 
 /** Where the section stands once its last outstanding term has come back. */
 const DONE_HREF = '/plan/mastered';
@@ -80,16 +61,7 @@ export default function RevisitDonePage() {
           left={<CloseButton href={DONE_HREF} label="Close" />}
         />
       }
-      middleContent={
-        <MascotHeading
-          /* Excited: a recovery is the one moment in the flow worth
-             celebrating. The title beside her carries it, so the pose is
-             never the only thing saying so. */
-          pose="Excited"
-          title="You got both terms on your own"
-          caption={`${REVISITED_NAMES} needed help last time. You explained them unaided this time. One more check before your exam.`}
-        />
-      }
+      middleContent={<RevisitDoneHeading />}
       bottomContent={
         /* The screen's one Primary, and the only control on it. */
         <ActionStack

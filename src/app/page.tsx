@@ -29,6 +29,7 @@ import { Scaffold } from '@/components/scaffold/Scaffold';
 import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
 
 import { ChromeStrip } from './_chrome/ChromeStrip';
+import { SUBJECT } from './plan/planData';
 import { planHrefFrom } from './plan/planHref';
 import './home.css';
 
@@ -61,7 +62,7 @@ export default async function HomePage({
             <VerdictHeader
               verdict="Neutral"
               titleAs="h1"
-              title="Your History exam is in 1 week"
+              title={`Your ${SUBJECT} exam is in 1 week`}
               showCaption={false}
             />
             <Button variant="Primary" size="M" CTA="Continue studying" href={planHref} />

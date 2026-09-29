@@ -36,6 +36,7 @@ import { notFound } from 'next/navigation';
 import { Button } from '@/components/button/Button';
 import { Scaffold } from '@/components/scaffold/Scaffold';
 
+import { RecordOutcome } from '../../RecordOutcome';
 import { VerdictActions } from '../../VerdictActions';
 import { withQuery } from '../../href';
 import { TERMS, isTermPosition, nextTermHref, nextTermLabel } from '../../session';
@@ -91,11 +92,14 @@ export default async function AnswerPage({
            the title says the same — "Here's the idea", not "You missed it".
            The key ideas ride inside the answer block, unticked: they are what
            the answer contains, not a record of what the student covered. */
-        <RevealedAnswer
-          term={current}
-          title="Here’s the idea"
-          caption={caption(tries)}
-        />
+        <>
+          <RecordOutcome term={term} variant="Revealed" xp={REVEALED_XP} />
+          <RevealedAnswer
+            term={current}
+            title="Here’s the idea"
+            caption={caption(tries)}
+          />
+        </>
       }
       bottomContent={
         <VerdictActions
