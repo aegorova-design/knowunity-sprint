@@ -5,32 +5,24 @@
  * card, or real mode's actual transcript. See `hint-1/HintOneBody.tsx` for
  * why this branch has to live in a client component.
  *
- * No hint here in either mode — the ladder is spent — but the header still
- * shows the real verdict pose (Miss or Partial) in real mode: the third
- * attempt can land as a partial as easily as an outright miss, and the
- * screen should not call it a plain Miss when it was closer than that.
+ * No hint here in either mode — the ladder is spent. The title stays
+ * `feedback.error.onSubtle` (verdict="Miss") in real mode too, whatever the
+ * third attempt's actual verdict was: this screen is where the ladder runs
+ * out, not a graded read on how close that last attempt came, so it does
+ * not borrow Partial's orange the way hint-1/hint-2 correctly do.
  */
 
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 import { AnswerBlock } from '@/components/answer-block/AnswerBlock';
-import { VerdictHeader, type VerdictHeaderVerdict } from '@/components/verdict-header/VerdictHeader';
+import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
 
 import { useIsDemoMode } from '../../demoMode';
 import type { Term } from '../../session';
 import { readTurn } from '../../turnStore';
 
 import '../../verdictBody.css';
-
-function poseAndCaption(verdict: 'pass' | 'partial' | 'miss' | 'unclear' | undefined): {
-  pose: VerdictHeaderVerdict;
-  caption: string;
-} {
-  return verdict === 'partial'
-    ? { pose: 'Partial', caption: 'Close, but that was the last hint. Let’s look at it together.' }
-    : { pose: 'Miss', caption: 'That was the last hint. Let’s look at it together.' };
-}
 
 export function LastMissBody({ term }: { term: Term }) {
   const router = useRouter();
@@ -66,11 +58,15 @@ export function LastMissBody({ term }: { term: Term }) {
   }
 
   const turn = readTurn();
-  const { pose, caption } = poseAndCaption(turn.verdict?.verdict);
 
   return (
     <div className="verdictBody">
-      <VerdictHeader verdict={pose} title="Not quite" caption={caption} titleAs="h1" />
+      <VerdictHeader
+        verdict="Miss"
+        title="Not quite"
+        caption="That was the last hint. Let&rsquo;s look at it together."
+        titleAs="h1"
+      />
       <div className="verdictCards">
         <AnswerBlock
           kind="Said"
