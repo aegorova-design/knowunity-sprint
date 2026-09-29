@@ -4,7 +4,8 @@
 
 - Voice in, text out. Knowie never speaks — see design-brief.md.
 - Push-to-talk, explicit send. No auto-endpointing — see design-brief.md, voice-ux.md.
-- Speech recognition, judging, and latency are mocked/hard-coded — see sprint-context.md.
+- Two modes on this branch (`v2-real-voice`). **Real mode** (default) records the mic, transcribes it (`/api/voice-test/transcribe`) and judges it (`/api/judge`), behind the `/voice-test` passcode. **Demo mode** (`?demo=1`, saved per session, `?demo=0` to clear) replays the scripted walkthrough in `script.ts`/`session.ts` with no mic and no API calls. Every change must keep both working. sprint-context.md still describes the mocked sprint build; where it says "mocked", read that as demo mode.
+- `judge/judging-rubric.json` is the only term source: prompts, answers, key ideas and hints all come from it, through `src/lib/judge-config.ts`. Only demo mode's scripted dialogue lives in `session.ts`.
 - Mobile iOS only, 390px canvas, dark mode only — see design-brief.md.
 - Every design value (color, space, type) comes from tokens/tokens.json, per the rules in design-system.md.
 - App code lives in `src/app` (App Router). Import alias `@/*` → `./src/*` (tsconfig.json).
@@ -18,7 +19,9 @@
 - Never add voice output, tutoring, or a follow-up-question branch.
 - Never require transcript correction as a step.
 - Never trap the student without skip or text-mode as a way out.
-- Never build real STT or real judging this sprint — see sprint-context.md "Not building".
+- Never make an API call, touch the mic, or read `turnStore` in demo mode.
+- Never call `/api/voice-test/transcribe` or `/api/judge` without the passcode session cookie — both routes reject it server-side (`src/lib/voicePasscode.ts`).
+- Never merge `v2-real-voice` into `main`. `main` (tagged `v1-sprint`) is the mocked sprint prototype and stays that way.
 - Never invent a token or component, or fork/detach one — see design-system.md "Never do this" and "Gaps waiting for a decision".
 - Never capitalize a label, button, or heading beyond sentence case, except proper nouns (Knowie, PRO) — see design-system.md "Never do this".
 - Never use a CSS fallback value on a token (e.g. `var(--token, #333)`).
@@ -50,11 +53,34 @@ When working on UI, use the storybook tools to read the component library before
 - `eslint.config.mjs` — lint rules (next/core-web-vitals + next/typescript).
 - `next-env.d.ts` — Next.js ambient types, regenerated; don't hand-edit.
 - `public/images/knowie-*.svg` — Knowie mascot artwork, one file per pose. Use through `mascotSlot`, per design-system.md.
-- `public/*.svg` (file, globe, next, vercel, window) — create-next-app placeholder icons, still referenced by the un-rebuilt `page.tsx`. Delete once the homepage is real.
 - `src/app/layout.tsx` — root layout, fonts, metadata.
-- `src/app/page.tsx` — homepage; still create-next-app boilerplate.
-- `src/app/globals.css` — global resets and CSS vars; still boilerplate, not yet mapped to tokens/tokens.json.
-- `src/app/page.module.css` — styles scoped to `page.tsx`; still boilerplate.
+- `src/app/page.tsx` — 01 Home, first session.
+- `src/app/globals.css` — global resets; imports `build/css/tokens.css`.
+- `src/components/*` — the design-system components, each with a Storybook story. Read through the Storybook tools, not the source.
+- `src/app/explain/*` — the Explain out loud session screens. Shared session-level files:
+  - `session.ts` — the three terms (camouflage, hibernation, mammal), derived from the rubric, plus demo mode's scripted dialogue.
+  - `script.ts` — demo mode's scripted verdicts, waits, XP and `SESSION_OUTCOMES`.
+  - `demoMode.ts`, `DemoModeGate.tsx`, `layout.tsx`, `demoBadge.css` — the demo flag and the "Demo" badge on every `/explain` screen.
+  - `turnStore.ts` — real mode's in-memory answer, transcript, verdict and per-idea hint counts. Deliberately lost on reload.
+  - `realVerdict.ts` — where a real verdict routes (the real-mode counterpart to `script.ts`'s table).
+  - `PendingAnswerGuard.tsx` — sends a reload mid-term back to Idle in real mode.
+  - `VoicePasscodePrompt.tsx` — the passcode ask, shown once per session before the first real judge call.
+  - `ReviewPlayback.tsx`, `RealTakePlayback.tsx`, `TakePlayback.tsx` — Review's real player, and the decorative one demo mode and Summary use.
+  - `[term]/checking/CheckingWait.tsx` — the processing wait: demo mode's timer, or real mode's transcribe and judge.
+  - `[term]/hint-1/HintOneBody.tsx`, `[term]/hint-2/HintTwoBody.tsx`, `[term]/last-miss/LastMissBody.tsx` — the parts of those screens that differ between demo and real mode.
+- `src/app/plan/planData.ts` — plan screen content.
+- `src/app/voice-test/page.tsx` — standalone debug page for the real record → transcribe → judge loop, behind the passcode. Not a designed screen; its raw hex and lint findings are known and out of scope.
+- `src/app/api/voice-test/verify/route.ts` — checks the passcode and sets the session cookie (`POST`); reports whether the session is unlocked (`GET`).
+- `src/app/api/voice-test/transcribe/route.ts` — OpenAI transcription. Needs the session cookie.
+- `src/app/api/judge/route.ts` — Anthropic judge call. Needs the session cookie. Takes `inputMode` (`voice` or `typed`).
+- `src/lib/judge-config.ts` — the judge's system prompt, message template, model, temperature and max_tokens, and the rubric import. Shared by the app and `judge/run-tests.mjs`.
+- `src/lib/voicePasscode.ts` — mints and checks the signed passcode session cookie.
+- `judge/judging-rubric.json` — the rubric: terms, ideas, pass rules, hints. The single source of term content.
+- `judge/judge-prompt.md` — the judge prompt as a readable document. Keep in sync with `judge-config.ts`.
+- `judge/judge-test-set.json`, `judge/run-tests.mjs` — judge regression tests. Run `node judge/run-tests.mjs [model]`; results go to `judge/results/` (gitignored).
+- `eval/rubric.md`, `eval/scorecard-*.md` — the prototype grading rubric and past scorecards, used by the critic agents.
+- Env vars (in `.env`, not committed): `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `VOICE_TEST_PASSCODE`. The same three must be set on Vercel.
 - `.claude/launch.json` — dev-server config for browser-preview tooling.
 - `.claude/settings.local.json` — local, machine-specific permission grants.
+- `.claude/agents/*` — `spec-reviewer` and the four critics (`critic-system`, `critic-craft`, `critic-ux`, `critic-ambition`) that grade against `eval/rubric.md`.
 - `.claude/skills/*` — generic Claude Code skills (interactive-prototype, ui-designer, ux-designer, ux-motion), not specific to this project.
