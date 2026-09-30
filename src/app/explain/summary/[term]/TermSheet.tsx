@@ -5,25 +5,31 @@
  * and its answer. A client component because the outcome is the session's —
  * the script in demo mode, what was recorded in real mode (`outcomes.ts`).
  *
- * **Two shapes, per SPEC.md.** A recorded term shows the take with what Knowie
- * heard; a term with no take — skipped, revealed after "I don't know", or
- * typed — shows the answer and its key ideas alone. `takePlayer` "must never
- * appear where the student did not record", which is the component's own rule
- * as well as SPEC.md's.
+ * **Three shapes.** A spoken term shows its final take and what Knowie heard.
+ * A typed term shows what was typed, with no player. A term with no answer —
+ * skipped, or revealed after "I don't know" — shows the answer and its key
+ * ideas alone. `takePlayer` "must never appear where the student did not
+ * record", which is the component's own rule as well as SPEC.md's.
  *
- * **What Knowie heard is the answer that got the final verdict** — the last
- * take in demo mode, the recorded transcript in real mode.
+ * **The player plays real audio or does not appear.** Real mode plays the
+ * recording that got the final verdict (`sessionTakes.ts`); after a reload
+ * that recording is gone, and the player goes with it, while what Knowie
+ * heard stays. Demo mode plays the design owner's sample clip for the term
+ * (`demoClipHref`), and hides the player if the file is not there.
  */
 
 import { AnswerBlock } from '@/components/answer-block/AnswerBlock';
 import { Button } from '@/components/button/Button';
 import { IconSlot, type IconName } from '@/components/icon-slot/IconSlot';
 
+import { DemoClipPlayback } from '../../DemoClipPlayback';
+import { useIsDemoMode } from '../../demoMode';
 import { useSessionOutcomes } from '../../outcomes';
+import { RealTakePlayback } from '../../RealTakePlayback';
+import { demoClipHref, type TermOutcome } from '../../script';
+import { readTake } from '../../sessionTakes';
+import { TERMS, type TermPosition } from '../../session';
 import { SheetPanel } from '../../SheetPanel';
-import { SUMMARY_TAKE_SECONDS, type TermOutcome } from '../../script';
-import { TERMS, formatTakeLength, type TermPosition } from '../../session';
-import { TakePlayback } from '../../TakePlayback';
 
 /**
  * The badge icon each outcome carries. The same four `termRow` swaps, so the
@@ -40,12 +46,13 @@ const BADGE_ICON: Record<TermOutcome['variant'], IconName> = {
 };
 
 export function TermSheet({ term, dismissHref }: { term: TermPosition; dismissHref: string }) {
+  const isDemo = useIsDemoMode();
   const outcomes = useSessionOutcomes();
   if (!outcomes) return null;
 
   const { name, answer, keyIdeas } = TERMS[term];
   const { variant, transcript, inputMode } = outcomes[term];
-  const recorded = inputMode === 'voice' && transcript !== null;
+  const take = isDemo ? undefined : readTake(term);
 
   return (
     <SheetPanel label={`${name}, ${variant.toLowerCase()}`} dismissHref={dismissHref}>
@@ -73,30 +80,40 @@ export function TermSheet({ term, dismissHref }: { term: TermPosition; dismissHr
           </div>
         </header>
 
-        {recorded ? (
+        {transcript !== null ? (
           <section className="termSheet-group" aria-labelledby="termSheet-takeLabel">
             <h3 className="termSheet-label" id="termSheet-takeLabel">
               Your last attempt
             </h3>
 
-            {/* surface=Sheet: takePlayer's own rule for a player inside
-                bottomSheetOnly, so it stays distinct from the sheet. */}
-            <TakePlayback
-              surface="Sheet"
-              seconds={SUMMARY_TAKE_SECONDS}
-              duration={formatTakeLength(SUMMARY_TAKE_SECONDS)}
-            />
+            {inputMode === 'voice' ? (
+              <>
+                {/* surface=Sheet: takePlayer's own rule for a player inside
+                    bottomSheetOnly, so it stays distinct from the sheet. */}
+                {isDemo ? (
+                  <DemoClipPlayback surface="Sheet" src={demoClipHref(term)} />
+                ) : take ? (
+                  <RealTakePlayback surface="Sheet" blob={take.blob} seconds={take.seconds} />
+                ) : null}
 
-            {/* "What Knowie heard", not "What you said": a mishear reads
-                as the app's mistake, which is the label the frame uses
-                here and the reason design-brief.md gives for quoting the
-                take back at all. Demo mode's scripted takes carry their own
-                quotation marks; a real transcript gets them here. */}
-            <AnswerBlock
-              kind="Said"
-              label="What Knowie heard"
-              body={transcript.startsWith('“') ? transcript : `“${transcript}”`}
-            />
+                {/* "What Knowie heard", not "What you said": a mishear reads
+                    as the app's mistake, which is the label the frame uses
+                    here and the reason design-brief.md gives for quoting the
+                    take back at all. Demo mode's scripted takes carry their
+                    own quotation marks; a real transcript gets them here. */}
+                <AnswerBlock
+                  kind="Said"
+                  label="What Knowie heard"
+                  body={transcript.startsWith('\u201C') ? transcript : `\u201C${transcript}\u201D`}
+                />
+              </>
+            ) : (
+              /* A typed answer, as typed. Said is the kind for the student's
+                 own words, but its icon is a microphone, which this was not —
+                 so the icon is off and the label says what it is. Logged in
+                 component-gaps.md. */
+              <AnswerBlock kind="Said" label="What you typed" body={transcript} showIcon={false} />
+            )}
           </section>
         ) : null}
 

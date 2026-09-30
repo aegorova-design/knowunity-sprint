@@ -11,12 +11,14 @@ import { useEffect } from 'react';
 
 import { readDemoMode } from './demoMode';
 import { clearOutcomes } from './outcomes';
+import { clearTakes } from './sessionTakes';
 import { resetTurnStore } from './turnStore';
 
 export function SessionStart() {
   useEffect(() => {
     if (readDemoMode()) return;
     clearOutcomes();
+    clearTakes();
     resetTurnStore();
   }, []);
 

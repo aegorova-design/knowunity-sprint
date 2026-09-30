@@ -16,6 +16,7 @@ import { readDemoMode } from './demoMode';
 import { hasRecordedOutcome, recordOutcome } from './outcomes';
 import type { TermOutcome } from './script';
 import type { TermPosition } from './session';
+import { keepTake } from './sessionTakes';
 import { clearTurn, readTurn } from './turnStore';
 
 export function RecordOutcome({
@@ -44,6 +45,11 @@ export function RecordOutcome({
       transcript: ownAnswer ? turn.transcript : null,
       inputMode: ownAnswer ? (turn.typedAnswer !== null ? 'typed' : 'voice') : null,
     });
+
+    // The recording that got the final verdict, for the summary to play back.
+    if (ownAnswer && turn.audioBlob) {
+      keepTake(term, { blob: turn.audioBlob, seconds: turn.audioSeconds });
+    }
 
     // The term is resolved: nothing about its answer should reach the next one.
     clearTurn();

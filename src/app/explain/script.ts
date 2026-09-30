@@ -181,13 +181,11 @@ export function attemptsTaken(position: TermPosition): number {
 }
 
 /**
- * How long the take the summary plays back runs for, in seconds.
- *
- * Read off the Mockups v2 frame "18 Summary, term tapped" (13662:14542),
- * which draws 0:34. The real length is measured on `07 Recording` and carried
- * to `08 Review` on the URL, but nothing carries it past the verdict — the
- * summary is reached after three terms and a wait — so this is the scripted
- * stand-in, the way the verdicts themselves are. Making it real means keeping
- * per-term session state, which this sprint does not have.
+ * Demo mode's sample take for a term, played on the summary sheet in place of
+ * a real recording. One file per term, recorded by the design owner reading
+ * that term's final scripted take (`heard` in `session.ts`, at the attempt
+ * the script ends on). A missing file hides the player; nothing stands in.
  */
-export const SUMMARY_TAKE_SECONDS = 34;
+export function demoClipHref(position: TermPosition): string {
+  return `/audio/demo/term-${position}.m4a`;
+}

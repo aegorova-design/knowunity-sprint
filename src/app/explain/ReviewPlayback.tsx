@@ -17,7 +17,7 @@ export function ReviewPlayback({ seconds, duration }: { seconds: number; duratio
   const isDemo = useIsDemoMode();
   const blob = isDemo ? null : readTurn().audioBlob;
 
-  if (blob) return <RealTakePlayback blob={blob} duration={duration} />;
+  if (blob) return <RealTakePlayback blob={blob} seconds={seconds} />;
 
   return <TakePlayback seconds={seconds} duration={duration} />;
 }

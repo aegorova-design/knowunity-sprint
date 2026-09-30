@@ -53,6 +53,7 @@ When working on UI, use the storybook tools to read the component library before
 - `eslint.config.mjs` — lint rules (next/core-web-vitals + next/typescript).
 - `next-env.d.ts` — Next.js ambient types, regenerated; don't hand-edit.
 - `public/images/knowie-*.svg` — Knowie mascot artwork, one file per pose. Use through `mascotSlot`, per design-system.md.
+- `public/audio/demo/term-{1,2,3}.m4a` — demo mode's sample takes for the summary player, one per term. A missing file hides the player.
 - `src/app/layout.tsx` — root layout, fonts, metadata.
 - `src/app/page.tsx` — 01 Home, first session.
 - `src/app/globals.css` — global resets; imports `build/css/tokens.css`.
@@ -62,10 +63,13 @@ When working on UI, use the storybook tools to read the component library before
   - `script.ts` — demo mode's scripted verdicts, waits, XP and `SESSION_OUTCOMES`.
   - `demoMode.ts`, `DemoModeGate.tsx`, `layout.tsx`, `demoBadge.css` — the demo flag and the "Demo" badge on every `/explain` screen.
   - `turnStore.ts` — real mode's in-memory answer, transcript, verdict and per-idea hint counts. Deliberately lost on reload.
+  - `outcomes.ts` — each term's result (outcome, XP, final transcript) in `sessionStorage`, and `useSessionOutcomes`, which every post-session screen reads: the script in demo mode, the recorded run in real mode. `RecordOutcome.tsx` writes it on 10, 10b and 13; `SessionStart.tsx` clears it on term 1's Idle.
+  - `sessionTakes.ts` — each term's final recording, in memory, for the summary player. Lost on reload, and the player hides.
   - `realVerdict.ts` — where a real verdict routes (the real-mode counterpart to `script.ts`'s table).
   - `PendingAnswerGuard.tsx` — sends a reload mid-term back to Idle in real mode.
   - `VoicePasscodePrompt.tsx` — the passcode ask, shown once per session before the first real judge call.
-  - `ReviewPlayback.tsx`, `RealTakePlayback.tsx`, `TakePlayback.tsx` — Review's real player, and the decorative one demo mode and Summary use.
+  - `RealTakePlayback.tsx` — plays a real recording or audio file, and renders nothing if it cannot. Used on Review (real mode) and the summary sheet (both modes).
+  - `ReviewPlayback.tsx`, `TakePlayback.tsx` — Review's choice between the real player and the decorative one demo mode uses.
   - `[term]/checking/CheckingWait.tsx` — the processing wait: demo mode's timer, or real mode's transcribe and judge.
   - `[term]/hint-1/HintOneBody.tsx`, `[term]/hint-2/HintTwoBody.tsx`, `[term]/last-miss/LastMissBody.tsx` — the parts of those screens that differ between demo and real mode.
 - `src/app/plan/planData.ts` — plan screen content.
