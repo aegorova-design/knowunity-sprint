@@ -24,14 +24,17 @@
  * navigates away before a response lands, the in-flight request is aborted
  * and its result is never acted on (rule 7) — see the effect's cleanup.
  *
- * A real error (transcribe or judge failing) falls back to `not-heard`
- * rather than hanging forever — "never trap the student" — though a
- * distinct slow/failed-judge experience is deferred, per the sprint plan.
+ * Where real mode lands when it is not a verdict:
+ * - silence, or an empty transcript → `not-heard` ("Didn't catch that");
+ * - a request that fails twice (each is retried once on its own) →
+ *   `failed` ("That didn't go through"), which can resend the same answer.
+ * An `unclear` verdict is a verdict, and `realVerdict.ts` sends it to
+ * `unclear`.
  *
- * **`09b` is the same wait with different words**, in demo mode only: it
- * passes its own `title` and a fixed `caption`, and the line stops
- * stepping. Real mode has no equivalent yet — an indefinite wait shows the
- * same processing UI throughout, which is also deferred.
+ * **Past 5s the wait says so.** Demo mode hands over to its own route, `09b`,
+ * at that point. Real mode cannot leave — leaving would abort the request —
+ * so the same words (`SLOW_TITLE`, `SLOW_CAPTION`) replace the stepping line
+ * here, and `SlowCancel` puts "Cancel and try again" in the bottom slot.
  */
 
 import { useRouter } from 'next/navigation';
@@ -42,11 +45,12 @@ import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
 
 import { readDemoMode, useIsDemoMode } from '../../demoMode';
 import { withQuery } from '../../href';
-import { WAIT_MS } from '../../script';
+import { SLOW_AFTER_MS, SLOW_CAPTION, SLOW_TITLE, WAIT_MS } from '../../script';
 import type { TermPosition } from '../../session';
 import { readTurn, recordHintTarget, setJudgeResult } from '../../turnStore';
 import { realVerdictSegment } from '../../realVerdict';
 import { VoicePasscodePrompt } from '../../VoicePasscodePrompt';
+import { setSlowWait, useSlowWait } from './slowWait';
 
 import './checkingScreen.css';
 
@@ -62,6 +66,20 @@ const STATUS_STEPS = [
   'Checking it',
   'Comparing what you said with the key ideas.',
 ] as const;
+
+/**
+ * A request, and one retry if it fails — a network error or a non-OK
+ * response. An abort is not a failure and is never retried.
+ */
+async function fetchWithRetry(input: string, init: RequestInit): Promise<Response> {
+  try {
+    const first = await fetch(input, init);
+    if (first.ok) return first;
+  } catch (error) {
+    if (init.signal?.aborted) throw error;
+  }
+  return fetch(input, init);
+}
 
 /**
  * How long each step holds. Short enough that the line has said all three
@@ -101,6 +119,10 @@ export function CheckingWait({
   const [step, setStep] = useState(0);
   const [isPulsing, setIsPulsing] = useState(false);
   const [needsPasscode, setNeedsPasscode] = useState(false);
+  // Bumped when the passcode is entered, so the real-mode effect runs again
+  // with the session now unlocked instead of sitting on the wait forever.
+  const [unlocks, setUnlocks] = useState(0);
+  const isSlow = useSlowWait();
 
   // Demo mode's wait: unchanged from before real mode existed.
   useEffect(() => {
@@ -124,6 +146,9 @@ export function CheckingWait({
     const controller = new AbortController();
     const startedAt = Date.now();
 
+    setSlowWait(false);
+    const slowTimer = window.setTimeout(() => setSlowWait(true), SLOW_AFTER_MS);
+
     const goTo = (segment: string, query: Record<string, string | number | undefined> = {}) => {
       if (cancelled) return;
       router.replace(withQuery(`/explain/${currentTerm}/${segment}`, { attempt: currentAttempt, ...query }));
@@ -142,6 +167,8 @@ export function CheckingWait({
         const { authenticated } = await sessionCheck.json();
         if (cancelled) return;
         if (!authenticated) {
+          window.clearTimeout(slowTimer);
+          setSlowWait(false);
           setNeedsPasscode(true);
           return;
         }
@@ -153,7 +180,7 @@ export function CheckingWait({
         // rule 7 — ignore the late response — and there is nothing to do.
         if (cancelled) return;
         await settle();
-        goTo('not-heard');
+        goTo('failed');
       }
     }
 
@@ -176,7 +203,7 @@ export function CheckingWait({
         } else if (turn.audioBlob) {
           const formData = new FormData();
           formData.append('audio', turn.audioBlob, 'recording.webm');
-          const res = await fetch('/api/voice-test/transcribe', {
+          const res = await fetchWithRetry('/api/voice-test/transcribe', {
             method: 'POST',
             body: formData,
             signal: controller.signal,
@@ -198,7 +225,7 @@ export function CheckingWait({
           return;
         }
 
-        const judgeRes = await fetch('/api/judge', {
+        const judgeRes = await fetchWithRetry('/api/judge', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ term: currentRubricId, transcript, inputMode }),
@@ -218,11 +245,10 @@ export function CheckingWait({
         goTo(realVerdictSegment(currentAttempt, verdict.verdict));
       } catch {
         if (cancelled) return;
-        // Not a designed failure state yet (sprint plan defers it) — falls
-        // back to the one neutral, no-rung-spent screen the app already has,
-        // rather than leaving the student stuck on a wait that never ends.
+        // Failed twice: our problem, not the student's. The answer stays in
+        // turnStore so "Try again" can resend it.
         await settle();
-        goTo('not-heard');
+        goTo('failed');
       }
     }
 
@@ -231,19 +257,28 @@ export function CheckingWait({
     return () => {
       cancelled = true;
       controller.abort();
+      window.clearTimeout(slowTimer);
+      setSlowWait(false);
     };
-  }, [isDemo, term, rubricId, attempt, router]);
+  }, [isDemo, term, rubricId, attempt, router, unlocks]);
 
   useEffect(() => {
-    if (caption !== undefined) return;
+    if (caption !== undefined || isSlow) return;
     if (step >= STATUS_STEPS.length - 1) return;
 
     const id = window.setTimeout(() => setStep((current) => current + 1), STEP_MS);
     return () => window.clearTimeout(id);
-  }, [step, caption]);
+  }, [step, caption, isSlow]);
 
   if (needsPasscode) {
-    return <VoicePasscodePrompt onUnlocked={() => setNeedsPasscode(false)} />;
+    return (
+      <VoicePasscodePrompt
+        onUnlocked={() => {
+          setNeedsPasscode(false);
+          setUnlocks((count) => count + 1);
+        }}
+      />
+    );
   }
 
   return (
@@ -261,8 +296,8 @@ export function CheckingWait({
       >
         <VerdictHeader
           verdict="Checking"
-          title={title}
-          caption={caption ?? STATUS_STEPS[step]}
+          title={isSlow ? SLOW_TITLE : title}
+          caption={isSlow ? SLOW_CAPTION : (caption ?? STATUS_STEPS[step])}
           titleAs="h1"
           // The caption is the only thing on the screen that changes while the
           // student waits, so it is the only thing worth announcing. Polite

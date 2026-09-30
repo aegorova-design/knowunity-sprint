@@ -20,7 +20,7 @@ import { TextField } from '@/components/text-field/TextField';
 import { ActionStack } from '../../ActionStack';
 import { ButtonPair } from '../../ButtonPair';
 import { withQuery } from '../../href';
-import { setTypedAnswer } from '../../turnStore';
+import { readTurn, setTypedAnswer } from '../../turnStore';
 
 import './typeScreen.css';
 
@@ -30,6 +30,7 @@ export function TypeScreen({
   sendHref,
   hintHref,
   voiceHref,
+  keepAnswer = false,
 }: {
   appBar: ReactNode;
   prompt: ReactNode;
@@ -39,8 +40,13 @@ export function TypeScreen({
   hintHref: string;
   /** Back to the mic on this same term. */
   voiceHref: string;
+  /** Start filled with the typed answer still in `turnStore` — one that was sent but never judged. */
+  keepAnswer?: boolean;
 }) {
-  const [answer, setAnswer] = useState('');
+  // Read once, on the client navigation that brings the student back. After
+  // a reload the store is empty, so this is '' on the server and the client
+  // alike, and hydration has nothing to disagree about.
+  const [answer, setAnswer] = useState(() => (keepAnswer ? (readTurn().typedAnswer ?? '') : ''));
   const helperId = useId();
 
   // SPEC.md: an empty field leaves Send answer disabled. Length judging is the

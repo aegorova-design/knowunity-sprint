@@ -37,6 +37,7 @@ import { TERMS, isTermPosition } from '../../session';
 import { SLOW_AFTER_MS, WAIT_MS, isSlowWait, parseAttempt } from '../../script';
 import { SessionAppBar } from '../SessionAppBar';
 import { CheckingWait } from './CheckingWait';
+import { SlowCancel } from './SlowCancel';
 import { queryString, verdictHref, type Query } from './outcome';
 
 export default async function CheckingPage({
@@ -76,6 +77,9 @@ export default async function CheckingPage({
           />
         </>
       }
+      /* Empty until real mode's wait passes 5s; demo mode's slow wait is its
+         own route, 09b, with its own Cancel. */
+      bottomContent={<SlowCancel term={term} attempt={attempt} />}
     />
   );
 }

@@ -70,7 +70,8 @@ When working on UI, use the storybook tools to read the component library before
   - `VoicePasscodePrompt.tsx` — the passcode ask, shown once per session before the first real judge call.
   - `RealTakePlayback.tsx` — plays a real recording or audio file, and renders nothing if it cannot. Used on Review (real mode) and the summary sheet (both modes).
   - `ReviewPlayback.tsx`, `TakePlayback.tsx` — Review's choice between the real player and the decorative one demo mode uses.
-  - `[term]/checking/CheckingWait.tsx` — the processing wait: demo mode's timer, or real mode's transcribe and judge.
+  - `[term]/checking/CheckingWait.tsx` — the processing wait: demo mode's timer, or real mode's transcribe and judge (each request retried once). Past 5s in real mode it says "Still thinking", and `SlowCancel.tsx` (via `slowWait.ts`) shows "Cancel and try again".
+  - `[term]/NeutralRetryScreen.tsx` — the shared layout for the three non-verdict outcomes: `not-heard` (silence), `unclear` (an unclear verdict) and `failed` (a request that failed twice). Neutral, no rung spent.
   - `[term]/hint-1/HintOneBody.tsx`, `[term]/hint-2/HintTwoBody.tsx`, `[term]/last-miss/LastMissBody.tsx` — the parts of those screens that differ between demo and real mode.
 - `src/app/plan/planData.ts` — plan screen content.
 - `src/app/voice-test/page.tsx` — standalone debug page for the real record → transcribe → judge loop, behind the passcode. Not a designed screen; its raw hex and lint findings are known and out of scope.

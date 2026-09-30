@@ -29,6 +29,10 @@ export const SLOW_WAIT_MS = 7000;
  */
 export const SLOW_AFTER_MS = 5000;
 
+/** What a wait that has run past 5s says — `09b` in demo mode, the checking screen itself in real mode. */
+export const SLOW_TITLE = 'Still thinking';
+export const SLOW_CAPTION = 'This one is taking a moment. Your answer is safe.';
+
 /**
  * Where each attempt on each term lands, in order. Read off SPEC.md's verdict
  * table:

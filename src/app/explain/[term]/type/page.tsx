@@ -40,7 +40,8 @@ export default async function TypePage({
   const { term } = await params;
   if (!isTermPosition(term)) notFound();
 
-  const attempt = parseAttempt((await searchParams).attempt);
+  const query = await searchParams;
+  const attempt = parseAttempt(query.attempt);
 
   return (
     <TypeScreen
@@ -49,6 +50,9 @@ export default async function TypePage({
       sendHref={withQuery(`/explain/${term}/checking`, { attempt })}
       hintHref={withQuery(`/explain/${term}/hint`, { mode: 'text' })}
       voiceHref={`/explain/${term}`}
+      // `?keep=1` comes from Cancel on a slow wait and Type instead on "That
+      // didn't go through": the answer was never judged, so it comes back.
+      keepAnswer={query.keep === '1'}
     />
   );
 }

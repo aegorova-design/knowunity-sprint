@@ -19,6 +19,9 @@
  * before, which is why the student lands here from `09 Processing` and not
  * from `07 Recording`.
  *
+ * The layout is `NeutralRetryScreen`, shared with "Couldn't make that out"
+ * (an unclear verdict) and "That didn't go through" (a failed request).
+ *
  * **Both ways back in.** Try again returns to the mic; Type instead is the
  * text fallback, which has to be reachable from every answerable state — and
  * this is the one screen in the flow where the voice path has just failed, so
@@ -31,18 +34,10 @@
 
 import { notFound } from 'next/navigation';
 
-import { Button } from '@/components/button/Button';
-import { Scaffold } from '@/components/scaffold/Scaffold';
-import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
-
-import { ActionStack } from '../../ActionStack';
-import { ButtonPair } from '../../ButtonPair';
 import { withQuery } from '../../href';
 import { parseAttempt } from '../../script';
-import { isTermPosition, nextTermHref } from '../../session';
-import { SessionAppBar } from '../SessionAppBar';
-
-import '../../verdictBody.css';
+import { isTermPosition } from '../../session';
+import { NeutralRetryScreen } from '../NeutralRetryScreen';
 
 export default async function NotHeardPage({
   params,
@@ -58,52 +53,12 @@ export default async function NotHeardPage({
   const attempt = parseAttempt((await searchParams).attempt);
 
   return (
-    <Scaffold
-      size="iPhone 13"
-      topNavigation={<SessionAppBar term={term} skipHref={nextTermHref(term)} />}
-      middleContent={
-        <div className="verdictBody">
-          {/* No card under it: there is no take to quote back, which is the
-              whole of what happened. The frame draws the header alone,
-              centred, and nothing else. */}
-          <VerdictHeader
-            verdict="Neutral"
-            title="Didn&rsquo;t catch that"
-            caption="Nothing came through. Have another go, or type it instead."
-            titleAs="h1"
-          />
-        </div>
-      }
-      bottomContent={
-        <ActionStack
-          /* The screen's one Primary: straight back to the mic, on the same
-             rung. */
-          primary={
-            <Button
-              variant="Primary"
-              size="L"
-              CTA="Try again"
-              showLeftIcon
-              leftIcon="microphone-01"
-              href={withQuery(`/explain/${term}/recording`, { attempt })}
-            />
-          }
-          /* One child, filling the row — the frame's `actions row` at 358,
-             not a half of it. See `component-gaps.md`. */
-          below={
-            <ButtonPair>
-              <Button
-                variant="Secondary"
-                size="M"
-                CTA="Type instead"
-                showLeftIcon
-                leftIcon="keyboard-01"
-                href={withQuery(`/explain/${term}/type`, { attempt })}
-              />
-            </ButtonPair>
-          }
-        />
-      }
+    <NeutralRetryScreen
+      term={term}
+      attempt={attempt}
+      title="Didn’t catch that"
+      caption="Nothing came through. Have another go, or type it instead."
+      retry={{ href: withQuery(`/explain/${term}/recording`, { attempt }), icon: 'microphone-01' }}
     />
   );
 }

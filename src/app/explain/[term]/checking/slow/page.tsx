@@ -35,7 +35,7 @@ import { Button } from '@/components/button/Button';
 import { Scaffold } from '@/components/scaffold/Scaffold';
 
 import { withQuery } from '../../../href';
-import { SLOW_AFTER_MS, SLOW_WAIT_MS, parseAttempt } from '../../../script';
+import { SLOW_AFTER_MS, SLOW_CAPTION, SLOW_TITLE, SLOW_WAIT_MS, parseAttempt } from '../../../script';
 import { isTermPosition, type TermPosition } from '../../../session';
 import { SessionAppBar } from '../../SessionAppBar';
 import { CheckingWait } from '../CheckingWait';
@@ -43,10 +43,6 @@ import { first, verdictHref, type Query } from '../outcome';
 
 /** What is left of the long wait once `09` has spent the first five seconds. */
 const REMAINING_MS = SLOW_WAIT_MS - SLOW_AFTER_MS;
-
-const TITLE = 'Still thinking';
-
-const CAPTION = 'This one is taking a moment. Your answer is safe.';
 
 /**
  * Where Cancel goes: back to the answer as it was, not back to the start of
@@ -83,8 +79,8 @@ export default async function SlowCheckingPage({
         <CheckingWait
           resolveAfterMs={REMAINING_MS}
           resolveHref={verdictHref(term, attempt, query)}
-          title={TITLE}
-          caption={CAPTION}
+          title={SLOW_TITLE}
+          caption={SLOW_CAPTION}
         />
       }
       bottomContent={
