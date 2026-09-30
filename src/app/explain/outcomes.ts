@@ -92,7 +92,7 @@ const SCRIPTED: SessionOutcomes = Object.fromEntries(
     position,
     {
       ...SESSION_OUTCOMES[position],
-      transcript: TERMS[position].heard[attemptsTaken(position) - 1],
+      transcript: TERMS[position].passTake ?? TERMS[position].heard[attemptsTaken(position) - 1],
       inputMode: 'voice',
     },
   ]),

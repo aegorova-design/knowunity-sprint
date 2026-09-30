@@ -65,6 +65,13 @@ export type Term = {
    */
   heard: readonly [string, string, string];
   /**
+   * The take a scripted first-try pass is heard as — what the summary quotes
+   * for a term the demo script passes unaided. Only camouflage has one: its
+   * `heard[0]` is a wrong answer, written for the hint screens on the typed
+   * path, and would otherwise be quoted under "Unaided".
+   */
+  passTake?: string;
+  /**
    * The hint ladder's two rungs in demo mode — `11 Not quite, hint 1 of 2`
    * shows the first, `12 Partial, hint 2 of 2` the second. Each one answers
    * the take above it rather than restating the question.
@@ -133,6 +140,7 @@ export const TERMS: Record<TermPosition, Term> = {
     // first echoes the rubric's own listed contradiction (bright colours to
     // be seen, not to hide), the second and third have "blends in" but never
     // say why that matters.
+    passTake: '“Camouflage is when an animal’s colours help it blend in, so predators can’t see it.”',
     heard: [
       '“Camouflage is when an animal has really bright colours so predators notice it and stay away.”',
       '“It’s when an animal’s colours match where it lives, so it’s harder to see.”',
