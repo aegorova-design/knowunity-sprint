@@ -19,14 +19,21 @@ import { TextBlock } from '@/components/text-block/TextBlock';
 
 import { CloseButton } from '../../navigation';
 import { SheetPanel } from '../../SheetPanel';
-import { DENIED_CLOSE_HREF, DeniedActions, DeniedContent } from '../PermissionDenied';
+import { DENIED_CLOSE_HREF, DeniedActions, DeniedContent, deniedTerm } from '../PermissionDenied';
 
 import './howSheet.css';
 
 const SHEET_TITLE = 'Turn on your mic';
 
-/** The screen underneath — where both ways out of the sheet go. */
-const DENIED_HREF = '/explain/denied';
+/**
+ * Where both ways out of the sheet go: `?back=`, when an answer surface's
+ * "Turn on mic" opened it, else the denied screen underneath. Only a path
+ * inside the session is honoured — the value arrives in a URL.
+ */
+function dismissHref(term: string, raw: string | string[] | undefined): string {
+  const back = Array.isArray(raw) ? raw[0] : raw;
+  return back?.startsWith('/explain/') && !back.startsWith('//') ? back : `/explain/denied?term=${term}`;
+}
 
 const INTRO =
   'Your iPhone is blocking the mic for Knowunity. You can change that in Settings in about 20 seconds.';
@@ -39,7 +46,15 @@ const STEPS = [
   'Come back here. Your session is saved.',
 ];
 
-export default function HowToAllowPage() {
+export default async function HowToAllowPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const query = await searchParams;
+  const back = dismissHref(deniedTerm(query.term), query.back);
+  const term = back.match(/^\/explain\/([123])\//)?.[1] ?? deniedTerm(query.term);
+
   return (
     <Scaffold
       size="iPhone 13"
@@ -51,10 +66,10 @@ export default function HowToAllowPage() {
         />
       }
       middleContent={<DeniedContent behindSheet />}
-      bottomContent={<DeniedActions behindSheet />}
+      bottomContent={<DeniedActions term={deniedTerm(term)} behindSheet />}
       showBottomSheetBackground
       bottomSheetOnly={
-        <SheetPanel label={SHEET_TITLE} dismissHref={DENIED_HREF}>
+        <SheetPanel label={SHEET_TITLE} dismissHref={back}>
           {/* Variant S, matching the example sheet: a label over the steps
               rather than a screen heading. Colour stays text/primary. */}
           <TextBlock variant="S" title={SHEET_TITLE} showCaption={false} titleAs="h2" />
@@ -75,7 +90,7 @@ export default function HowToAllowPage() {
           {/* Back to the screen underneath, which is its own route. Tapping
               outside the panel goes to the same place; this is the accessible
               way, since the outside layer is hidden from assistive tech. */}
-          <Button variant="Primary" size="L" CTA="Got it" href={DENIED_HREF} />
+          <Button variant="Primary" size="L" CTA="Got it" href={back} />
         </SheetPanel>
       }
     />

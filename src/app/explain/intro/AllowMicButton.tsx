@@ -16,6 +16,8 @@ import { useState } from 'react';
 
 import { Button } from '@/components/button/Button';
 
+import { setInputMode } from '../inputMode';
+
 export function AllowMicButton({
   grantedHref,
   deniedHref,
@@ -36,7 +38,9 @@ export function AllowMicButton({
     } catch {
       // Either the student said no, or there is no mediaDevices to ask — an
       // insecure origin, or a browser without it. Both leave the student
-      // unable to speak to this page, which is the dead end 14 is for.
+      // unable to speak to this page, which is the dead end 14 is for. The
+      // session is in type mode from here, and not by choice.
+      setInputMode('denied');
       router.push(deniedHref);
     }
   }

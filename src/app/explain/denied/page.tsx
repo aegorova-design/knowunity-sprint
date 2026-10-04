@@ -11,9 +11,15 @@ import { AppBar } from '@/components/app-bar/AppBar';
 import { Scaffold } from '@/components/scaffold/Scaffold';
 
 import { CloseButton } from '../navigation';
-import { DENIED_CLOSE_HREF, DeniedActions, DeniedContent } from './PermissionDenied';
+import { DENIED_CLOSE_HREF, DeniedActions, DeniedContent, deniedTerm } from './PermissionDenied';
 
-export default function PermissionDeniedPage() {
+export default async function PermissionDeniedPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const term = deniedTerm((await searchParams).term);
+
   return (
     <Scaffold
       size="iPhone 13"
@@ -25,7 +31,7 @@ export default function PermissionDeniedPage() {
         />
       }
       middleContent={<DeniedContent />}
-      bottomContent={<DeniedActions />}
+      bottomContent={<DeniedActions term={term} />}
     />
   );
 }

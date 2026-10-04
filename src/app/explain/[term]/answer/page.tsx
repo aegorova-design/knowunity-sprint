@@ -36,6 +36,7 @@ import { notFound } from 'next/navigation';
 import { Button } from '@/components/button/Button';
 import { Scaffold } from '@/components/scaffold/Scaffold';
 
+import { readInputMode } from '../../inputModeServer';
 import { RecordOutcome } from '../../RecordOutcome';
 import { VerdictActions } from '../../VerdictActions';
 import { withQuery } from '../../href';
@@ -58,8 +59,10 @@ import { SessionAppBar } from '../SessionAppBar';
  */
 const TRIES_WORD: Record<number, string> = { 1: 'once', 2: 'twice', 3: 'three times' };
 
-function caption(tries: number): string {
-  if (tries < 1) return 'Read it through, then say it back in your own words.';
+function caption(tries: number, sayBack: boolean): string {
+  if (tries < 1) {
+    return sayBack ? 'Read it through, then say it back in your own words.' : 'Read it through before you move on.';
+  }
 
   const word = TRIES_WORD[Math.min(tries, 3)];
   return `You tried ${word}, and that’s what makes this stick now.`;
@@ -82,6 +85,18 @@ export default async function AnswerPage({
 
   const current = TERMS[term];
   const tries = takesBehind((await searchParams).tries);
+  // Say it back is voice-only: type mode skips it, and Next term takes the Primary.
+  const sayBack = (await readInputMode()).mode === 'voice';
+  const nextTerm = (
+    <Button
+      variant={sayBack ? 'Secondary' : 'Primary'}
+      size={sayBack ? 'M' : 'L'}
+      CTA={nextTermLabel(term)}
+      showRightIcon
+      rightIcon="arrow-right"
+      href={nextTermHref(term)}
+    />
+  );
 
   return (
     <Scaffold
@@ -97,7 +112,7 @@ export default async function AnswerPage({
           <RevealedAnswer
             term={current}
             title="Here’s the idea"
-            caption={caption(tries)}
+            caption={caption(tries, sayBack)}
           />
         </>
       }
@@ -108,6 +123,7 @@ export default async function AnswerPage({
              it — saying it is. The take is not judged and cannot change the
              outcome; it comes back to `13b` acknowledged. */
           primary={
+            !sayBack ? nextTerm : (
             <Button
               variant="Primary"
               size="L"
@@ -118,6 +134,7 @@ export default async function AnswerPage({
                 back: `/explain/${term}/answer/said-back`,
               })}
             />
+            )
           }
           /* Secondary, per SPEC.md. The frame draws it Tertiary — moving on is
              allowed but not encouraged — and the intent is unchanged here, only
@@ -125,16 +142,7 @@ export default async function AnswerPage({
              the lowest emphasis on the screen, below even the ways out on the
              hint screens above it. `13b` promotes it to Primary once the
              saying-back is done. */
-          secondary={
-            <Button
-              variant="Secondary"
-              size="M"
-              CTA={nextTermLabel(term)}
-              showRightIcon
-              rightIcon="arrow-right"
-              href={nextTermHref(term)}
-            />
-          }
+          secondary={sayBack ? nextTerm : undefined}
           /* `+0 XP · revealed`, in the same shape as a pass's `+15 XP ·
              unaided`. The number used to be left off here, on the rule that an
              outcome should be named rather than a zero shown; the design owner

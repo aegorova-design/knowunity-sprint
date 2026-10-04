@@ -10,6 +10,7 @@
 import { PlanScreen } from '../PlanScreen';
 import { PLAN_IN_PROGRESS_HREF, voiceHrefFor, homeHrefFor } from '../planHref';
 import { PLAN_IN_PROGRESS } from '../planData';
+import { NEW_SESSION_HREF } from '@/app/explain/inputMode';
 
 export default async function PlanInProgressPage({
   searchParams,
@@ -24,7 +25,7 @@ export default async function PlanInProgressPage({
       // Not a first run: section 1 is already underway, so the voice step goes
       // straight to the loop rather than back through the primer — SPEC.md,
       // screen 1, "on a first run, /explain/1 after that".
-      voiceHref={voiceHrefFor(resume, '/explain/1')}
+      voiceHref={voiceHrefFor(resume, NEW_SESSION_HREF)}
       planHref={PLAN_IN_PROGRESS_HREF}
       /* Home carries the stage, so Continue studying comes back here rather
          than to `02`. `20 Home, revisit` is not it: that screen says terms

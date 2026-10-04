@@ -23,12 +23,9 @@
 
 import { notFound } from 'next/navigation';
 
-import { withQuery } from '../../href';
 import { parseAttempt } from '../../script';
-import { TERMS, isTermPosition, nextTermHref } from '../../session';
-import { SessionAppBar } from '../SessionAppBar';
-import { TermPrompt } from '../TermPrompt';
-import { TypeScreen } from './TypeScreen';
+import { isTermPosition } from '../../session';
+import { TypeAnswerScreen } from './TypeAnswerScreen';
 
 export default async function TypePage({
   params,
@@ -41,15 +38,11 @@ export default async function TypePage({
   if (!isTermPosition(term)) notFound();
 
   const query = await searchParams;
-  const attempt = parseAttempt(query.attempt);
 
   return (
-    <TypeScreen
-      appBar={<SessionAppBar term={term} skipHref={nextTermHref(term)} />}
-      prompt={<TermPrompt prompt={TERMS[term].prompt} />}
-      sendHref={withQuery(`/explain/${term}/checking`, { attempt })}
-      hintHref={withQuery(`/explain/${term}/hint`, { mode: 'text' })}
-      voiceHref={`/explain/${term}`}
+    <TypeAnswerScreen
+      term={term}
+      attempt={parseAttempt(query.attempt)}
       // `?keep=1` comes from Cancel on a slow wait and Type instead on "That
       // didn't go through": the answer was never judged, so it comes back.
       keepAnswer={query.keep === '1'}

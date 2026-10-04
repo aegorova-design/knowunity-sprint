@@ -15,8 +15,15 @@ import { ActionStack } from '../ActionStack';
 import { ButtonPair } from '../ButtonPair';
 import { MascotHeading } from '../MascotHeading';
 
-export const DENIED_TYPE_HREF = '/explain/1/type';
+import { isTermPosition, type TermPosition } from '../session';
+
 export const DENIED_HELP_HREF = '/explain/denied/how';
+
+/** `?term=` names the term the mic failed on; from the primer there is none, and it is term 1. */
+export function deniedTerm(raw: string | string[] | undefined): TermPosition {
+  const value = Array.isArray(raw) ? raw[0] : raw;
+  return value && isTermPosition(value) ? value : '1';
+}
 export const DENIED_CLOSE_HREF = '/plan';
 
 export function DeniedContent({ behindSheet = false }: { behindSheet?: boolean }) {
@@ -32,7 +39,7 @@ export function DeniedContent({ behindSheet = false }: { behindSheet?: boolean }
   );
 }
 
-export function DeniedActions({ behindSheet = false }: { behindSheet?: boolean }) {
+export function DeniedActions({ term, behindSheet = false }: { term: TermPosition; behindSheet?: boolean }) {
   return (
     <ActionStack
       inert={behindSheet}
@@ -45,7 +52,7 @@ export function DeniedActions({ behindSheet = false }: { behindSheet?: boolean }
           CTA="Type my answers"
           showLeftIcon
           leftIcon="keyboard-01"
-          href={DENIED_TYPE_HREF}
+          href={`/explain/${term}/type`}
         />
       }
       below={
@@ -61,7 +68,7 @@ export function DeniedActions({ behindSheet = false }: { behindSheet?: boolean }
             CTA="How to allow it"
             showLeftIcon
             leftIcon="help-circle"
-            href={DENIED_HELP_HREF}
+            href={`${DENIED_HELP_HREF}?term=${term}`}
           />
         </ButtonPair>
       }

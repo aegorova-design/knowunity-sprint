@@ -30,6 +30,7 @@ import { Waveform } from '@/components/waveform/Waveform';
 
 import { readDemoMode, useIsDemoMode } from '../../demoMode';
 import { withQuery } from '../../href';
+import { setInputMode } from '../../inputMode';
 import { formatTakeLength } from '../../session';
 import { setAudioTake } from '../../turnStore';
 
@@ -44,7 +45,10 @@ function detectAudioFormat(): 'audio/webm' | 'audio/mp4' {
 export function RecordingTake({
   cancelHref,
   reviewHref,
+  deniedHref,
 }: {
+  /** `14 Permission denied`, for a mic that refuses to start. */
+  deniedHref: string;
   /** Back where a discarded take leaves the student. */
   cancelHref: string;
   /**
@@ -110,7 +114,9 @@ export function RecordingTake({
         mediaRecorder.start(1000);
       })
       .catch(() => {
-        if (!cancelled) router.replace('/explain/denied');
+        if (cancelled) return;
+        setInputMode('denied');
+        router.replace(deniedHref);
       });
 
     return () => {

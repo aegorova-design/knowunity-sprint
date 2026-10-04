@@ -17,12 +17,13 @@
 import { PlanScreen } from '../PlanScreen';
 import { PLAN_MASTERED } from '../planData';
 import { PLAN_MASTERED_HREF, homeHrefFor } from '../planHref';
+import { NEW_SESSION_HREF } from '@/app/explain/inputMode';
 
 export default function PlanMasteredPage() {
   return (
     <PlanScreen
       sections={PLAN_MASTERED}
-      voiceHref="/explain/1"
+      voiceHref={NEW_SESSION_HREF}
       planHref={PLAN_MASTERED_HREF}
       /* `01 Home` carrying the stage: there is no "home, all done" frame, and
          `20 Home, revisit` still says terms are due — untrue once the section

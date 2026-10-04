@@ -31,6 +31,12 @@
  * An `unclear` verdict is a verdict, and `realVerdict.ts` sends it to
  * `unclear`.
  *
+ * **Silent, unclear and slow are voice states.** A typed answer has no audio
+ * to be silent, words that are exactly what was typed, and no transcription to
+ * wait on — so it never shows "Still thinking", and an unclear verdict on it
+ * is read as a miss, with a hint aimed at the first idea it is missing. Only
+ * `failed` can follow a typed answer.
+ *
  * **Past 5s the wait says so.** Demo mode hands over to its own route, `09b`,
  * at that point. Real mode cannot leave — leaving would abort the request —
  * so the same words (`SLOW_TITLE`, `SLOW_CAPTION`) replace the stepping line
@@ -47,7 +53,9 @@ import { readDemoMode, useIsDemoMode } from '../../demoMode';
 import { withQuery } from '../../href';
 import { SLOW_AFTER_MS, SLOW_CAPTION, SLOW_TITLE, WAIT_MS } from '../../script';
 import type { TermPosition } from '../../session';
-import { readTurn, recordHintTarget, setJudgeResult } from '../../turnStore';
+import { rubric } from '@/lib/judge-config';
+
+import { readTurn, recordHintTarget, setJudgeResult, type JudgeVerdict } from '../../turnStore';
 import { realVerdictSegment } from '../../realVerdict';
 import { VoicePasscodePrompt } from '../../VoicePasscodePrompt';
 import { setSlowWait, useSlowWait } from './slowWait';
@@ -79,6 +87,17 @@ async function fetchWithRetry(input: string, init: RequestInit): Promise<Respons
     if (init.signal?.aborted) throw error;
   }
   return fetch(input, init);
+}
+
+/** An unclear verdict on typed words is a miss: there is nothing to have misheard. */
+function typedVerdict(rubricId: string, verdict: JudgeVerdict): JudgeVerdict {
+  if (verdict.verdict !== 'unclear') return verdict;
+  const firstKeyIdea = rubric.terms.find((term) => term.id === rubricId)?.ideas.find((idea) => idea.type === 'key')?.id;
+  return {
+    ...verdict,
+    verdict: 'miss',
+    hint_target: verdict.hint_target ?? verdict.ideas_missing[0] ?? firstKeyIdea ?? null,
+  };
 }
 
 /**
@@ -147,7 +166,8 @@ export function CheckingWait({
     const startedAt = Date.now();
 
     setSlowWait(false);
-    const slowTimer = window.setTimeout(() => setSlowWait(true), SLOW_AFTER_MS);
+    const isTyped = readTurn().typedAnswer !== null;
+    const slowTimer = isTyped ? undefined : window.setTimeout(() => setSlowWait(true), SLOW_AFTER_MS);
 
     const goTo = (segment: string, query: Record<string, string | number | undefined> = {}) => {
       if (cancelled) return;
@@ -233,8 +253,9 @@ export function CheckingWait({
         });
         if (cancelled) return;
         if (!judgeRes.ok) throw new Error('judge failed');
-        const verdict = await judgeRes.json();
+        const judged: JudgeVerdict = await judgeRes.json();
         if (cancelled) return;
+        const verdict = inputMode === 'typed' ? typedVerdict(currentRubricId, judged) : judged;
 
         setJudgeResult(currentTerm, transcript, verdict);
         // Counted here, once, right as the verdict arrives — stage D's rule:

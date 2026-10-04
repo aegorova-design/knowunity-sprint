@@ -36,6 +36,7 @@ import { Scaffold } from '@/components/scaffold/Scaffold';
 import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
 
 import { CoveredIdeas } from '../../CoveredIdeas';
+import { readInputMode } from '../../inputModeServer';
 import { RecordOutcome } from '../../RecordOutcome';
 import { VerdictActions } from '../../VerdictActions';
 import { FIRST_ATTEMPT, hintedXp, parseAttempt, xpLabel } from '../../script';
@@ -89,6 +90,9 @@ export default async function PassHintedPage({
   const xp = hintedXp(attempt - 1);
 
   const saidBack = first(query['said-back']) === '1';
+  // Say it back is voice-only, and type mode skips it rather than nudging the
+  // student to switch.
+  const offerSayBack = !saidBack && (await readInputMode()).mode === 'voice';
   const current = TERMS[term];
 
   return (
@@ -127,7 +131,7 @@ export default async function PassHintedPage({
              there with help, and this is the offer to own it unaided. It is
              gone once taken — there is nothing to acknowledge twice. */
           secondary={
-            saidBack ? undefined : (
+            !offerSayBack ? undefined : (
               <Button
                 variant="Secondary"
                 size="M"

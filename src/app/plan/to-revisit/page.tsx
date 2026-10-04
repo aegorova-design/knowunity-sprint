@@ -32,11 +32,12 @@
 
 import { PLAN_TO_REVISIT_HREF } from '../planHref';
 import { ToRevisitScreen } from '../ToRevisitScreen';
+import { NEW_SESSION_HREF } from '@/app/explain/inputMode';
 
 export default function PlanToRevisitPage() {
   return (
     <ToRevisitScreen
-      voiceHref="/explain/1"
+      voiceHref={NEW_SESSION_HREF}
       homeHref="/home/revisit"
       planHref={PLAN_TO_REVISIT_HREF}
       /* Stubbed: straight to 20b, skipping the loop. See the note above. */

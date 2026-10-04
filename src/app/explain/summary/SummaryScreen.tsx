@@ -38,6 +38,7 @@ import { PROGRESS_LABEL, TERM_COUNT } from '../session';
 import { SummaryRows } from './SummaryRows';
 
 import './summaryScreen.css';
+import { NEW_SESSION_HREF } from '@/app/explain/inputMode';
 
 /**
  * Terms that needed help — the number Redo offers to run again. The
@@ -167,7 +168,7 @@ export function SummaryActions({ behindSheet = false }: { behindSheet?: boolean 
             CTA={outcomes ? redoLabel(outcomes) : 'Redo'}
             showLeftIcon
             leftIcon="refresh-ccw-01"
-            href="/explain/1"
+            href={NEW_SESSION_HREF}
           />
         }
       />

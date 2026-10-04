@@ -96,6 +96,7 @@ export default async function RecordingPage({
           // A say-back goes straight back where it came from; an ordinary take
           // goes to Review with its rung, which Review hands to the wait.
           reviewHref={back ?? withQuery(`/explain/${term}/review`, { attempt })}
+          deniedHref={`/explain/denied?term=${term}`}
         />
       }
     />

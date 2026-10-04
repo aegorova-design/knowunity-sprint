@@ -21,12 +21,14 @@ import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
 import { ActionStack } from '../ActionStack';
 import { ButtonPair } from '../ButtonPair';
 import { withQuery } from '../href';
+import { readInputMode } from '../inputModeServer';
+import { OtherModeButton } from '../ModeButtons';
 import { nextTermHref, type TermPosition } from '../session';
 import { SessionAppBar } from './SessionAppBar';
 
 import '../verdictBody.css';
 
-export function NeutralRetryScreen({
+export async function NeutralRetryScreen({
   term,
   attempt,
   title,
@@ -43,6 +45,8 @@ export function NeutralRetryScreen({
   /** Whether Type instead brings back a typed answer that was in flight. */
   keepTyped?: boolean;
 }) {
+  const inputMode = await readInputMode();
+
   return (
     <Scaffold
       size="iPhone 13"
@@ -68,13 +72,12 @@ export function NeutralRetryScreen({
              not a half of it. See `component-gaps.md`. */
           below={
             <ButtonPair>
-              <Button
-                variant="Secondary"
-                size="M"
-                CTA="Type instead"
-                showLeftIcon
-                leftIcon="keyboard-01"
-                href={withQuery(`/explain/${term}/type`, {
+              {/* Only `failed` can follow a typed answer, and there the
+                  other mode is voice. */}
+              <OtherModeButton
+                inputMode={inputMode}
+                voiceHref={withQuery(`/explain/${term}/recording`, { attempt })}
+                typeHref={withQuery(`/explain/${term}/type`, {
                   attempt,
                   keep: keepTyped ? 1 : undefined,
                 })}

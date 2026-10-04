@@ -29,7 +29,7 @@ export function TypeScreen({
   prompt,
   sendHref,
   hintHref,
-  voiceHref,
+  otherMode,
   keepAnswer = false,
 }: {
   appBar: ReactNode;
@@ -38,8 +38,8 @@ export function TypeScreen({
   sendHref: string;
   /** The "I don't know" path: one hint, then the reveal. */
   hintHref: string;
-  /** Back to the mic on this same term. */
-  voiceHref: string;
+  /** The way back to voice — or, with the mic refused, the explainer on turning it on. */
+  otherMode: ReactNode;
   /** Start filled with the typed answer still in `turnStore` — one that was sent but never judged. */
   keepAnswer?: boolean;
 }) {
@@ -132,14 +132,7 @@ export function TypeScreen({
                      XP either way (sprint-context.md). */
                   href={hintHref}
                 />
-                <Button
-                  variant="Secondary"
-                  size="M"
-                  CTA="Switch to voice"
-                  showLeftIcon
-                  leftIcon="microphone-01"
-                  href={voiceHref}
-                />
+                {otherMode}
               </ButtonPair>
             }
           />

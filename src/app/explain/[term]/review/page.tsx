@@ -30,6 +30,7 @@ import { Scaffold } from '@/components/scaffold/Scaffold';
 
 import { ActionStack } from '../../ActionStack';
 import { ButtonPair } from '../../ButtonPair';
+import { SetModeButton } from '../../ModeButtons';
 import { PendingAnswerGuard } from '../../PendingAnswerGuard';
 import { withQuery } from '../../href';
 import { parseAttempt } from '../../script';
@@ -113,7 +114,8 @@ export default async function ReviewPage({
                   leftIcon="microphone-01"
                   href={withQuery(`/explain/${term}/recording`, { attempt })}
                 />
-                <Button
+                <SetModeButton
+                  setsMode="type"
                   variant="Secondary"
                   size="M"
                   CTA="Type instead"

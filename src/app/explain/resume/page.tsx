@@ -42,6 +42,7 @@ import {
   isTermPosition,
   type TermPosition,
 } from '../session';
+import { NEW_SESSION_HREF } from '@/app/explain/inputMode';
 
 /**
  * Close leaves the session for the plan, as the primer and `14` both do — for
@@ -51,7 +52,7 @@ import {
 const RESUME_CLOSE_HREF = PLAN_IN_PROGRESS_HREF;
 
 /** Start over: a fresh link is a fresh session. */
-const START_OVER_HREF = '/explain/1';
+const START_OVER_HREF = NEW_SESSION_HREF;
 
 /**
  * Where the student stopped. Only a term that is actually part-done can be

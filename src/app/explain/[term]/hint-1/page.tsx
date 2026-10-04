@@ -38,6 +38,8 @@ import { Scaffold } from '@/components/scaffold/Scaffold';
 
 import { ActionStack } from '../../ActionStack';
 import { ButtonPair } from '../../ButtonPair';
+import { readInputMode } from '../../inputModeServer';
+import { OtherModeButton } from '../../ModeButtons';
 import { withQuery } from '../../href';
 import { FIRST_ATTEMPT } from '../../script';
 import { TERMS, isTermPosition, nextTermHref } from '../../session';
@@ -52,6 +54,10 @@ export default async function HintOnePage({ params }: { params: Promise<{ term: 
   // This screen is always the first rung, whatever the answer arrived as, so
   // the rung it sends on is always the second.
   const nextAttempt = FIRST_ATTEMPT + 1;
+  const inputMode = await readInputMode();
+  const isText = inputMode.mode === 'type';
+  const voiceHref = withQuery(`/explain/${term}/recording`, { attempt: nextAttempt });
+  const typeHref = withQuery(`/explain/${term}/type`, { attempt: nextAttempt });
 
   return (
     <Scaffold
@@ -68,8 +74,8 @@ export default async function HintOnePage({ params }: { params: Promise<{ term: 
               size="L"
               CTA="Try again"
               showLeftIcon
-              leftIcon="microphone-01"
-              href={withQuery(`/explain/${term}/recording`, { attempt: nextAttempt })}
+              leftIcon={isText ? 'keyboard-01' : 'microphone-01'}
+              href={isText ? typeHref : voiceHref}
             />
           }
           below={
@@ -90,14 +96,7 @@ export default async function HintOnePage({ params }: { params: Promise<{ term: 
               {/* The text fallback, reachable from every answerable state. It
                   carries the rung: the ladder does not care which way the
                   answer comes in. */}
-              <Button
-                variant="Secondary"
-                size="M"
-                CTA="Type instead"
-                showLeftIcon
-                leftIcon="keyboard-01"
-                href={withQuery(`/explain/${term}/type`, { attempt: nextAttempt })}
-              />
+              <OtherModeButton inputMode={inputMode} voiceHref={voiceHref} typeHref={typeHref} />
             </ButtonPair>
           }
         />

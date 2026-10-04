@@ -38,7 +38,7 @@ import { SLOW_AFTER_MS, WAIT_MS, isSlowWait, parseAttempt } from '../../script';
 import { SessionAppBar } from '../SessionAppBar';
 import { CheckingWait } from './CheckingWait';
 import { SlowCancel } from './SlowCancel';
-import { queryString, verdictHref, type Query } from './outcome';
+import { first, queryString, verdictHref, type Query } from './outcome';
 
 export default async function CheckingPage({
   params,
@@ -52,7 +52,8 @@ export default async function CheckingPage({
 
   const query = await searchParams;
   const attempt = parseAttempt(query.attempt);
-  const slow = isSlowWait(term, attempt);
+  // The long wait is a voice state: a typed answer never runs into 09b.
+  const slow = isSlowWait(term, attempt) && first(query.typed) === undefined;
 
   return (
     <Scaffold

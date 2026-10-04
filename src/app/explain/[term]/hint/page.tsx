@@ -19,15 +19,10 @@
  * because there is no second rung. The term records as Revealed at 0 XP either
  * way (sprint-context.md).
  *
- * **The way out reads in the mode the student is already in.** `?mode=text`
- * rides in from the text screen's own "I don't know", and it is the whole
- * reason this screen takes a query at all: without it the row told a student
- * who had just been typing to "Have a go" at a microphone and offered "Type
- * instead" for what they were already doing. SPEC.md screen 23 makes text
- * sticky for the rest of the session, and a screen in the middle of that
- * session should not quietly unstick it. So in text mode "Have a go" leads
- * back to the field and the second half offers voice; in voice mode the row
- * is unchanged. Either way both ways of answering stay on screen, which is
+ * **The way out reads in the mode the student is already in** — the
+ * session's input mode (`inputMode.ts`). In type mode "Have a go" leads back
+ * to the field and the second half offers voice; in voice mode it is the
+ * other way round. Either way both ways of answering stay on screen, which is
  * what keeps the text fallback reachable from every answerable state.
  */
 
@@ -40,27 +35,21 @@ import { Scaffold } from '@/components/scaffold/Scaffold';
 
 import { ActionStack } from '../../ActionStack';
 import { ButtonPair } from '../../ButtonPair';
+import { readInputMode } from '../../inputModeServer';
+import { OtherModeButton } from '../../ModeButtons';
 import { TERMS, isTermPosition, nextTermHref } from '../../session';
 import { SessionAppBar } from '../SessionAppBar';
 
 import './hintScreen.css';
 
-export default async function HintPage({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ term: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
+export default async function HintPage({ params }: { params: Promise<{ term: string }> }) {
   const { term } = await params;
   if (!isTermPosition(term)) notFound();
 
   const current = TERMS[term];
 
-  // Anything but `text` is the voice row, which is the one the student gets
-  // arriving from `06 Idle` and the one this screen has always drawn.
-  const { mode } = await searchParams;
-  const isText = (Array.isArray(mode) ? mode[0] : mode) === 'text';
+  const inputMode = await readInputMode();
+  const isText = inputMode.mode === 'type';
 
   return (
     <Scaffold
@@ -114,13 +103,10 @@ export default async function HintPage({
                 leftIcon={isText ? 'keyboard-01' : 'microphone-01'}
                 href={isText ? `/explain/${term}/type` : `/explain/${term}/recording`}
               />
-              <Button
-                variant="Secondary"
-                size="M"
-                CTA={isText ? 'Switch to voice' : 'Type instead'}
-                showLeftIcon
-                leftIcon={isText ? 'microphone-01' : 'keyboard-01'}
-                href={isText ? `/explain/${term}/recording` : `/explain/${term}/type`}
+              <OtherModeButton
+                inputMode={inputMode}
+                voiceHref={`/explain/${term}/recording`}
+                typeHref={`/explain/${term}/type`}
               />
             </ButtonPair>
           }

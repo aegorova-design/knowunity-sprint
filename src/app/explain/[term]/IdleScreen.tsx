@@ -15,6 +15,7 @@
 import { Button } from '@/components/button/Button';
 
 import { ButtonPair } from '../ButtonPair';
+import { SetModeButton } from '../ModeButtons';
 import { TermPrompt } from './TermPrompt';
 import { StartRecordingButton } from './navigation';
 
@@ -70,7 +71,8 @@ export function IdleActions({
           leftIcon="help-circle"
           href={`/explain/${term}/hint`}
         />
-        <Button
+        <SetModeButton
+          setsMode="type"
           variant="Secondary"
           size="M"
           CTA="Type instead"
