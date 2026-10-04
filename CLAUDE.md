@@ -19,6 +19,11 @@
 - **Typed answers only fail one way.** Silent, unclear and slow are voice states. A typed unclear verdict returns to the field with the words kept and Knowie asking for more — no hint, no attempt spent. Only `failed` renders as its own screen for a typed answer. Typed answers read "What you typed", never "What Knowie heard" (`SaidAnswer.tsx`).
 - **A revealed term is requeued once.** On its first reveal the term joins the back of the session queue (the `explain-requeue` cookie: queued terms plus the active requeue pass; `requeue.ts`, `requeueServer.ts`, `QueueState` in `session.ts`). It still requeues when it was the last term. It comes back with Knowie's "Let's try that one again.", the progress bar full (the denominator stays the session's term count), one hint, then the reveal. A second reveal keeps Revealed and does not requeue. The reveal screen has no Say it back in either mode — the requeue is the retry. Say it back stays only after a hinted pass in voice mode.
 - **A requeue pass is hinted at best.** A pass on a requeued term routes to `pass-hinted` and records Hinted at the hinted rate, never Unaided; `outcomes.ts` guards it too. Only a revisit session may flip a term to Unaided, and **revisit sessions are not built in v2 — revealed and hinted terms cannot currently flip to Unaided at all.** The requeue result overwrites the first pass, so the summary row, terms to revisit, plan header and XP follow the final status, and the summary keeps only the last attempt's take.
+- **No Redo after a session.** The summary's only exit is Continue, to the plan, and the plan offers no "Do it now anyway" on terms that needed help. An immediate redo is recognition, not recall; the revisit Knowie schedules is the intended second attempt. New sessions start only from the primer, Start over (`05b Resume`) and the plan's Explain out loud step — all through `/explain/1?new=1`, which resets input mode and the requeue.
+
+## Open questions (not in v2 scope)
+
+- What the revisit interval should be when the exam is one day away — the "couple of days" Knowie names would land after it.
 
 ## Never
 

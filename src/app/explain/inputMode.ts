@@ -22,7 +22,7 @@ export type InputModeState = { mode: InputMode; micDenied: boolean };
 
 export const INPUT_MODE_COOKIE = 'explain-input-mode';
 
-/** Where every new session starts — the primer, Redo, Start over, the plan's voice step. */
+/** Where every new session starts — the primer, Start over, the plan's Explain out loud step. */
 export const NEW_SESSION_HREF = '/explain/1?new=1';
 
 type StoredValue = InputMode | 'denied';

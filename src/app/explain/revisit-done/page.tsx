@@ -26,17 +26,11 @@
  * theirs. No Skip and no progress bar: the revisit is over, and like the
  * primer and `14` this sits outside the term loop.
  *
- * **Two entries, and the copy has to read from both.** `19`'s "Do it now
- * anyway" arrives with no time passed — the student pulled the terms forward
- * rather than waiting — and `20 Home, revisit` arrives five days later, with
- * them coming back on the date Knowie named. So neither line may lean on the
- * gap: the title does not say the terms "came back on their own", which is
- * only true of the scheduled return, and the caption names no day. What is
- * true from both is that they needed help last time and were explained
- * unaided this time, with one check still to come.
- *
- * The walkthrough reaches it once, through `20`. `19`'s route stays wired
- * because that is the entry the real flow uses.
+ * **One entry: `20 Home, revisit`**, five days later, with the terms coming
+ * back on the date Knowie named. `19`'s "Do it now anyway" used to arrive here
+ * with no time passed; it is gone, because an immediate second go is
+ * recognition, not recall. The copy still leans on no gap — the caption names
+ * no day — so it stays true if a revisit is ever pulled forward again.
  */
 
 import { AppBar } from '@/components/app-bar/AppBar';

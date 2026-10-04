@@ -31,9 +31,9 @@ export type PlanScreenProps = {
   sections: PlanSection[];
   /**
    * Where a voice step goes. First run sends the student through the primer.
-   * Knowie's action on a result section goes to the same place: SPEC.md
-   * screens 5 and 6 send both there, because "Do it now anyway" and "Practice
-   * sooner" start the recall loop now rather than on the date Knowie named.
+   * Knowie's action on a result section goes to the same place: "Practice
+   * sooner", on `21`, starts the recall loop now rather than on the date
+   * Knowie named. `19` has no action — see `PLAN_TO_REVISIT`.
    */
   voiceHref: string;
   /**
@@ -61,15 +61,6 @@ export type PlanScreenProps = {
    */
   homeHref?: string;
   /**
-   * Where Knowie's action on a result section goes, when it is not the same
-   * place the Voice step goes.
-   *
-   * Defaults to `voiceHref`, which is what "Practice sooner" on `21` wants:
-   * start the recall loop now rather than on the date Knowie named. `19`
-   * overrides it — see the note there.
-   */
-  resultActionHref?: string;
-  /**
    * This screen's own route, which is where the study-plan tab in the bottom
    * bar goes.
    *
@@ -87,7 +78,6 @@ export function PlanScreen({
   voiceHref,
   learningHref,
   homeHref = '/',
-  resultActionHref,
   planHref = PLAN_HREF,
 }: PlanScreenProps) {
   return (
@@ -162,6 +152,7 @@ export function PlanScreen({
                     /* Tertiary XS per SPEC.md, and the screen's lowest
                        emphasis — the scheduled date is the recommendation and
                        this is the way around it, not the way through. */
+                    section.result.message.action === undefined ? undefined : (
                     <Button
                       variant="Tertiary"
                       size="XS"
@@ -172,8 +163,9 @@ export function PlanScreen({
                          icon container without naming what goes in it. */
                       showLeftIcon
                       leftIcon="microphone-01"
-                      href={resultActionHref ?? voiceHref}
+                      href={voiceHref}
                     />
+                    )
                   }
                 />
               ) : null}

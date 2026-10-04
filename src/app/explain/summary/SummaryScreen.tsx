@@ -16,7 +16,7 @@
  * about to change.
  *
  * `behindSheet` marks the covered controls inert. Covered is not unreachable:
- * without it, Tab still walks the three rows, Continue and Redo while a sheet
+ * without it, Tab still walks the three rows and Continue while a sheet
  * is showing one term's answer.
  */
 
@@ -25,7 +25,6 @@ import { Button } from '@/components/button/Button';
 import { ButtonGroup } from '@/components/button-group/ButtonGroup';
 import { IconSlot } from '@/components/icon-slot/IconSlot';
 import { ProgressIndicator } from '@/components/progress-indicator/ProgressIndicator';
-import { NEW_SESSION_HREF } from '@/app/explain/inputMode';
 
 import { CloseButton } from '../navigation';
 import {
@@ -39,21 +38,6 @@ import { PROGRESS_LABEL, TERM_COUNT, TERM_POSITIONS } from '../session';
 import { SummaryRows } from './SummaryRows';
 
 import './summaryScreen.css';
-
-/**
- * Terms that needed help — the number Redo offers to run again. The
- * complement of the claim directly above it, so the button can never offer a
- * count the headline contradicts.
- *
- * The frame says "Redo 3 terms". The design owner narrowed it to the terms
- * that did not land on their own, which on the scripted run is 2. A real run
- * that lands all three has nothing to narrow to, so it offers the frame's
- * "Redo 3 terms" back.
- */
-function redoLabel(outcomes: SessionOutcomes): string {
-  const count = TERM_COUNT - unaidedCount(outcomes) || TERM_COUNT;
-  return `Redo ${count} ${count === 1 ? 'term' : 'terms'}`;
-}
 
 /**
  * Where Continue and Close go before the outcomes are known. `/plan/to-revisit`
@@ -159,24 +143,10 @@ export function SummaryActions({ behindSheet = false }: { behindSheet?: boolean 
       <ButtonGroup
         variant="Vertical"
         size="L"
-        /* The screen's one Primary. */
+        /* The screen's one Primary, and its only exit. No Redo: an
+           immediate redo is recognition, not recall, and the revisit Knowie
+           schedules on the plan is the intended second attempt. */
         primary={<Button variant="Primary" size="L" CTA="Continue" href={href} />}
-        /* A fresh run of the terms that needed help. SPEC.md: "Redo awards
-           full XP" — nothing is discounted for having been seen.
-
-           The destination is still `/explain/1`, which runs all three: the
-           session has no store, so there is nowhere to carry "these two" to.
-           The copy is the design owner's and leads the behaviour. */
-        secondary={
-          <Button
-            variant="Secondary"
-            size="M"
-            CTA={outcomes ? redoLabel(outcomes) : 'Redo'}
-            showLeftIcon
-            leftIcon="refresh-ccw-01"
-            href={NEW_SESSION_HREF}
-          />
-        }
       />
     </div>
   );

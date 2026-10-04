@@ -9,9 +9,11 @@
  * ever being read, which SPEC.md accepts under "Known trade-off, accepted".
  * Do not re-gate the Voice step to protect the claim.
  *
- * Both ways forward go to `/explain/1`, as on `/plan/to-revisit`: the Voice
- * step redoes the section, and "Practice sooner" runs the same loop now rather
- * than on the date Knowie named.
+ * Both ways forward start a new session, as the Voice step on
+ * `/plan/to-revisit` does: the Voice step runs the section again, and
+ * "Practice sooner" runs the same loop now rather than on the date Knowie
+ * named. Every term here was already explained unaided, so this is practice,
+ * not a redo of terms that needed help.
  */
 
 import { PlanScreen } from '../PlanScreen';

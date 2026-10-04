@@ -114,8 +114,12 @@ export type PlanResult = {
     message: string;
     /** The scheduling line — when Knowie brings these terms back. */
     helper: string;
-    /** The low-emphasis way to start the recall loop now rather than then. */
-    action: string;
+    /**
+     * The low-emphasis way to start the recall loop now rather than then. Off
+     * where terms needed help: an immediate second go is recognition, not
+     * recall, and the revisit is the intended second attempt.
+     */
+    action?: string;
   };
 };
 
@@ -163,7 +167,6 @@ export const PLAN_TO_REVISIT: PlanSection[] = [
       state: 'ToRevisit',
       message: 'Mammal needed a hint. Hibernation was revealed.',
       helper: 'Try them on your own in a couple of days.',
-      action: 'Do it now anyway',
     },
   }),
   PLAN_NOTHING_STARTED[1],

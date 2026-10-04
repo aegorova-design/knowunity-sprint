@@ -2,8 +2,8 @@
 
 /**
  * Clears the last run's results when a new one starts — rendered on term 1's
- * Idle, which every fresh run passes through: the primer, Redo, Start over
- * and the plan's Voice step all land there. Resume's Continue goes straight
+ * Idle, which every fresh run passes through: the primer, Start over and the
+ * plan's Explain out loud step all land there. Resume's Continue goes straight
  * to a later term and so keeps the terms already done. Renders nothing.
  *
  * `fresh` is `?new=1`, which only those new-session links carry: it resets the
