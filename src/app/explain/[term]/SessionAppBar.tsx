@@ -11,16 +11,25 @@ import { AppBar } from '@/components/app-bar/AppBar';
 import { Button } from '@/components/button/Button';
 import { ProgressIndicator } from '@/components/progress-indicator/ProgressIndicator';
 
-import { PROGRESS_LABEL, TERM_COUNT, type TermPosition, termsDoneBefore } from '../session';
+import { readQueue } from '../requeueServer';
+import { PROGRESS_LABEL, TERM_COUNT, isRequeuePass, type TermPosition, termsDoneBefore } from '../session';
 import { CloseSessionButton } from './navigation';
 
-export function SessionAppBar({
+export async function SessionAppBar({
   term,
   skipHref,
   skipState = 'Default',
   resolved = false,
   behindSheet = false,
+  requeuePass,
 }: {
+  /**
+   * A requeued term runs with the bar full: the denominator stays the
+   * session's term count, and the reveal already advanced it. Read from the
+   * queue unless the screen knows better — a requeued Idle's first render,
+   * before its pass is written down.
+   */
+  requeuePass?: boolean;
   term: TermPosition;
   /** Where Skip goes. Ignored while Skip is disabled. */
   skipHref: string;
@@ -46,6 +55,8 @@ export function SessionAppBar({
    */
   behindSheet?: boolean;
 }) {
+  const again = requeuePass ?? isRequeuePass(term, await readQueue());
+
   const bar = (
     <AppBar
       variant="leftAndRightButton"
@@ -55,7 +66,7 @@ export function SessionAppBar({
         <ProgressIndicator
           variant="Primary"
           thickness="24"
-          current={termsDoneBefore(term) + (resolved ? 1 : 0)}
+          current={again ? TERM_COUNT : termsDoneBefore(term) + (resolved ? 1 : 0)}
           total={TERM_COUNT}
           aria-label={PROGRESS_LABEL}
         />

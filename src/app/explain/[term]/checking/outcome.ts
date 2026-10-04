@@ -20,22 +20,22 @@ export function first(raw: string | string[] | undefined): string | undefined {
 }
 
 /** The segment under `/explain/[term]` that this answer resolves to. */
-export function outcomeSegment(term: TermPosition, attempt: number, query: Query): string {
+export function outcomeSegment(term: TermPosition, attempt: number, query: Query, requeuePass = false): string {
   // Silence beats everything: there was nothing to judge.
   if (first(query.seconds) === '0') return 'not-heard';
 
   const typed = first(query.typed);
-  if (typed !== undefined) return typedVerdictSegment(attempt, Number(typed));
+  if (typed !== undefined) return typedVerdictSegment(attempt, Number(typed), requeuePass);
 
-  return verdictSegment(term, attempt);
+  return verdictSegment(term, attempt, requeuePass);
 }
 
 /**
  * The verdict this wait ends on. The rung rides along, because a verdict has
  * to say what the term recorded and the ladder is what decides that.
  */
-export function verdictHref(term: TermPosition, attempt: number, query: Query): string {
-  return `/explain/${term}/${outcomeSegment(term, attempt, query)}?attempt=${attempt}`;
+export function verdictHref(term: TermPosition, attempt: number, query: Query, requeuePass = false): string {
+  return `/explain/${term}/${outcomeSegment(term, attempt, query, requeuePass)}?attempt=${attempt}`;
 }
 
 /**

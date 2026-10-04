@@ -26,14 +26,24 @@ import './idleScreen.css';
  * there is a sheet over it — `inert` also takes it out of the accessibility
  * tree, which is the part that matters here.
  */
-export function IdleContent({ prompt, behindSheet = false }: { prompt: string; behindSheet?: boolean }) {
-  if (!behindSheet) return <TermPrompt prompt={prompt} />;
-
-  return (
-    <div inert>
-      <TermPrompt prompt={prompt} />
-    </div>
+export function IdleContent({
+  prompt,
+  caption,
+  behindSheet = false,
+}: {
+  prompt: string;
+  /** Knowie's own line in place of the usual ask — a requeued term's intro. */
+  caption?: string;
+  behindSheet?: boolean;
+}) {
+  const termPrompt = caption ? (
+    <TermPrompt prompt={prompt} caption={caption} pose="Excited" />
+  ) : (
+    <TermPrompt prompt={prompt} />
   );
+  if (!behindSheet) return termPrompt;
+
+  return <div inert>{termPrompt}</div>;
 }
 
 export function IdleActions({

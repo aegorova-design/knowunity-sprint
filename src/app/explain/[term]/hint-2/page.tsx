@@ -33,12 +33,14 @@ import { OtherModeButton } from '../../ModeButtons';
 import { withQuery } from '../../href';
 import { FIRST_ATTEMPT } from '../../script';
 import { TERMS, isTermPosition, nextTermHref } from '../../session';
+import { readQueue } from '../../requeueServer';
 import { SessionAppBar } from '../SessionAppBar';
 import { HintTwoBody } from './HintTwoBody';
 
 export default async function HintTwoPage({ params }: { params: Promise<{ term: string }> }) {
   const { term } = await params;
   if (!isTermPosition(term)) notFound();
+  const queue = await readQueue();
 
   const current = TERMS[term];
   // Always the second rung, so the rung it sends on is always the third.
@@ -54,7 +56,7 @@ export default async function HintTwoPage({ params }: { params: Promise<{ term: 
       // Skip is live: the term is still open and still answerable. SPEC.md's
       // Skip rule lists 12 among the live screens, and the bar has not moved
       // because nothing has resolved.
-      topNavigation={<SessionAppBar term={term} skipHref={nextTermHref(term)} />}
+      topNavigation={<SessionAppBar term={term} skipHref={nextTermHref(term, queue)} />}
       middleContent={<HintTwoBody term={current} />}
       bottomContent={
         <ActionStack

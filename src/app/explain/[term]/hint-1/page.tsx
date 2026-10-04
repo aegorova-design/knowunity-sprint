@@ -42,13 +42,15 @@ import { readInputMode } from '../../inputModeServer';
 import { OtherModeButton } from '../../ModeButtons';
 import { withQuery } from '../../href';
 import { FIRST_ATTEMPT } from '../../script';
-import { TERMS, isTermPosition, nextTermHref } from '../../session';
+import { TERMS, isRequeuePass, isTermPosition, nextTermHref } from '../../session';
+import { readQueue } from '../../requeueServer';
 import { SessionAppBar } from '../SessionAppBar';
 import { HintOneBody } from './HintOneBody';
 
 export default async function HintOnePage({ params }: { params: Promise<{ term: string }> }) {
   const { term } = await params;
   if (!isTermPosition(term)) notFound();
+  const queue = await readQueue();
 
   const current = TERMS[term];
   // This screen is always the first rung, whatever the answer arrived as, so
@@ -62,8 +64,8 @@ export default async function HintOnePage({ params }: { params: Promise<{ term: 
   return (
     <Scaffold
       size="iPhone 13"
-      topNavigation={<SessionAppBar term={term} skipHref={nextTermHref(term)} />}
-      middleContent={<HintOneBody term={current} />}
+      topNavigation={<SessionAppBar term={term} skipHref={nextTermHref(term, queue)} />}
+      middleContent={<HintOneBody term={current} requeuePass={isRequeuePass(term, queue)} />}
       bottomContent={
         <ActionStack
           /* The screen's one Primary. Another go at the mic, on the next rung

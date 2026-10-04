@@ -24,6 +24,7 @@ import { withQuery } from '../href';
 import { readInputMode } from '../inputModeServer';
 import { OtherModeButton } from '../ModeButtons';
 import { nextTermHref, type TermPosition } from '../session';
+import { readQueue } from '../requeueServer';
 import { SessionAppBar } from './SessionAppBar';
 
 import '../verdictBody.css';
@@ -46,11 +47,12 @@ export async function NeutralRetryScreen({
   keepTyped?: boolean;
 }) {
   const inputMode = await readInputMode();
+  const queue = await readQueue();
 
   return (
     <Scaffold
       size="iPhone 13"
-      topNavigation={<SessionAppBar term={term} skipHref={nextTermHref(term)} />}
+      topNavigation={<SessionAppBar term={term} skipHref={nextTermHref(term, queue)} />}
       middleContent={
         <div className="verdictBody">
           <VerdictHeader verdict="Neutral" title={title} caption={caption} titleAs="h1" />

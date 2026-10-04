@@ -21,7 +21,7 @@
  * resolution". Close stays live: leaving is always allowed.
  */
 
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 
 import { Button } from '@/components/button/Button';
 import { Scaffold } from '@/components/scaffold/Scaffold';
@@ -30,8 +30,9 @@ import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
 import { CoveredIdeas } from '../../CoveredIdeas';
 import { RecordOutcome } from '../../RecordOutcome';
 import { VerdictActions } from '../../VerdictActions';
-import { UNAIDED_XP, xpLabel } from '../../script';
-import { TERMS, isTermPosition, nextTermHref, nextTermLabel } from '../../session';
+import { FIRST_ATTEMPT, UNAIDED_XP, xpLabel } from '../../script';
+import { TERMS, isRequeuePass, isTermPosition, nextTermHref, nextTermLabel } from '../../session';
+import { readQueue } from '../../requeueServer';
 import { SessionAppBar } from '../SessionAppBar';
 
 import '../../verdictBody.css';
@@ -39,6 +40,9 @@ import '../../verdictBody.css';
 export default async function PassPage({ params }: { params: Promise<{ term: string }> }) {
   const { term } = await params;
   if (!isTermPosition(term)) notFound();
+  const queue = await readQueue();
+  // Hinted at best on a requeue pass: the reveal was the help.
+  if (isRequeuePass(term, queue)) redirect(`/explain/${term}/pass-hinted?attempt=${FIRST_ATTEMPT + 1}`);
 
   const current = TERMS[term];
 
@@ -74,10 +78,10 @@ export default async function PassPage({ params }: { params: Promise<{ term: str
             <Button
               variant="Primary"
               size="L"
-              CTA={nextTermLabel(term)}
+              CTA={nextTermLabel(term, queue)}
               showRightIcon
               rightIcon="arrow-right"
-              href={nextTermHref(term)}
+              href={nextTermHref(term, queue)}
             />
           }
           /* "unaided" is the word that carries the result into the summary,

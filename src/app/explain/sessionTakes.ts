@@ -22,6 +22,11 @@ export function readTake(term: TermPosition): SessionTake | undefined {
   return takes.get(term);
 }
 
+/** A term whose final answer had no recording — its earlier take must not play as if it were the last. */
+export function dropTake(term: TermPosition): void {
+  takes.delete(term);
+}
+
 export function clearTakes(): void {
   takes.clear();
 }

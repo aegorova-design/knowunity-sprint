@@ -36,7 +36,12 @@ function poseAndTitle(verdict: 'pass' | 'partial' | 'miss' | 'unclear' | undefin
   return verdict === 'partial' ? { pose: 'Partial', title: 'Almost there' } : { pose: 'Miss', title: 'Not quite' };
 }
 
-export function HintOneBody({ term }: { term: Term }) {
+/** A requeued term gets one hint, not two, so the rung is not counted out of anything. */
+function hintLabel(requeuePass: boolean): string {
+  return requeuePass ? 'Hint' : 'Hint 1 of 2';
+}
+
+export function HintOneBody({ term, requeuePass = false }: { term: Term; requeuePass?: boolean }) {
   const router = useRouter();
   const isDemo = useIsDemoMode();
 
@@ -77,7 +82,7 @@ export function HintOneBody({ term }: { term: Term }) {
             the hint lands against it rather than in the abstract. */}
         <div className="verdictCards">
           <AnswerBlock kind="Said" label="What Knowie heard" body={term.heard[0]} />
-          <AnswerBlock kind="Hint" label="Hint 1 of 2" body={term.hints[0]} />
+          <AnswerBlock kind="Hint" label={hintLabel(requeuePass)} body={term.hints[0]} />
         </div>
       </div>
     );
@@ -108,7 +113,7 @@ export function HintOneBody({ term }: { term: Term }) {
           label="What Knowie heard"
           body={turn.transcript ? `“${turn.transcript}”` : '“…”'}
         />
-        {hintText && <AnswerBlock kind="Hint" label="Hint 1 of 2" body={hintText} />}
+        {hintText && <AnswerBlock kind="Hint" label={hintLabel(requeuePass)} body={hintText} />}
       </div>
     </div>
   );

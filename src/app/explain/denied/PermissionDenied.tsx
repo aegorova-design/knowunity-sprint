@@ -15,14 +15,15 @@ import { ActionStack } from '../ActionStack';
 import { ButtonPair } from '../ButtonPair';
 import { MascotHeading } from '../MascotHeading';
 
+import { NEW_SESSION_HREF } from '../inputMode';
 import { isTermPosition, type TermPosition } from '../session';
 
 export const DENIED_HELP_HREF = '/explain/denied/how';
 
-/** `?term=` names the term the mic failed on; from the primer there is none, and it is term 1. */
-export function deniedTerm(raw: string | string[] | undefined): TermPosition {
+/** `?term=` names the term the mic failed on. From the primer there is none: the session has not started. */
+export function deniedTerm(raw: string | string[] | undefined): TermPosition | null {
   const value = Array.isArray(raw) ? raw[0] : raw;
-  return value && isTermPosition(value) ? value : '1';
+  return value && isTermPosition(value) ? value : null;
 }
 export const DENIED_CLOSE_HREF = '/plan';
 
@@ -39,7 +40,7 @@ export function DeniedContent({ behindSheet = false }: { behindSheet?: boolean }
   );
 }
 
-export function DeniedActions({ term, behindSheet = false }: { term: TermPosition; behindSheet?: boolean }) {
+export function DeniedActions({ term, behindSheet = false }: { term: TermPosition | null; behindSheet?: boolean }) {
   return (
     <ActionStack
       inert={behindSheet}
@@ -52,7 +53,7 @@ export function DeniedActions({ term, behindSheet = false }: { term: TermPositio
           CTA="Type my answers"
           showLeftIcon
           leftIcon="keyboard-01"
-          href={`/explain/${term}/type`}
+          href={term ? `/explain/${term}/type` : `${NEW_SESSION_HREF}&mode=denied`}
         />
       }
       below={
@@ -68,7 +69,7 @@ export function DeniedActions({ term, behindSheet = false }: { term: TermPositio
             CTA="How to allow it"
             showLeftIcon
             leftIcon="help-circle"
-            href={`${DENIED_HELP_HREF}?term=${term}`}
+            href={term ? `${DENIED_HELP_HREF}?term=${term}` : DENIED_HELP_HREF}
           />
         </ButtonPair>
       }

@@ -38,6 +38,7 @@ import { ButtonPair } from '../../ButtonPair';
 import { readInputMode } from '../../inputModeServer';
 import { OtherModeButton } from '../../ModeButtons';
 import { TERMS, isTermPosition, nextTermHref } from '../../session';
+import { readQueue } from '../../requeueServer';
 import { SessionAppBar } from '../SessionAppBar';
 
 import './hintScreen.css';
@@ -45,6 +46,7 @@ import './hintScreen.css';
 export default async function HintPage({ params }: { params: Promise<{ term: string }> }) {
   const { term } = await params;
   if (!isTermPosition(term)) notFound();
+  const queue = await readQueue();
 
   const current = TERMS[term];
 
@@ -55,7 +57,7 @@ export default async function HintPage({ params }: { params: Promise<{ term: str
     <Scaffold
       size="iPhone 13"
       // Skip is live: the student can still act on this term. SPEC.md, Skip rule.
-      topNavigation={<SessionAppBar term={term} skipHref={nextTermHref(term)} />}
+      topNavigation={<SessionAppBar term={term} skipHref={nextTermHref(term, queue)} />}
       middleContent={
         <div className="hintScreen-body">
           <VerdictHeader

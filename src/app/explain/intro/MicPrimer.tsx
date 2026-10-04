@@ -22,13 +22,12 @@ import { AllowMicButton } from './AllowMicButton';
 
 import './introScreen.css';
 import { NEW_SESSION_HREF } from '@/app/explain/inputMode';
-import { SetModeButton } from '@/app/explain/ModeButtons';
 
 /** Where the primer's three ways out go. */
 export const PRIMER_GRANTED_HREF = NEW_SESSION_HREF;
 export const PRIMER_DENIED_HREF = '/explain/denied';
 export const PRIMER_EXAMPLE_HREF = '/explain/intro/example';
-export const PRIMER_TYPE_HREF = '/explain/1/type';
+export const PRIMER_TYPE_HREF = `${NEW_SESSION_HREF}&mode=type`;
 export const PRIMER_CLOSE_HREF = '/plan';
 
 /** The three explainer lines, in the frame's order. */
@@ -103,9 +102,7 @@ export function PrimerActions({ behindSheet = false }: { behindSheet?: boolean }
             {/* Text is reachable before the mic is ever asked for —
                 design-brief.md and voice-ux.md both make the fallback available
                 from every answerable state, and this is the first of them. */}
-            <SetModeButton
-              setsMode="type"
-            
+            <Button
               variant="Secondary"
               size="M"
               CTA="Type instead"

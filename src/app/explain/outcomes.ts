@@ -16,7 +16,7 @@
 import { useMemo, useSyncExternalStore } from 'react';
 
 import { useIsDemoMode } from './demoMode';
-import { SESSION_OUTCOMES, attemptsTaken, type TermOutcome } from './script';
+import { SESSION_OUTCOMES, attemptsTaken, hintedXp, type TermOutcome } from './script';
 import { TERMS, TERM_COUNT, TERM_POSITIONS, type TermPosition } from './session';
 
 export type SessionOutcome = TermOutcome & {
@@ -30,6 +30,8 @@ export type SessionOutcomes = Record<TermPosition, SessionOutcome>;
 
 type RecordedOutcome = Omit<SessionOutcome, 'variant'> & {
   variant: Exclude<TermOutcome['variant'], 'Skipped'>;
+  /** Written by a requeue pass — the term's second go, after a reveal. */
+  requeued?: boolean;
 };
 
 const STORAGE_KEY = 'explain:outcomes';
@@ -55,15 +57,28 @@ function readRecorded(): Partial<Record<TermPosition, RecordedOutcome>> {
   return parseRecorded(readRaw());
 }
 
-export function hasRecordedOutcome(term: TermPosition): boolean {
-  return readRecorded()[term] !== undefined;
+/** Whether this pass has already recorded: the first pass, or — on a requeue pass — the requeue itself. */
+export function hasRecordedOutcome(term: TermPosition, requeuePass = false): boolean {
+  const recorded = readRecorded()[term];
+  return recorded !== undefined && (!requeuePass || recorded.requeued === true);
+}
+
+/**
+ * Only a revisit session can flip a term to Unaided. A requeue pass is hinted
+ * at best — the reveal before it was the help — so an Unaided arriving from
+ * one is written as Hinted at the hinted rate. Revisit sessions are not built
+ * in v2, so nothing that was revealed or hinted can become Unaided yet.
+ */
+function guardUnaided(outcome: RecordedOutcome): RecordedOutcome {
+  if (!outcome.requeued || outcome.variant !== 'Unaided') return outcome;
+  return { ...outcome, variant: 'Hinted', xp: hintedXp(1) };
 }
 
 export function recordOutcome(term: TermPosition, outcome: RecordedOutcome): void {
   try {
     window.sessionStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ ...readRecorded(), [term]: outcome }),
+      JSON.stringify({ ...readRecorded(), [term]: guardUnaided(outcome) }),
     );
   } catch {
     // Storage off: the summary will read this term as Skipped. Nothing else
@@ -92,7 +107,10 @@ const SCRIPTED: SessionOutcomes = Object.fromEntries(
     position,
     {
       ...SESSION_OUTCOMES[position],
-      transcript: TERMS[position].passTake ?? TERMS[position].heard[attemptsTaken(position) - 1],
+      transcript:
+        TERMS[position].requeueTake ??
+        TERMS[position].passTake ??
+        TERMS[position].heard[attemptsTaken(position) - 1],
       inputMode: 'voice',
     },
   ]),

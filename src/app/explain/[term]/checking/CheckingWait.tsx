@@ -110,6 +110,8 @@ type Props = {
   term?: TermPosition;
   rubricId?: string;
   attempt?: number;
+  /** A requeued term: one hint, then the reveal, and never unaided. */
+  requeuePass?: boolean;
 };
 
 export function CheckingWait({
@@ -120,6 +122,7 @@ export function CheckingWait({
   term,
   rubricId,
   attempt,
+  requeuePass = false,
 }: Props) {
   const router = useRouter();
   const isDemo = useIsDemoMode();
@@ -258,7 +261,7 @@ export function CheckingWait({
         // has been targeted, which only this running count can answer.
         if (verdict.hint_target) recordHintTarget(currentTerm, verdict.hint_target);
         await settle();
-        goTo(realVerdictSegment(currentAttempt, verdict.verdict));
+        goTo(realVerdictSegment(currentAttempt, verdict.verdict, requeuePass));
       } catch {
         if (cancelled) return;
         // Failed twice: our problem, not the student's. The answer stays in
@@ -276,7 +279,7 @@ export function CheckingWait({
       window.clearTimeout(slowTimer);
       setSlowWait(false);
     };
-  }, [isDemo, term, rubricId, attempt, router, unlocks]);
+  }, [isDemo, term, rubricId, attempt, requeuePass, router, unlocks]);
 
   useEffect(() => {
     if (caption !== undefined || isSlow) return;

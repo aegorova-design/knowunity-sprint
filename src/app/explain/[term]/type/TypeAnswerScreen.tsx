@@ -9,7 +9,9 @@ import type { ReactNode } from 'react';
 import { withQuery } from '../../href';
 import { OtherModeButton } from '../../ModeButtons';
 import { FIRST_ATTEMPT } from '../../script';
-import { TERMS, nextTermHref, type TermPosition } from '../../session';
+import { TERMS, isRequeuePass, nextTermHref, type QueueState, type TermPosition } from '../../session';
+import { readQueue } from '../../requeueServer';
+import type { InputModeState } from '../../inputMode';
 import { readInputMode } from '../../inputModeServer';
 import { SessionAppBar } from '../SessionAppBar';
 import { TermPrompt } from '../TermPrompt';
@@ -29,7 +31,15 @@ export async function TypeAnswerScreen({
   before,
   askForMore = false,
   sheet,
+  inputMode: inputModeOverride,
+  queue: queueOverride,
+  promptCaption,
 }: {
+  /** Set when the caller already knows better than the cookies — a new session's first render. */
+  inputMode?: InputModeState;
+  queue?: QueueState;
+  /** Knowie's own line in place of the usual ask — a requeued term's intro. */
+  promptCaption?: string;
   /** An unclear verdict on a typed answer: Knowie asks for a bit more, and nothing is spent. */
   askForMore?: boolean;
   /** A sheet over the screen, as `06b Leave session` draws one. */
@@ -40,17 +50,27 @@ export async function TypeAnswerScreen({
   /** Rendered ahead of the prompt — `SessionStart` on term 1's Idle. */
   before?: ReactNode;
 }) {
-  const inputMode = await readInputMode();
+  const inputMode = inputModeOverride ?? (await readInputMode());
+  const queue = queueOverride ?? (await readQueue());
   const typeHref = withQuery(`/explain/${term}/type`, { attempt: attempt > FIRST_ATTEMPT ? attempt : undefined });
 
   return (
     <TypeScreen
-      appBar={<SessionAppBar term={term} skipHref={nextTermHref(term)} behindSheet={sheet !== undefined} />}
+      appBar={
+        <SessionAppBar
+          term={term}
+          skipHref={nextTermHref(term, queue)}
+          behindSheet={sheet !== undefined}
+          requeuePass={isRequeuePass(term, queue)}
+        />
+      }
       prompt={
         <>
           {before}
           {askForMore ? (
             <TermPrompt prompt={TERMS[term].prompt} caption={ASK_FOR_MORE} pose="Questioning" />
+          ) : promptCaption ? (
+            <TermPrompt prompt={TERMS[term].prompt} caption={promptCaption} pose="Excited" />
           ) : (
             <TermPrompt prompt={TERMS[term].prompt} />
           )}

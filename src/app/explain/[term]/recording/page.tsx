@@ -47,6 +47,7 @@ import { Scaffold } from '@/components/scaffold/Scaffold';
 import { withQuery } from '../../href';
 import { parseAttempt } from '../../script';
 import { TERMS, isTermPosition, nextTermHref } from '../../session';
+import { readQueue } from '../../requeueServer';
 import { SessionAppBar } from '../SessionAppBar';
 import { TermPrompt } from '../TermPrompt';
 import { RecordingTake } from './RecordingTake';
@@ -72,6 +73,7 @@ export default async function RecordingPage({
 }) {
   const { term } = await params;
   if (!isTermPosition(term)) notFound();
+  const queue = await readQueue();
 
   const query = await searchParams;
   const current = TERMS[term];
@@ -84,7 +86,7 @@ export default async function RecordingPage({
       topNavigation={
         <SessionAppBar
           term={term}
-          skipHref={nextTermHref(term)}
+          skipHref={nextTermHref(term, queue)}
           skipState={back ? 'Disabled' : 'Default'}
           resolved={Boolean(back)}
         />

@@ -72,6 +72,12 @@ export type Term = {
    */
   passTake?: string;
   /**
+   * The take a scripted requeue pass is heard as — what the summary quotes for
+   * a term demo mode reveals and then passes on the way back. Only hibernation
+   * has one: it is the term the script requeues.
+   */
+  requeueTake?: string;
+  /**
    * The hint ladder's two rungs in demo mode — `11 Not quite, hint 1 of 2`
    * shows the first, `12 Partial, hint 2 of 2` the second. Each one answers
    * the take above it rather than restating the question.
@@ -164,6 +170,8 @@ export const TERMS: Record<TermPosition, Term> = {
     // the second has the state but not the reason, for a Partial; the third
     // is a different wrong-ish take, not a repeat of the second, per the
     // three-takes rule above.
+    requeueTake:
+      '“Hibernation is a deep sleep through the winter. The animal’s heart rate and breathing slow down, so it saves energy when there’s no food.”',
     heard: [
       '“Hibernation is when animals fly south for the winter to find food.”',
       '“It’s when an animal goes into a long sleep through the winter.”',
@@ -220,11 +228,49 @@ export function termsDoneBefore(position: TermPosition): number {
 }
 
 /**
- * Where a resolution goes — the next term, or the summary after the last one.
- * Skip is a resolution, so Skip uses this too.
+ * The session queue: the three terms in order, then each revealed term once
+ * more, in the order they were revealed. `queued` is that tail; `active` is
+ * the term whose requeue pass is running, if one is. Held in a cookie
+ * (`requeue.ts`) so the Server Component screens can read it.
  */
-export function nextTermHref(position: TermPosition): string {
-  return position === '3' ? '/explain/summary' : `/explain/${Number(position) + 1}`;
+export type QueueState = { queued: TermPosition[]; active: TermPosition | null };
+
+export const EMPTY_QUEUE: QueueState = { queued: [], active: null };
+
+const SUMMARY_HREF = '/explain/summary';
+
+/** Whether this term is on its second go, after a reveal. */
+export function isRequeuePass(position: TermPosition, queue: QueueState): boolean {
+  return queue.active === position;
+}
+
+/** How a requeued term is entered: its Idle, flagged so the first render already knows. */
+export function requeueHref(position: TermPosition): string {
+  return `/explain/${position}?again=1`;
+}
+
+/**
+ * Where a resolution goes — the next term in the queue, or the summary after
+ * the last one. Skip is a resolution, so Skip uses this too.
+ *
+ * `revealing` is the reveal screen asking: the term it reveals joins the queue
+ * as that screen mounts, after this has already run, so it is counted here.
+ */
+export function nextTermHref(
+  position: TermPosition,
+  queue: QueueState,
+  { revealing = false }: { revealing?: boolean } = {},
+): string {
+  if (isRequeuePass(position, queue)) {
+    const after = queue.queued[queue.queued.indexOf(position) + 1];
+    return after ? requeueHref(after) : SUMMARY_HREF;
+  }
+
+  if (position !== '3') return `/explain/${Number(position) + 1}`;
+
+  const queued =
+    revealing && !queue.queued.includes(position) ? [...queue.queued, position] : queue.queued;
+  return queued[0] ? requeueHref(queued[0]) : SUMMARY_HREF;
 }
 
 /**
@@ -235,9 +281,16 @@ export function nextTermHref(position: TermPosition): string {
  * label has to change exactly where the destination does, and a verdict screen
  * that read "Next term" into the summary would be lying about where it goes.
  */
-export function nextTermLabel(position: TermPosition): string {
-  return position === '3' ? 'See how you did' : 'Next term';
+export function nextTermLabel(
+  position: TermPosition,
+  queue: QueueState,
+  options: { revealing?: boolean } = {},
+): string {
+  return nextTermHref(position, queue, options) === SUMMARY_HREF ? 'See how you did' : 'Next term';
 }
+
+/** Knowie's line on a requeued term's Idle, in place of the usual ask. */
+export const REQUEUE_INTRO = 'Let’s try that one again.';
 
 /**
  * The progress bar's accessible name. The numbers are not in here: the

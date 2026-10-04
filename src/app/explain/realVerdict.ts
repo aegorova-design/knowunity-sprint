@@ -4,7 +4,7 @@
  * instead of a fixed per-term script.
  */
 
-import { FIRST_ATTEMPT } from './script';
+import { FIRST_ATTEMPT, REQUEUE_LADDER } from './script';
 import type { JudgeVerdict } from './turnStore';
 
 /**
@@ -18,8 +18,15 @@ import type { JudgeVerdict } from './turnStore';
  * the answer, which is `last-miss` — the screen that already, on its one
  * button, leads to the reveal.
  */
-export function realVerdictSegment(attempt: number, verdict: JudgeVerdict['verdict']): string {
+export function realVerdictSegment(
+  attempt: number,
+  verdict: JudgeVerdict['verdict'],
+  requeuePass = false,
+): string {
   if (verdict === 'unclear') return 'unclear';
-  if (verdict === 'pass') return attempt > FIRST_ATTEMPT ? 'pass-hinted' : 'pass';
+  // A requeued term is hinted at best: the reveal was the help.
+  if (verdict === 'pass') return attempt > FIRST_ATTEMPT || requeuePass ? 'pass-hinted' : 'pass';
+  // One hint, then the reveal.
+  if (requeuePass) return REQUEUE_LADDER[Math.min(attempt, REQUEUE_LADDER.length) - 1];
   return attempt >= FIRST_ATTEMPT + 2 ? 'last-miss' : attempt === FIRST_ATTEMPT ? 'hint-1' : 'hint-2';
 }

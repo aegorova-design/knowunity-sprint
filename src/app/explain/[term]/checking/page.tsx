@@ -33,7 +33,8 @@ import { notFound } from 'next/navigation';
 import { Scaffold } from '@/components/scaffold/Scaffold';
 
 import { PendingAnswerGuard } from '../../PendingAnswerGuard';
-import { TERMS, isTermPosition } from '../../session';
+import { readQueue } from '../../requeueServer';
+import { TERMS, isRequeuePass, isTermPosition } from '../../session';
 import { SLOW_AFTER_MS, WAIT_MS, isSlowWait, parseAttempt } from '../../script';
 import { SessionAppBar } from '../SessionAppBar';
 import { CheckingWait } from './CheckingWait';
@@ -53,7 +54,8 @@ export default async function CheckingPage({
   const query = await searchParams;
   const attempt = parseAttempt(query.attempt);
   // The long wait is a voice state: a typed answer never runs into 09b.
-  const slow = isSlowWait(term, attempt) && first(query.typed) === undefined;
+  const requeuePass = isRequeuePass(term, await readQueue());
+  const slow = isSlowWait(term, attempt, requeuePass) && first(query.typed) === undefined;
 
   return (
     <Scaffold
@@ -67,7 +69,7 @@ export default async function CheckingPage({
             resolveHref={
               slow
                 ? `/explain/${term}/checking/slow${queryString(query)}`
-                : verdictHref(term, attempt, query)
+                : verdictHref(term, attempt, query, requeuePass)
             }
             // Real mode ignores the two props above entirely and runs the
             // actual transcribe/judge call instead — see CheckingWait. Demo
@@ -75,6 +77,7 @@ export default async function CheckingPage({
             term={term}
             rubricId={TERMS[term].rubricId}
             attempt={attempt}
+            requeuePass={requeuePass}
           />
         </>
       }

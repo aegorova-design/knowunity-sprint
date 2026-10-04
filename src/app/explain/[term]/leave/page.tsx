@@ -44,6 +44,7 @@ import { ActionStack } from '../../ActionStack';
 import { ButtonPair } from '../../ButtonPair';
 import { SheetPanel } from '../../SheetPanel';
 import { TERMS, isTermPosition, nextTermHref, type TermPosition } from '../../session';
+import { readQueue } from '../../requeueServer';
 import { readInputMode } from '../../inputModeServer';
 import { FIRST_ATTEMPT } from '../../script';
 import { IdleActions, IdleContent } from '../IdleScreen';
@@ -93,6 +94,7 @@ export default async function LeaveSessionPage({
 }) {
   const { term } = await params;
   if (!isTermPosition(term)) notFound();
+  const queue = await readQueue();
 
   const back = keepGoingHref(term, (await searchParams).back);
 
@@ -138,7 +140,7 @@ export default async function LeaveSessionPage({
     <Scaffold
       size="iPhone 13"
       topNavigation={
-        <SessionAppBar term={term} skipHref={nextTermHref(term)} behindSheet />
+        <SessionAppBar term={term} skipHref={nextTermHref(term, queue)} behindSheet />
       }
       middleContent={<IdleContent prompt={TERMS[term].prompt} behindSheet />}
       bottomContent={<IdleActions term={term} behindSheet />}

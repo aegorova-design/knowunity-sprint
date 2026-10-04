@@ -30,9 +30,10 @@ const SHEET_TITLE = 'Turn on your mic';
  * "Turn on mic" opened it, else the denied screen underneath. Only a path
  * inside the session is honoured — the value arrives in a URL.
  */
-function dismissHref(term: string, raw: string | string[] | undefined): string {
+function dismissHref(term: string | null, raw: string | string[] | undefined): string {
   const back = Array.isArray(raw) ? raw[0] : raw;
-  return back?.startsWith('/explain/') && !back.startsWith('//') ? back : `/explain/denied?term=${term}`;
+  if (back?.startsWith('/explain/')) return back;
+  return term ? `/explain/denied?term=${term}` : '/explain/denied';
 }
 
 const INTRO =
@@ -53,7 +54,7 @@ export default async function HowToAllowPage({
 }) {
   const query = await searchParams;
   const back = dismissHref(deniedTerm(query.term), query.back);
-  const term = back.match(/^\/explain\/([123])\//)?.[1] ?? deniedTerm(query.term);
+  const term = deniedTerm(back.match(/^\/explain\/([123])\//)?.[1]) ?? deniedTerm(query.term);
 
   return (
     <Scaffold
@@ -66,7 +67,7 @@ export default async function HowToAllowPage({
         />
       }
       middleContent={<DeniedContent behindSheet />}
-      bottomContent={<DeniedActions term={deniedTerm(term)} behindSheet />}
+      bottomContent={<DeniedActions term={term} behindSheet />}
       showBottomSheetBackground
       bottomSheetOnly={
         <SheetPanel label={SHEET_TITLE} dismissHref={back}>

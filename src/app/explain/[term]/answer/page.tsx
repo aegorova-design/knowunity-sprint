@@ -17,13 +17,15 @@
  * they tried when they did not.
  *
  * **The chips are not ticked.** `active="False"`, per SPEC.md: they are the
- * four ideas the answer contains, not four the student covered. `13b` ticks
- * them, after the student has said them back.
+ * four ideas the answer contains, not four the student covered.
+ *
+ * **No Say it back.** The retry for a revealed term is the requeue: on its
+ * first reveal the term goes to the back of the session queue and comes round
+ * once more at the end (`RequeueOnReveal`). A second reveal does not requeue.
  *
  * **The outcome is Revealed at 0 XP**, and the outcome line prints the zero —
  * SPEC.md: "`+0 XP · revealed`, in the same shape and the same slot as a
- * pass's `+15 XP · unaided`". Nothing on this screen can change it, Say it
- * back included.
+ * pass's `+15 XP · unaided`". Nothing on this screen can change it.
  *
  * Skip is **disabled** and the progress bar **has** advanced: this is where
  * the term resolves. SPEC.md's Skip rule names 13 among the disabled screens,
@@ -36,11 +38,11 @@ import { notFound } from 'next/navigation';
 import { Button } from '@/components/button/Button';
 import { Scaffold } from '@/components/scaffold/Scaffold';
 
-import { readInputMode } from '../../inputModeServer';
 import { RecordOutcome } from '../../RecordOutcome';
+import { RequeueOnReveal } from '../../RequeueEffects';
 import { VerdictActions } from '../../VerdictActions';
-import { withQuery } from '../../href';
-import { TERMS, isTermPosition, nextTermHref, nextTermLabel } from '../../session';
+import { readQueue } from '../../requeueServer';
+import { TERMS, isRequeuePass, isTermPosition, nextTermHref, nextTermLabel } from '../../session';
 import { REVEALED_XP, xpLabel } from '../../script';
 import { RevealedAnswer } from '../RevealedAnswer';
 import { SessionAppBar } from '../SessionAppBar';
@@ -53,16 +55,11 @@ import { SessionAppBar } from '../SessionAppBar';
  * the other counts keep that sentence and change its number. Getting the
  * number wrong would be worse than not saying one: a student who tried three
  * times being told they tried twice is being read a script, not talked to.
- *
- * With no take at all there is nothing to credit, so the line does the other
- * useful thing and points at the button underneath.
  */
 const TRIES_WORD: Record<number, string> = { 1: 'once', 2: 'twice', 3: 'three times' };
 
-function caption(tries: number, sayBack: boolean): string {
-  if (tries < 1) {
-    return sayBack ? 'Read it through, then say it back in your own words.' : 'Read it through before you move on.';
-  }
+function caption(tries: number): string {
+  if (tries < 1) return 'Read it through before you move on.';
 
   const word = TRIES_WORD[Math.min(tries, 3)];
   return `You tried ${word}, and that’s what makes this stick now.`;
@@ -82,21 +79,11 @@ export default async function AnswerPage({
 }) {
   const { term } = await params;
   if (!isTermPosition(term)) notFound();
+  const queue = await readQueue();
+  const requeuePass = isRequeuePass(term, queue);
 
   const current = TERMS[term];
   const tries = takesBehind((await searchParams).tries);
-  // Say it back is voice-only: type mode skips it, and Next term takes the Primary.
-  const sayBack = (await readInputMode()).mode === 'voice';
-  const nextTerm = (
-    <Button
-      variant={sayBack ? 'Secondary' : 'Primary'}
-      size={sayBack ? 'M' : 'L'}
-      CTA={nextTermLabel(term)}
-      showRightIcon
-      rightIcon="arrow-right"
-      href={nextTermHref(term)}
-    />
-  );
 
   return (
     <Scaffold
@@ -108,46 +95,26 @@ export default async function AnswerPage({
            The key ideas ride inside the answer block, unticked: they are what
            the answer contains, not a record of what the student covered. */
         <>
-          <RecordOutcome term={term} variant="Revealed" xp={REVEALED_XP} />
-          <RevealedAnswer
-            term={current}
-            title="Here’s the idea"
-            caption={caption(tries, sayBack)}
-          />
+          <RecordOutcome term={term} variant="Revealed" xp={REVEALED_XP} requeuePass={requeuePass} />
+          {requeuePass ? null : <RequeueOnReveal term={term} />}
+          <RevealedAnswer term={current} title="Here’s the idea" caption={caption(tries)} />
         </>
       }
       bottomContent={
         <VerdictActions
-          /* Say it back takes the Primary, not Next term. SPEC.md's whole
-             point for this screen is that reading an answer is not learning
-             it — saying it is. The take is not judged and cannot change the
-             outcome; it comes back to `13b` acknowledged. */
           primary={
-            !sayBack ? nextTerm : (
             <Button
               variant="Primary"
               size="L"
-              CTA="Say it back"
-              showLeftIcon
-              leftIcon="microphone-01"
-              href={withQuery(`/explain/${term}/recording`, {
-                back: `/explain/${term}/answer/said-back`,
-              })}
+              CTA={nextTermLabel(term, queue, { revealing: true })}
+              showRightIcon
+              rightIcon="arrow-right"
+              href={nextTermHref(term, queue, { revealing: true })}
             />
-            )
           }
-          /* Secondary, per SPEC.md. The frame draws it Tertiary — moving on is
-             allowed but not encouraged — and the intent is unchanged here, only
-             the step down from the Primary: Tertiary put the one way forward at
-             the lowest emphasis on the screen, below even the ways out on the
-             hint screens above it. `13b` promotes it to Primary once the
-             saying-back is done. */
-          secondary={sayBack ? nextTerm : undefined}
           /* `+0 XP · revealed`, in the same shape as a pass's `+15 XP ·
-             unaided`. The number used to be left off here, on the rule that an
-             outcome should be named rather than a zero shown; the design owner
-             reversed that, so every outcome line and every summary row now
-             carries a number and the word says why it is what it is. */
+             unaided`. Every outcome line and every summary row carries a
+             number, and the word says why it is what it is. */
           outcome={`${xpLabel(REVEALED_XP)} · revealed`}
         />
       }

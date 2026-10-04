@@ -40,7 +40,8 @@ import { readInputMode } from '../../inputModeServer';
 import { RecordOutcome } from '../../RecordOutcome';
 import { VerdictActions } from '../../VerdictActions';
 import { FIRST_ATTEMPT, hintedXp, parseAttempt, xpLabel } from '../../script';
-import { TERMS, isTermPosition, nextTermHref, nextTermLabel } from '../../session';
+import { TERMS, isRequeuePass, isTermPosition, nextTermHref, nextTermLabel } from '../../session';
+import { readQueue } from '../../requeueServer';
 import { SessionAppBar } from '../SessionAppBar';
 
 import '../../verdictBody.css';
@@ -81,6 +82,7 @@ export default async function PassHintedPage({
 }) {
   const { term } = await params;
   if (!isTermPosition(term)) notFound();
+  const queue = await readQueue();
 
   const query = await searchParams;
   // The rung the answer landed on. One hint means the second attempt, so the
@@ -101,7 +103,7 @@ export default async function PassHintedPage({
       topNavigation={<SessionAppBar term={term} skipHref="" skipState="Disabled" resolved />}
       middleContent={
         <div className="verdictBody">
-          <RecordOutcome term={term} variant="Hinted" xp={xp} />
+          <RecordOutcome term={term} variant="Hinted" xp={xp} requeuePass={isRequeuePass(term, queue)} />
           {/* Still a Pass: a hint changes what it was worth, not whether the
               student got there. The pose and the title's colour come with the
               verdict, so the green never carries the result on its own. */}
@@ -121,10 +123,10 @@ export default async function PassHintedPage({
             <Button
               variant="Primary"
               size="L"
-              CTA={nextTermLabel(term)}
+              CTA={nextTermLabel(term, queue)}
               showRightIcon
               rightIcon="arrow-right"
-              href={nextTermHref(term)}
+              href={nextTermHref(term, queue)}
             />
           }
           /* Say it back is the whole point of the hinted pass: the student got

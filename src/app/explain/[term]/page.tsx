@@ -19,13 +19,20 @@ import { notFound } from 'next/navigation';
 
 import { Scaffold } from '@/components/scaffold/Scaffold';
 
+import { parseInputMode } from '../inputMode';
 import { readInputMode } from '../inputModeServer';
+import { RequeueStart } from '../RequeueEffects';
+import { readQueue } from '../requeueServer';
 import { FIRST_ATTEMPT } from '../script';
 import { SessionStart } from '../SessionStart';
-import { TERMS, isTermPosition, nextTermHref } from '../session';
+import { EMPTY_QUEUE, REQUEUE_INTRO, TERMS, isRequeuePass, isTermPosition, nextTermHref } from '../session';
 import { IdleActions, IdleContent } from './IdleScreen';
 import { SessionAppBar } from './SessionAppBar';
 import { TypeAnswerScreen } from './type/TypeAnswerScreen';
+
+function first(raw: string | string[] | undefined): string | undefined {
+  return Array.isArray(raw) ? raw[0] : raw;
+}
 
 export default async function IdlePage({
   params,
@@ -35,27 +42,54 @@ export default async function IdlePage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { term } = await params;
-  // A new session opens in voice whatever the cookie still says; SessionStart
-  // resets the cookie on mount.
-  const fresh = term === '1' && (await searchParams).new === '1';
   if (!isTermPosition(term)) notFound();
 
+  const query = await searchParams;
+  // A new session starts clean whatever the cookies still say — voice, or the
+  // primer's choice of type — and SessionStart resets them on mount.
+  const fresh = term === '1' && first(query.new) === '1';
+  const rawMode = first(query.mode);
+  const freshMode = rawMode === 'type' || rawMode === 'denied' ? rawMode : undefined;
+  const inputMode = fresh ? parseInputMode(freshMode) : await readInputMode();
+  const queue = fresh ? EMPTY_QUEUE : await readQueue();
+  // `?again=1` is the way into a requeued term; the cookie says so from then on.
+  const again = first(query.again) === '1';
+  const requeuePass = again || isRequeuePass(term, queue);
+  const passQueue = again ? { ...queue, active: term } : queue;
+
   const current = TERMS[term];
-  const sessionStart = term === '1' ? <SessionStart fresh={fresh} /> : null;
+  const before = (
+    <>
+      {term === '1' ? <SessionStart fresh={fresh} mode={freshMode} /> : null}
+      {again ? <RequeueStart term={term} /> : null}
+    </>
+  );
+  const caption = requeuePass ? REQUEUE_INTRO : undefined;
 
   // Type mode is sticky: Idle in type mode is the field, not the mic.
-  if (!fresh && (await readInputMode()).mode === 'type') {
-    return <TypeAnswerScreen term={term} attempt={FIRST_ATTEMPT} before={sessionStart} />;
+  if (inputMode.mode === 'type') {
+    return (
+      <TypeAnswerScreen
+        term={term}
+        attempt={FIRST_ATTEMPT}
+        before={before}
+        inputMode={inputMode}
+        queue={passQueue}
+        promptCaption={caption}
+      />
+    );
   }
 
   return (
     <Scaffold
       size="iPhone 13"
-      topNavigation={<SessionAppBar term={term} skipHref={nextTermHref(term)} />}
+      topNavigation={
+        <SessionAppBar term={term} skipHref={nextTermHref(term, passQueue)} requeuePass={requeuePass} />
+      }
       middleContent={
         <>
-          {sessionStart}
-          <IdleContent prompt={current.prompt} />
+          {before}
+          <IdleContent prompt={current.prompt} caption={caption} />
         </>
       }
       bottomContent={<IdleActions term={term} />}

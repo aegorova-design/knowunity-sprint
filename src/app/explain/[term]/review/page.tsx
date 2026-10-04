@@ -36,6 +36,7 @@ import { withQuery } from '../../href';
 import { parseAttempt } from '../../script';
 import { ReviewPlayback } from '../../ReviewPlayback';
 import { TERMS, formatTakeLength, isTermPosition, nextTermHref } from '../../session';
+import { readQueue } from '../../requeueServer';
 import { SessionAppBar } from '../SessionAppBar';
 import { TermPrompt } from '../TermPrompt';
 
@@ -63,6 +64,7 @@ export default async function ReviewPage({
 }) {
   const { term } = await params;
   if (!isTermPosition(term)) notFound();
+  const queue = await readQueue();
 
   const query = await searchParams;
   const seconds = takeSeconds(query.seconds);
@@ -71,7 +73,7 @@ export default async function ReviewPage({
   return (
     <Scaffold
       size="iPhone 13"
-      topNavigation={<SessionAppBar term={term} skipHref={nextTermHref(term)} />}
+      topNavigation={<SessionAppBar term={term} skipHref={nextTermHref(term, queue)} />}
       // The question stays up while the student listens back, so they can hear
       // their answer against what was asked. Same placement as 06 and 07.
       middleContent={

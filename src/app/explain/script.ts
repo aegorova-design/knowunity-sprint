@@ -50,6 +50,19 @@ const VERDICTS: Record<TermPosition, readonly string[]> = {
   '3': ['hint-1', 'pass-hinted'],
 };
 
+/**
+ * A requeued term's second go. The scripted run requeues hibernation, and it
+ * passes first time on the way back — hinted, not unaided: the reveal was the
+ * help. Any term that reaches a requeue in demo mode runs the same path.
+ */
+const REQUEUE_VERDICTS: readonly string[] = ['pass-hinted'];
+
+/**
+ * A requeue pass gets one hint, then the reveal: a miss on its first attempt is
+ * `hint-1`, a miss on its second is `last-miss`. And any pass is `pass-hinted`.
+ */
+export const REQUEUE_LADDER: readonly string[] = ['hint-1', 'last-miss'];
+
 /** Attempts are 1-based, the way the hint ladder counts rungs. */
 export const FIRST_ATTEMPT = 1;
 
@@ -65,14 +78,14 @@ export function parseAttempt(raw: string | string[] | undefined): number {
  * `12b` can be reached that way, and only by retrying a term the script has
  * already run out of answers for, which the scripted run never does.
  */
-export function verdictSegment(position: TermPosition, attempt: number): string {
-  const path = VERDICTS[position];
+export function verdictSegment(position: TermPosition, attempt: number, requeuePass = false): string {
+  const path = requeuePass ? REQUEUE_VERDICTS : VERDICTS[position];
   return path[Math.min(attempt, path.length) - 1];
 }
 
-/** Only term 2's first attempt runs long. SPEC.md is explicit that it is the only one. */
-export function isSlowWait(position: TermPosition, attempt: number): boolean {
-  return position === '2' && attempt === FIRST_ATTEMPT;
+/** Only term 2's first attempt runs long, and only the first time round. SPEC.md is explicit that it is the only one. */
+export function isSlowWait(position: TermPosition, attempt: number, requeuePass = false): boolean {
+  return position === '2' && attempt === FIRST_ATTEMPT && !requeuePass;
 }
 
 /**
@@ -119,12 +132,14 @@ export function hintedXp(hints: number): number {
   return hints >= 2 ? 5 : 10;
 }
 
-export function typedVerdictSegment(attempt: number, length: number): string {
+export function typedVerdictSegment(attempt: number, length: number, requeuePass = false): string {
   if (length >= TYPED_PASS_LENGTH) {
-    // A pass after a rung of the ladder is `10b`, not `10`.
-    return attempt > FIRST_ATTEMPT ? 'pass-hinted' : 'pass';
+    // A pass after a rung of the ladder is `10b`, not `10` — and so is any
+    // pass on a requeued term.
+    return attempt > FIRST_ATTEMPT || requeuePass ? 'pass-hinted' : 'pass';
   }
-  return ['hint-1', 'hint-2', 'last-miss'][Math.min(attempt, 3) - 1];
+  const ladder = requeuePass ? REQUEUE_LADDER : ['hint-1', 'hint-2', 'last-miss'];
+  return ladder[Math.min(attempt, ladder.length) - 1];
 }
 
 /**
@@ -153,7 +168,9 @@ export type TermOutcome = {
 
 export const SESSION_OUTCOMES: Record<TermPosition, TermOutcome> = {
   '1': { variant: 'Unaided', xp: UNAIDED_XP },
-  '2': { variant: 'Revealed', xp: 0 },
+  // Revealed, then requeued, then passed on the way back: hinted, at the
+  // one-hint rate — the summary follows the final status.
+  '2': { variant: 'Hinted', xp: hintedXp(1) },
   '3': { variant: 'Hinted', xp: hintedXp(1) },
 };
 
@@ -191,5 +208,7 @@ export function attemptsTaken(position: TermPosition): number {
  * the script ends on). A missing file hides the player; nothing stands in.
  */
 export function demoClipHref(position: TermPosition): string {
-  return `/audio/demo/term-${position}.m4a`;
+  // Hibernation's last take is its requeue pass, so its clip is that one —
+  // a placeholder path until the design owner records it, like the others.
+  return position === '2' ? '/audio/demo/term-2-requeue.m4a' : `/audio/demo/term-${position}.m4a`;
 }
