@@ -25,6 +25,7 @@ import { Button } from '@/components/button/Button';
 import { ButtonGroup } from '@/components/button-group/ButtonGroup';
 import { IconSlot } from '@/components/icon-slot/IconSlot';
 import { ProgressIndicator } from '@/components/progress-indicator/ProgressIndicator';
+import { NEW_SESSION_HREF } from '@/app/explain/inputMode';
 
 import { CloseButton } from '../navigation';
 import {
@@ -34,11 +35,10 @@ import {
   useSessionOutcomes,
   type SessionOutcomes,
 } from '../outcomes';
-import { PROGRESS_LABEL, TERM_COUNT } from '../session';
+import { PROGRESS_LABEL, TERM_COUNT, TERM_POSITIONS } from '../session';
 import { SummaryRows } from './SummaryRows';
 
 import './summaryScreen.css';
-import { NEW_SESSION_HREF } from '@/app/explain/inputMode';
 
 /**
  * Terms that needed help — the number Redo offers to run again. The
@@ -95,6 +95,14 @@ export function SummaryBar({ behindSheet = false }: { behindSheet?: boolean }) {
   return behindSheet ? <div inert>{bar}</div> : bar;
 }
 
+/** "Play back what you said" only promises what is there: with no spoken answer, there is nothing to play. */
+function tapHint(outcomes: SessionOutcomes): string {
+  const spoke = TERM_POSITIONS.some((position) => outcomes[position].inputMode === 'voice');
+  return spoke
+    ? 'Tap any term to play back what you said and read the full answer.'
+    : 'Tap any term to see what you typed and read the full answer.';
+}
+
 export function SummaryContent({ behindSheet = false }: { behindSheet?: boolean }) {
   const outcomes = useSessionOutcomes();
 
@@ -136,9 +144,7 @@ export function SummaryContent({ behindSheet = false }: { behindSheet?: boolean 
           <SummaryRows outcomes={outcomes} />
         </div>
 
-        <p className="summaryScreen-tapHint">
-          Tap any term to play back what you said and read the full answer.
-        </p>
+        <p className="summaryScreen-tapHint">{tapHint(outcomes)}</p>
       </div>
     </div>
   );

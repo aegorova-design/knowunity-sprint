@@ -15,13 +15,13 @@ import { Button } from '@/components/button/Button';
 import { IconSlot, type IconName } from '@/components/icon-slot/IconSlot';
 import { MascotFigure } from '@/components/mascot-figure/MascotFigure';
 import { TextBlock } from '@/components/text-block/TextBlock';
+import { NEW_SESSION_HREF } from '@/app/explain/inputMode';
 
 import { ActionStack } from '../ActionStack';
 import { ButtonPair } from '../ButtonPair';
 import { AllowMicButton } from './AllowMicButton';
 
 import './introScreen.css';
-import { NEW_SESSION_HREF } from '@/app/explain/inputMode';
 
 /** Where the primer's three ways out go. */
 export const PRIMER_GRANTED_HREF = NEW_SESSION_HREF;

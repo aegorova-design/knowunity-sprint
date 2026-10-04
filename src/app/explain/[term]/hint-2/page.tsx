@@ -57,7 +57,7 @@ export default async function HintTwoPage({ params }: { params: Promise<{ term: 
       // Skip rule lists 12 among the live screens, and the bar has not moved
       // because nothing has resolved.
       topNavigation={<SessionAppBar term={term} skipHref={nextTermHref(term, queue)} />}
-      middleContent={<HintTwoBody term={current} />}
+      middleContent={<HintTwoBody term={current} sessionTyped={(await readInputMode()).mode === 'type'} />}
       bottomContent={
         <ActionStack
           primary={

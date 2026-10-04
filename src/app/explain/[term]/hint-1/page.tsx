@@ -65,7 +65,7 @@ export default async function HintOnePage({ params }: { params: Promise<{ term: 
     <Scaffold
       size="iPhone 13"
       topNavigation={<SessionAppBar term={term} skipHref={nextTermHref(term, queue)} />}
-      middleContent={<HintOneBody term={current} requeuePass={isRequeuePass(term, queue)} />}
+      middleContent={<HintOneBody term={current} sessionTyped={(await readInputMode()).mode === 'type'} requeuePass={isRequeuePass(term, queue)} />}
       bottomContent={
         <ActionStack
           /* The screen's one Primary. Another go at the mic, on the next rung

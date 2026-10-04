@@ -24,6 +24,7 @@ import { VerdictHeader, type VerdictHeaderVerdict } from '@/components/verdict-h
 import { rubric } from '@/lib/judge-config';
 
 import { readDemoMode, useIsDemoMode } from '../../demoMode';
+import { SaidAnswer } from '../../SaidAnswer';
 import type { Term } from '../../session';
 import { hintLevelFor, readTurn } from '../../turnStore';
 
@@ -41,7 +42,14 @@ function hintLabel(requeuePass: boolean): string {
   return requeuePass ? 'Hint' : 'Hint 1 of 2';
 }
 
-export function HintOneBody({ term, requeuePass = false }: { term: Term; requeuePass?: boolean }) {
+export function HintOneBody({
+  term, requeuePass = false,
+  sessionTyped = false,
+}: {
+  term: Term; requeuePass?: boolean;
+  /** The session is in type mode — demo mode's only clue to how the answer came in. */
+  sessionTyped?: boolean;
+}) {
   const router = useRouter();
   const isDemo = useIsDemoMode();
 
@@ -81,7 +89,7 @@ export function HintOneBody({ term, requeuePass = false }: { term: Term; requeue
             it. Order matters — the student reads what they said first, so
             the hint lands against it rather than in the abstract. */}
         <div className="verdictCards">
-          <AnswerBlock kind="Said" label="What Knowie heard" body={term.heard[0]} />
+          <SaidAnswer text={term.heard[0]} typed={sessionTyped} />
           <AnswerBlock kind="Hint" label={hintLabel(requeuePass)} body={term.hints[0]} />
         </div>
       </div>
@@ -108,11 +116,7 @@ export function HintOneBody({ term, requeuePass = false }: { term: Term; requeue
         titleAs="h1"
       />
       <div className="verdictCards">
-        <AnswerBlock
-          kind="Said"
-          label="What Knowie heard"
-          body={turn.transcript ? `“${turn.transcript}”` : '“…”'}
-        />
+        <SaidAnswer text={turn.transcript} typed={turn.typedAnswer !== null} />
         {hintText && <AnswerBlock kind="Hint" label={hintLabel(requeuePass)} body={hintText} />}
       </div>
     </div>

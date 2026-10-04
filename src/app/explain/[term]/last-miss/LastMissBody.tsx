@@ -15,16 +15,23 @@
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
-import { AnswerBlock } from '@/components/answer-block/AnswerBlock';
 import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
 
 import { readDemoMode, useIsDemoMode } from '../../demoMode';
+import { SaidAnswer } from '../../SaidAnswer';
 import type { Term } from '../../session';
 import { readTurn } from '../../turnStore';
 
 import '../../verdictBody.css';
 
-export function LastMissBody({ term }: { term: Term }) {
+export function LastMissBody({
+  term,
+  sessionTyped = false,
+}: {
+  term: Term;
+  /** The session is in type mode — demo mode's only clue to how the answer came in. */
+  sessionTyped?: boolean;
+}) {
   const router = useRouter();
   const isDemo = useIsDemoMode();
 
@@ -51,7 +58,7 @@ export function LastMissBody({ term }: { term: Term }) {
             take from `12`, which would show the student their previous
             answer straight after speaking again. See `component-gaps.md`. */}
         <div className="verdictCards">
-          <AnswerBlock kind="Said" label="What Knowie heard" body={term.heard[2]} />
+          <SaidAnswer text={term.heard[2]} typed={sessionTyped} />
         </div>
       </div>
     );
@@ -68,11 +75,7 @@ export function LastMissBody({ term }: { term: Term }) {
         titleAs="h1"
       />
       <div className="verdictCards">
-        <AnswerBlock
-          kind="Said"
-          label="What Knowie heard"
-          body={turn.transcript ? `“${turn.transcript}”` : '“…”'}
-        />
+        <SaidAnswer text={turn.transcript} typed={turn.typedAnswer !== null} />
       </div>
     </div>
   );

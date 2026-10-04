@@ -34,6 +34,7 @@ import { ActionStack } from '../../ActionStack';
 import { withQuery } from '../../href';
 import { parseAttempt } from '../../script';
 import { TERMS, isTermPosition } from '../../session';
+import { readInputMode } from '../../inputModeServer';
 import { SessionAppBar } from '../SessionAppBar';
 import { LastMissBody } from './LastMissBody';
 
@@ -56,7 +57,7 @@ export default async function LastMissPage({
     <Scaffold
       size="iPhone 13"
       topNavigation={<SessionAppBar term={term} skipHref="" skipState="Disabled" />}
-      middleContent={<LastMissBody term={current} />}
+      middleContent={<LastMissBody term={current} sessionTyped={(await readInputMode()).mode === 'type'} />}
       bottomContent={
         <ActionStack
           /* The screen's one Primary and its only action, with nothing under

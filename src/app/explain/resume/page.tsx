@@ -29,6 +29,7 @@
 import { AppBar } from '@/components/app-bar/AppBar';
 import { Button } from '@/components/button/Button';
 import { Scaffold } from '@/components/scaffold/Scaffold';
+import { NEW_SESSION_HREF } from '@/app/explain/inputMode';
 
 import { PLAN_IN_PROGRESS_HREF } from '../../plan/planHref';
 import { ActionStack } from '../ActionStack';
@@ -42,7 +43,6 @@ import {
   isTermPosition,
   type TermPosition,
 } from '../session';
-import { NEW_SESSION_HREF } from '@/app/explain/inputMode';
 
 /**
  * Close leaves the session for the plan, as the primer and `14` both do — for

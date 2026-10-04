@@ -27,6 +27,7 @@ import { useIsDemoMode } from '../../demoMode';
 import { useSessionOutcomes } from '../../outcomes';
 import { RealTakePlayback } from '../../RealTakePlayback';
 import { demoClipHref, type TermOutcome } from '../../script';
+import { SaidAnswer } from '../../SaidAnswer';
 import { readTake } from '../../sessionTakes';
 import { TERMS, type TermPosition } from '../../session';
 import { SheetPanel } from '../../SheetPanel';
@@ -101,18 +102,11 @@ export function TermSheet({ term, dismissHref }: { term: TermPosition; dismissHr
                     here and the reason design-brief.md gives for quoting the
                     take back at all. Demo mode's scripted takes carry their
                     own quotation marks; a real transcript gets them here. */}
-                <AnswerBlock
-                  kind="Said"
-                  label="What Knowie heard"
-                  body={transcript.startsWith('\u201C') ? transcript : `\u201C${transcript}\u201D`}
-                />
+                <SaidAnswer text={transcript} typed={false} />
               </>
             ) : (
-              /* A typed answer, as typed. Said is the kind for the student's
-                 own words, but its icon is a microphone, which this was not —
-                 so the icon is off and the label says what it is. Logged in
-                 component-gaps.md. */
-              <AnswerBlock kind="Said" label="What you typed" body={transcript} showIcon={false} />
+              /* A typed answer, as typed, and no player: there is no audio. */
+              <SaidAnswer text={transcript} typed />
             )}
           </section>
         ) : null}

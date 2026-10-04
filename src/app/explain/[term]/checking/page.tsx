@@ -78,6 +78,7 @@ export default async function CheckingPage({
             rubricId={TERMS[term].rubricId}
             attempt={attempt}
             requeuePass={requeuePass}
+            typed={first(query.typed) !== undefined}
           />
         </>
       }

@@ -68,11 +68,18 @@ import './checkingScreen.css';
  * Figma frame draws, which is where the line settles and stays; the long wait
  * would otherwise run out of things to say with 5s still to go.
  */
-const STATUS_STEPS = [
+const STATUS_STEPS: readonly string[] = [
   'Sending your answer',
   'Checking it',
   'Comparing what you said with the key ideas.',
-] as const;
+];
+
+/** The same three, for an answer that was typed rather than said. */
+const TYPED_STATUS_STEPS: readonly string[] = [
+  'Sending your answer',
+  'Checking it',
+  'Comparing what you wrote with the key ideas.',
+];
 
 /**
  * A request, and one retry if it fails — a network error or a non-OK
@@ -112,6 +119,8 @@ type Props = {
   attempt?: number;
   /** A requeued term: one hint, then the reveal, and never unaided. */
   requeuePass?: boolean;
+  /** The answer was typed, so the status line does not talk about what was said. */
+  typed?: boolean;
 };
 
 export function CheckingWait({
@@ -123,7 +132,9 @@ export function CheckingWait({
   rubricId,
   attempt,
   requeuePass = false,
+  typed = false,
 }: Props) {
+  const steps = typed ? TYPED_STATUS_STEPS : STATUS_STEPS;
   const router = useRouter();
   const isDemo = useIsDemoMode();
   const [step, setStep] = useState(0);
@@ -283,11 +294,11 @@ export function CheckingWait({
 
   useEffect(() => {
     if (caption !== undefined || isSlow) return;
-    if (step >= STATUS_STEPS.length - 1) return;
+    if (step >= steps.length - 1) return;
 
     const id = window.setTimeout(() => setStep((current) => current + 1), STEP_MS);
     return () => window.clearTimeout(id);
-  }, [step, caption, isSlow]);
+  }, [step, caption, isSlow, steps.length]);
 
   if (needsPasscode) {
     return (
@@ -316,7 +327,7 @@ export function CheckingWait({
         <VerdictHeader
           verdict="Checking"
           title={isSlow ? SLOW_TITLE : title}
-          caption={isSlow ? SLOW_CAPTION : (caption ?? STATUS_STEPS[step])}
+          caption={isSlow ? SLOW_CAPTION : (caption ?? steps[step])}
           titleAs="h1"
           // The caption is the only thing on the screen that changes while the
           // student waits, so it is the only thing worth announcing. Polite

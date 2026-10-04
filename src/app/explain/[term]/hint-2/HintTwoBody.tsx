@@ -16,6 +16,7 @@ import { VerdictHeader, type VerdictHeaderVerdict } from '@/components/verdict-h
 import { rubric } from '@/lib/judge-config';
 
 import { readDemoMode, useIsDemoMode } from '../../demoMode';
+import { SaidAnswer } from '../../SaidAnswer';
 import type { Term } from '../../session';
 import { hintLevelFor, readTurn } from '../../turnStore';
 
@@ -28,7 +29,14 @@ function poseAndTitle(verdict: 'pass' | 'partial' | 'miss' | 'unclear' | undefin
   return verdict === 'miss' ? { pose: 'Miss', title: 'Not quite' } : { pose: 'Partial', title: 'Almost there' };
 }
 
-export function HintTwoBody({ term }: { term: Term }) {
+export function HintTwoBody({
+  term,
+  sessionTyped = false,
+}: {
+  term: Term;
+  /** The session is in type mode — demo mode's only clue to how the answer came in. */
+  sessionTyped?: boolean;
+}) {
   const router = useRouter();
   const isDemo = useIsDemoMode();
 
@@ -54,7 +62,7 @@ export function HintTwoBody({ term }: { term: Term }) {
         />
 
         <div className="verdictCards">
-          <AnswerBlock kind="Said" label="What Knowie heard" body={term.heard[1]} />
+          <SaidAnswer text={term.heard[1]} typed={sessionTyped} />
           {/* "the last one" is the warning that the ladder is running out.
               It is the label's job, not the caption's — the caption is busy
               saying how close the answer already is. */}
@@ -84,11 +92,7 @@ export function HintTwoBody({ term }: { term: Term }) {
         titleAs="h1"
       />
       <div className="verdictCards">
-        <AnswerBlock
-          kind="Said"
-          label="What Knowie heard"
-          body={turn.transcript ? `“${turn.transcript}”` : '“…”'}
-        />
+        <SaidAnswer text={turn.transcript} typed={turn.typedAnswer !== null} />
         {hintText && (
           <AnswerBlock kind="Hint" label="Hint 2 of 2, the last one" body={hintText} />
         )}
