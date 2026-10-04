@@ -44,7 +44,10 @@ import { ActionStack } from '../../ActionStack';
 import { ButtonPair } from '../../ButtonPair';
 import { SheetPanel } from '../../SheetPanel';
 import { TERMS, isTermPosition, nextTermHref, type TermPosition } from '../../session';
+import { readInputMode } from '../../inputModeServer';
+import { FIRST_ATTEMPT } from '../../script';
 import { IdleActions, IdleContent } from '../IdleScreen';
+import { TypeAnswerScreen } from '../type/TypeAnswerScreen';
 import { SessionAppBar } from '../SessionAppBar';
 
 import './leaveSheet.css';
@@ -93,6 +96,44 @@ export default async function LeaveSessionPage({
 
   const back = keepGoingHref(term, (await searchParams).back);
 
+  const sheet = (
+    <SheetPanel label={SHEET_TITLE} dismissHref={back}>
+      {/* One child, so the panel's own Space/600 between children never
+          applies and this frame's Space/400 is what shows. */}
+      <div className="leaveSheet-body">
+        {/* Variant M: the frame's Headline S title, ranged left, over the
+            reassurance. Not the sheet-label variant S the other two sheets
+            use — this one is a question being asked, not a label over a
+            list, and it is the only thing on the sheet above the answer. */}
+        <TextBlock
+          variant="M"
+          title={SHEET_TITLE}
+          caption={SHEET_CAPTION}
+          showCaption
+          titleAs="h2"
+        />
+
+        <ActionStack
+          /* The screen's one Primary, and it is the *staying* one: a
+             confirm should make the reversible choice the easy one. */
+          primary={<Button variant="Primary" size="L" CTA="Keep going" href={back} />}
+          below={
+            <ButtonPair>
+              {/* Tertiary, per the frame and SPEC.md — the way out is
+                 available without being invited. */}
+              <Button variant="Tertiary" size="M" CTA="Leave" href={leaveHref(term)} />
+            </ButtonPair>
+          }
+        />
+      </div>
+    </SheetPanel>
+  );
+
+  // The screen underneath is Idle in the stored mode: the field in type mode.
+  if ((await readInputMode()).mode === 'type') {
+    return <TypeAnswerScreen term={term} attempt={FIRST_ATTEMPT} sheet={sheet} />;
+  }
+
   return (
     <Scaffold
       size="iPhone 13"
@@ -102,38 +143,7 @@ export default async function LeaveSessionPage({
       middleContent={<IdleContent prompt={TERMS[term].prompt} behindSheet />}
       bottomContent={<IdleActions term={term} behindSheet />}
       showBottomSheetBackground
-      bottomSheetOnly={
-        <SheetPanel label={SHEET_TITLE} dismissHref={back}>
-          {/* One child, so the panel's own Space/600 between children never
-              applies and this frame's Space/400 is what shows. */}
-          <div className="leaveSheet-body">
-            {/* Variant M: the frame's Headline S title, ranged left, over the
-                reassurance. Not the sheet-label variant S the other two sheets
-                use — this one is a question being asked, not a label over a
-                list, and it is the only thing on the sheet above the answer. */}
-            <TextBlock
-              variant="M"
-              title={SHEET_TITLE}
-              caption={SHEET_CAPTION}
-              showCaption
-              titleAs="h2"
-            />
-
-            <ActionStack
-              /* The screen's one Primary, and it is the *staying* one: a
-                 confirm should make the reversible choice the easy one. */
-              primary={<Button variant="Primary" size="L" CTA="Keep going" href={back} />}
-              below={
-                <ButtonPair>
-                  {/* Tertiary, per the frame and SPEC.md — the way out is
-                     available without being invited. */}
-                  <Button variant="Tertiary" size="M" CTA="Leave" href={leaveHref(term)} />
-                </ButtonPair>
-              }
-            />
-          </div>
-        </SheetPanel>
-      }
+      bottomSheetOnly={sheet}
     />
   );
 }

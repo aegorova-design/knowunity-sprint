@@ -31,7 +31,10 @@ export function TypeScreen({
   hintHref,
   otherMode,
   keepAnswer = false,
+  sheet,
 }: {
+  /** A sheet over the screen — `06b Leave session` in type mode. Marks everything under it inert. */
+  sheet?: ReactNode;
   appBar: ReactNode;
   prompt: ReactNode;
   /** Where a sent answer goes to be judged. */
@@ -59,11 +62,13 @@ export function TypeScreen({
       topNavigation={appBar}
       // Figma puts the prompt alone in middleContent — the field lives down in
       // the thumb zone with the buttons, not under the question.
-      middleContent={prompt}
+      middleContent={sheet ? <div inert>{prompt}</div> : prompt}
+      showBottomSheetBackground={sheet !== undefined}
+      bottomSheetOnly={sheet}
       bottomContent={
         // Figma's "bottom stack": the field group over the action group at
         // Space/400. scaffold.css owns the zone's own inset.
-        <div className="typeScreen-bottom">
+        <div className="typeScreen-bottom" inert={sheet !== undefined || undefined}>
           <div className="typeScreen-field">
             <TextField
               label="Your explanation"
@@ -71,7 +76,7 @@ export function TypeScreen({
               value={answer}
               onChange={(event) => setAnswer(event.target.value)}
               aria-describedby={helperId}
-              autoFocus
+              autoFocus={sheet === undefined}
             />
             {/* A helper line under a field. Not a Storybook component —
                 textField carries no helper of its own. Logged in

@@ -15,12 +15,25 @@ import { SessionAppBar } from '../SessionAppBar';
 import { TermPrompt } from '../TermPrompt';
 import { TypeScreen } from './TypeScreen';
 
+/**
+ * Knowie's line when a typed answer came back unclear. Voice gets its own
+ * screen for this; typed words were exactly what was meant to be sent, so the
+ * student stays on the field with them and is asked to add to them.
+ */
+const ASK_FOR_MORE = 'I couldn’t quite follow that. Can you add a bit more?';
+
 export async function TypeAnswerScreen({
   term,
   attempt,
   keepAnswer = false,
   before,
+  askForMore = false,
+  sheet,
 }: {
+  /** An unclear verdict on a typed answer: Knowie asks for a bit more, and nothing is spent. */
+  askForMore?: boolean;
+  /** A sheet over the screen, as `06b Leave session` draws one. */
+  sheet?: ReactNode;
   term: TermPosition;
   attempt: number;
   keepAnswer?: boolean;
@@ -32,13 +45,18 @@ export async function TypeAnswerScreen({
 
   return (
     <TypeScreen
-      appBar={<SessionAppBar term={term} skipHref={nextTermHref(term)} />}
+      appBar={<SessionAppBar term={term} skipHref={nextTermHref(term)} behindSheet={sheet !== undefined} />}
       prompt={
         <>
           {before}
-          <TermPrompt prompt={TERMS[term].prompt} />
+          {askForMore ? (
+            <TermPrompt prompt={TERMS[term].prompt} caption={ASK_FOR_MORE} pose="Questioning" />
+          ) : (
+            <TermPrompt prompt={TERMS[term].prompt} />
+          )}
         </>
       }
+      sheet={sheet}
       sendHref={withQuery(`/explain/${term}/checking`, { attempt })}
       hintHref={`/explain/${term}/hint`}
       otherMode={

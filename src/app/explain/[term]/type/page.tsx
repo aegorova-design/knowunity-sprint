@@ -46,6 +46,8 @@ export default async function TypePage({
       // `?keep=1` comes from Cancel on a slow wait and Type instead on "That
       // didn't go through": the answer was never judged, so it comes back.
       keepAnswer={query.keep === '1'}
+      // `?more=1`: an unclear verdict on this answer. No rung was spent.
+      askForMore={query.more === '1'}
     />
   );
 }

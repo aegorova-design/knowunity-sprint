@@ -33,9 +33,10 @@
  *
  * **Silent, unclear and slow are voice states.** A typed answer has no audio
  * to be silent, words that are exactly what was typed, and no transcription to
- * wait on — so it never shows "Still thinking", and an unclear verdict on it
- * is read as a miss, with a hint aimed at the first idea it is missing. Only
- * `failed` can follow a typed answer.
+ * wait on — so it never shows "Still thinking", and an unclear verdict sends
+ * it back to the field with the words kept and Knowie asking for a bit more,
+ * no rung spent. Only `failed` can follow a typed answer as a screen of its
+ * own.
  *
  * **Past 5s the wait says so.** Demo mode hands over to its own route, `09b`,
  * at that point. Real mode cannot leave — leaving would abort the request —
@@ -53,8 +54,6 @@ import { readDemoMode, useIsDemoMode } from '../../demoMode';
 import { withQuery } from '../../href';
 import { SLOW_AFTER_MS, SLOW_CAPTION, SLOW_TITLE, WAIT_MS } from '../../script';
 import type { TermPosition } from '../../session';
-import { rubric } from '@/lib/judge-config';
-
 import { readTurn, recordHintTarget, setJudgeResult, type JudgeVerdict } from '../../turnStore';
 import { realVerdictSegment } from '../../realVerdict';
 import { VoicePasscodePrompt } from '../../VoicePasscodePrompt';
@@ -87,17 +86,6 @@ async function fetchWithRetry(input: string, init: RequestInit): Promise<Respons
     if (init.signal?.aborted) throw error;
   }
   return fetch(input, init);
-}
-
-/** An unclear verdict on typed words is a miss: there is nothing to have misheard. */
-function typedVerdict(rubricId: string, verdict: JudgeVerdict): JudgeVerdict {
-  if (verdict.verdict !== 'unclear') return verdict;
-  const firstKeyIdea = rubric.terms.find((term) => term.id === rubricId)?.ideas.find((idea) => idea.type === 'key')?.id;
-  return {
-    ...verdict,
-    verdict: 'miss',
-    hint_target: verdict.hint_target ?? verdict.ideas_missing[0] ?? firstKeyIdea ?? null,
-  };
 }
 
 /**
@@ -253,9 +241,16 @@ export function CheckingWait({
         });
         if (cancelled) return;
         if (!judgeRes.ok) throw new Error('judge failed');
-        const judged: JudgeVerdict = await judgeRes.json();
+        const verdict: JudgeVerdict = await judgeRes.json();
         if (cancelled) return;
-        const verdict = inputMode === 'typed' ? typedVerdict(currentRubricId, judged) : judged;
+
+        // Unclear on typed words: back to the field with them, Knowie asking
+        // for more. Like voice's unclear, it spends no rung and counts no hint.
+        if (inputMode === 'typed' && verdict.verdict === 'unclear') {
+          await settle();
+          goTo('type', { keep: 1, more: 1 });
+          return;
+        }
 
         setJudgeResult(currentTerm, transcript, verdict);
         // Counted here, once, right as the verdict arrives — stage D's rule:

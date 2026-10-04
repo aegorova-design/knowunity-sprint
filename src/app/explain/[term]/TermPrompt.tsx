@@ -16,7 +16,7 @@
 
 import type { ElementType } from 'react';
 
-import { MascotFigure } from '@/components/mascot-figure/MascotFigure';
+import { MascotFigure, type MascotFigurePose } from '@/components/mascot-figure/MascotFigure';
 import { TextBlock } from '@/components/text-block/TextBlock';
 
 import { TERM_PROMPT_CAPTION } from '../session';
@@ -28,7 +28,10 @@ export function TermPrompt({
   caption = TERM_PROMPT_CAPTION,
   showCaption = true,
   titleAs = 'h1',
+  pose = 'Standby',
 }: {
+  /** Knowie's pose. Standby, unless the caption is Knowie saying something to the student. */
+  pose?: MascotFigurePose;
   /** The question Knowie is asking. */
   prompt: string;
   /** The ask under it. Defaults to the session's, which is the same every time. */
@@ -43,7 +46,7 @@ export function TermPrompt({
 }) {
   return (
     <div className="termPrompt">
-      <MascotFigure size="S" pose="Standby" />
+      <MascotFigure size="S" pose={pose} />
       <TextBlock
         variant="M"
         title={prompt}
