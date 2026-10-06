@@ -46,6 +46,13 @@ export type MascotMessageProps = Omit<HTMLAttributes<HTMLDivElement>, 'children'
    * without an override.
    */
   actionSlot?: ReactNode;
+  /**
+   * More than one action, side by side in a row that hugs them, Space/400
+   * apart, and wraps when the bubble is too narrow. The `mascotMessage` frame
+   * draws it as a horizontal actionSlot of Tertiary XS buttons. Pass the
+   * buttons as siblings in a fragment.
+   */
+  actionsSlot?: ReactNode;
 };
 
 export function MascotMessage({
@@ -55,6 +62,7 @@ export function MascotMessage({
   helper = 'I will bring these three back on Thursday, two days before the exam.',
   showHelper = true,
   actionSlot,
+  actionsSlot,
   ...rest
 }: MascotMessageProps) {
   return (
@@ -67,6 +75,7 @@ export function MascotMessage({
         <p className="knowieMascotMessage-message">{message}</p>
         {showHelper ? <p className="knowieMascotMessage-helper">{helper}</p> : null}
         {actionSlot ? <div className="knowieMascotMessage-action">{actionSlot}</div> : null}
+        {actionsSlot ? <div className="knowieMascotMessage-actions">{actionsSlot}</div> : null}
       </div>
     </div>
   );

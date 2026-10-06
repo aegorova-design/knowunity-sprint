@@ -16,7 +16,7 @@
 import { useMemo, useSyncExternalStore } from 'react';
 
 import { useIsDemoMode } from './demoMode';
-import { SESSION_OUTCOMES, attemptsTaken, hintedXp, type TermOutcome } from './script';
+import { SESSION_OUTCOMES, UNAIDED_XP, attemptsTaken, hintedXp, type TermOutcome } from './script';
 import { TERMS, TERM_COUNT, TERM_POSITIONS, type TermPosition } from './session';
 
 export type SessionOutcome = TermOutcome & {
@@ -75,15 +75,63 @@ function guardUnaided(outcome: RecordedOutcome): RecordedOutcome {
 }
 
 export function recordOutcome(term: TermPosition, outcome: RecordedOutcome): void {
+  const guarded = guardUnaided(outcome);
   try {
-    window.sessionStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ ...readRecorded(), [term]: guardUnaided(outcome) }),
-    );
+    window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ ...readRecorded(), [term]: guarded }));
   } catch {
     // Storage off: the summary will read this term as Skipped. Nothing else
     // depends on it.
   }
+  recordHistory(term, guarded);
+}
+
+/**
+ * The history behind the review and the plan: each term's latest result
+ * across every session — first pass, requeue, and a revisit once there is
+ * one. In `localStorage`, not `sessionStorage`: it has to outlive the
+ * session, the tab and a browser restart, and a new session must not clear
+ * it. A term is only ever replaced by a newer result; a skip records nothing,
+ * so it keeps the last real one. `completedAt` is set when a session reaches
+ * its summary, which is what puts "Review answers" in Knowie's bubble on the plan.
+ */
+const HISTORY_KEY = 'explain:history';
+
+type History = { terms: Partial<Record<TermPosition, RecordedOutcome>>; completedAt?: number };
+
+function readHistoryRaw(): string | null {
+  try {
+    return window.localStorage.getItem(HISTORY_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function parseHistory(raw: string | null): History {
+  if (!raw) return { terms: {} };
+  try {
+    const parsed = JSON.parse(raw);
+    return { terms: parsed.terms ?? {}, completedAt: parsed.completedAt };
+  } catch {
+    return { terms: {} };
+  }
+}
+
+function writeHistory(history: History): void {
+  try {
+    window.localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  } catch {
+    // Storage off: the review falls back to Skipped rows, as the summary does.
+  }
+}
+
+function recordHistory(term: TermPosition, outcome: RecordedOutcome): void {
+  const history = parseHistory(readHistoryRaw());
+  writeHistory({ ...history, terms: { ...history.terms, [term]: outcome } });
+}
+
+/** Called when a real session reaches its summary. */
+export function markSessionCompleted(): void {
+  writeHistory({ ...parseHistory(readHistoryRaw()), completedAt: Date.now() });
 }
 
 export function clearOutcomes(): void {
@@ -132,14 +180,155 @@ export function useSessionOutcomes(): SessionOutcomes | null {
     if (isDemo) return SCRIPTED;
     if (raw === UNKNOWN) return null;
 
-    const recorded = parseRecorded(raw);
-    return Object.fromEntries(
-      TERM_POSITIONS.map((position) => [
-        position,
-        recorded[position] ?? { variant: 'Skipped', xp: 0, transcript: null, inputMode: null },
-      ]),
-    ) as SessionOutcomes;
+    return asOutcomes(parseRecorded(raw));
   }, [isDemo, raw]);
+}
+
+function asOutcomes(recorded: Partial<Record<TermPosition, RecordedOutcome>>): SessionOutcomes {
+  return Object.fromEntries(
+    TERM_POSITIONS.map((position) => [
+      position,
+      recorded[position] ?? { variant: 'Skipped', xp: 0, transcript: null, inputMode: null },
+    ]),
+  ) as SessionOutcomes;
+}
+
+/**
+ * Demo mode's two steps after the session, in `sessionStorage` so they last
+ * the walkthrough and no longer. The time skip is `20 Home, revisit` — five
+ * days later — which makes the revisit due. The revisit itself is stubbed:
+ * `20b Revisit complete` records the terms it brought back as revisited, and
+ * from then on the latest results read those terms as Unaided, so the review
+ * on the mastered plan matches its header. Both are cleared by a new session.
+ */
+const DEMO_TIME_SKIP_KEY = 'explain:demoTimeSkip';
+const DEMO_REVISITED_KEY = 'explain:demoRevisited';
+
+function readSession(key: string): string | null {
+  try {
+    return window.sessionStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function writeSession(key: string, value: string | null): void {
+  try {
+    if (value === null) window.sessionStorage.removeItem(key);
+    else window.sessionStorage.setItem(key, value);
+  } catch {
+    // Storage off: the demo stays on the step before.
+  }
+}
+
+export function markDemoTimeSkip(): void {
+  writeSession(DEMO_TIME_SKIP_KEY, '1');
+}
+
+/** The terms the stubbed revisit brought back. Written once; later visits keep the first list. */
+export function markDemoRevisited(terms: TermPosition[]): void {
+  if (readSession(DEMO_REVISITED_KEY) === null) writeSession(DEMO_REVISITED_KEY, JSON.stringify(terms));
+}
+
+export function clearDemoAfterSession(): void {
+  writeSession(DEMO_TIME_SKIP_KEY, null);
+  writeSession(DEMO_REVISITED_KEY, null);
+}
+
+function readDemoRevisited(): string | null {
+  return readSession(DEMO_REVISITED_KEY);
+}
+
+function parseTerms(raw: string | null): TermPosition[] {
+  if (!raw) return [];
+  try {
+    return (JSON.parse(raw) as string[]).filter((value): value is TermPosition =>
+      (TERM_POSITIONS as readonly string[]).includes(value),
+    );
+  } catch {
+    return [];
+  }
+}
+
+/** The terms demo mode's stubbed revisit brought back, or null before it has run. Always null in real mode. */
+export function useDemoRevisitedTerms(): TermPosition[] | null {
+  const isDemo = useIsDemoMode();
+  const raw = useSyncExternalStore(subscribeToNothing, readDemoRevisited, () => null);
+  return useMemo(() => (isDemo && raw !== null ? parseTerms(raw) : null), [isDemo, raw]);
+}
+
+/** A revisited term, as the stubbed revisit leaves it: explained unaided, its scripted revisit take quoted back. */
+function revisited(position: TermPosition): SessionOutcome {
+  return {
+    variant: 'Unaided',
+    xp: UNAIDED_XP,
+    transcript: TERMS[position].revisitTake ?? null,
+    inputMode: 'voice',
+  };
+}
+
+/**
+ * The merged view: each term's latest result across every session, for the
+ * review and the plan. Demo mode reads the script, as the summary does — its
+ * run ends with hibernation requeued and passed — with any term its stubbed
+ * revisit brought back read as Unaided. Null until it can be known.
+ */
+export function useLatestOutcomes(): SessionOutcomes | null {
+  const isDemo = useIsDemoMode();
+  const raw = useSyncExternalStore(subscribeToNothing, readHistoryRaw, () => UNKNOWN);
+  const demoRevisited = useDemoRevisitedTerms();
+
+  return useMemo(() => {
+    if (isDemo) {
+      if (!demoRevisited) return SCRIPTED;
+      return Object.fromEntries(
+        TERM_POSITIONS.map((position) => [
+          position,
+          demoRevisited.includes(position) ? revisited(position) : SCRIPTED[position],
+        ]),
+      ) as SessionOutcomes;
+    }
+    if (raw === UNKNOWN) return null;
+    return asOutcomes(parseHistory(raw).terms);
+  }, [isDemo, raw, demoRevisited]);
+}
+
+/**
+ * How long after a session the terms that needed help are due again — the
+ * "couple of days" Knowie names on the plan.
+ */
+export const REVISIT_AFTER_MS = 2 * 24 * 60 * 60 * 1000;
+
+function readRevisitClock(): string {
+  // A string snapshot, so it compares by value: whether the interval has
+  // passed since the last completed session, read when the screen renders.
+  const { completedAt } = parseHistory(readHistoryRaw());
+  return completedAt !== undefined && Date.now() - completedAt >= REVISIT_AFTER_MS ? 'due' : 'not-due';
+}
+
+/**
+ * Whether the revisit is due: terms still need help, and the interval has
+ * passed — in demo mode, the time skip on `20 Home, revisit` has happened and
+ * the stubbed revisit has not run yet.
+ */
+export function useRevisitDue(): boolean {
+  const isDemo = useIsDemoMode();
+  const latest = useLatestOutcomes();
+  const timeSkip = useSyncExternalStore(subscribeToNothing, () => readSession(DEMO_TIME_SKIP_KEY), () => null);
+  const clock = useSyncExternalStore(subscribeToNothing, readRevisitClock, () => 'not-due');
+  const demoRevisited = useDemoRevisitedTerms();
+
+  if (!latest || dueTerms(latest).length === 0) return false;
+  if (isDemo) return timeSkip === '1' && demoRevisited === null;
+  return clock === 'due';
+}
+
+/** Whether a session has reached its summary — what puts "Review answers" in Knowie's bubble on the plan. Demo mode's walkthrough always has. */
+export function useHasCompletedSession(): boolean {
+  const isDemo = useIsDemoMode();
+  const raw = useSyncExternalStore(subscribeToNothing, readHistoryRaw, () => UNKNOWN);
+  if (isDemo) return true;
+  return raw !== UNKNOWN && parseHistory(raw).completedAt !== undefined;
 }
 
 export function unaidedCount(outcomes: SessionOutcomes): number {

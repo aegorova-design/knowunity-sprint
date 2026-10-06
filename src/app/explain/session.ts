@@ -78,6 +78,12 @@ export type Term = {
    */
   requeueTake?: string;
   /**
+   * The take demo mode's stubbed revisit is heard as — what the review quotes
+   * for a term the revisit brought back unaided. Only the two the scripted run
+   * leaves needing help have one: hibernation and mammal.
+   */
+  revisitTake?: string;
+  /**
    * The hint ladder's two rungs in demo mode — `11 Not quite, hint 1 of 2`
    * shows the first, `12 Partial, hint 2 of 2` the second. Each one answers
    * the take above it rather than restating the question.
@@ -172,6 +178,8 @@ export const TERMS: Record<TermPosition, Term> = {
     // three-takes rule above.
     requeueTake:
       '“Hibernation is a deep sleep through the winter. The animal’s heart rate and breathing slow down, so it saves energy when there’s no food.”',
+    revisitTake:
+      '“Hibernation is when an animal goes into a deep sleep for the winter. Its body slows right down, its heart rate and temperature drop, so it uses less energy while there’s hardly any food.”',
     heard: [
       '“Hibernation is when animals fly south for the winter to find food.”',
       '“It’s when an animal goes into a long sleep through the winter.”',
@@ -194,6 +202,8 @@ export const TERMS: Record<TermPosition, Term> = {
     // so the second take and second hint exist for the typed path and for
     // completeness. The third take leans on the rubric's own "neutral" fact
     // (live birth) that neither helps nor hurts a real verdict.
+    revisitTake:
+      '“A mammal is a warm-blooded animal, and the mothers feed their babies milk.”',
     heard: [
       '“A mammal is an animal that has fur and lives on land.”',
       '“A mammal is a warm-blooded animal, and the mothers feed their babies milk.”',

@@ -6,13 +6,23 @@
  * mode. The caption stays off until the count can be read.
  */
 
+import { useEffect } from 'react';
+
 import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
 
-import { dueTerms, useSessionOutcomes } from '../../explain/outcomes';
+import { readDemoMode } from '../../explain/demoMode';
+import { dueTerms, markDemoTimeSkip, useLatestOutcomes } from '../../explain/outcomes';
 import { SUBJECT } from '../../plan/planData';
 
 export function RevisitHeader() {
-  const outcomes = useSessionOutcomes();
+  const outcomes = useLatestOutcomes();
+
+  // Demo mode's time skip: this screen is five days on, so from here the
+  // revisit is due and the plan offers Practice again.
+  useEffect(() => {
+    if (readDemoMode()) markDemoTimeSkip();
+  }, []);
+
   const due = outcomes ? dueTerms(outcomes).length : null;
 
   return (

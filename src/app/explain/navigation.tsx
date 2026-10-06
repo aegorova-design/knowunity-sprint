@@ -16,6 +16,20 @@ import { useRouter } from 'next/navigation';
 
 import { ButtonIcon } from '@/components/button-icon/ButtonIcon';
 
+export function BackButton({ href, label }: { href: string; label: string }) {
+  const router = useRouter();
+
+  return (
+    <ButtonIcon
+      variant="Tertiary"
+      size="M"
+      icon="arrow-left"
+      label={label}
+      onClick={() => router.push(href)}
+    />
+  );
+}
+
 export function CloseButton({ href, label }: { href: string; label: string }) {
   const router = useRouter();
 

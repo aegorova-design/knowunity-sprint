@@ -253,3 +253,50 @@ export const WithAction: Story = {
     await userEvent.click(button);
   },
 };
+
+/**
+ * Not a Figma variant — `actionsSlot`, two actions side by side, as the
+ * `mascotMessage` frame draws them: Tertiary XS, Space/400 apart. The plan's
+ * bubble uses it once a revisit is due — Practice again, then Review answers.
+ * Both hug their labels in one row.
+ */
+const onPractice = fn();
+const onReview = fn();
+
+export const WithActions: Story = {
+  name: 'With two actions',
+  args: {
+    state: 'ToRevisit',
+    message: 'Hibernation and Mammal needed hints.',
+    helper: 'Try them on your own in a couple of days.',
+    actionsSlot: (
+      <>
+        <Button
+          variant="Tertiary"
+          size="XS"
+          CTA="Practice again"
+          showLeftIcon
+          leftIcon="microphone-01"
+          onClick={onPractice}
+        />
+        <Button variant="Tertiary" size="XS" CTA="Review answers" onClick={onReview} />
+      </>
+    ),
+  },
+  play: async ({ canvas, canvasElement }) => {
+    onPractice.mockClear();
+    onReview.mockClear();
+    const practice = canvas.getByRole('button', { name: 'Practice again' });
+    const review = canvas.getByRole('button', { name: 'Review answers' });
+
+    // One row: the two share a top edge, and neither stretches across the bubble.
+    const row = canvasElement.querySelector('.knowieMascotMessage-actions') as HTMLElement;
+    await expect(row).not.toBeNull();
+    await expect(Math.abs(practice.getBoundingClientRect().top - review.getBoundingClientRect().top)).toBeLessThan(2);
+
+    await userEvent.click(practice);
+    await expect(onPractice).toHaveBeenCalledTimes(1);
+    await userEvent.click(review);
+    await expect(onReview).toHaveBeenCalledTimes(1);
+  },
+};

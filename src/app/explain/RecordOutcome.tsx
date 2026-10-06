@@ -54,7 +54,9 @@ export function RecordOutcome({
     // The recording that got the final verdict, for the summary to play back.
     if (ownAnswer && turn.audioBlob) {
       keepTake(term, { blob: turn.audioBlob, seconds: turn.audioSeconds });
-    } else if (requeuePass) {
+    } else {
+      // No recording behind this result: a take from an earlier pass or an
+      // earlier session must not play as if it were the last attempt.
       dropTake(term);
     }
 

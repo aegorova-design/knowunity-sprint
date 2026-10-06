@@ -20,24 +20,55 @@
  * is showing one term's answer.
  */
 
+import { useEffect, useRef } from 'react';
+
 import { AppBar } from '@/components/app-bar/AppBar';
 import { Button } from '@/components/button/Button';
 import { ButtonGroup } from '@/components/button-group/ButtonGroup';
 import { IconSlot } from '@/components/icon-slot/IconSlot';
 import { ProgressIndicator } from '@/components/progress-indicator/ProgressIndicator';
 
-import { CloseButton } from '../navigation';
+import { readDemoMode } from '../demoMode';
+import { BackButton, CloseButton } from '../navigation';
 import {
   continueHref,
+  markSessionCompleted,
   totalXp,
   unaidedCount,
+  useLatestOutcomes,
   useSessionOutcomes,
   type SessionOutcomes,
 } from '../outcomes';
-import { PROGRESS_LABEL, TERM_COUNT, TERM_POSITIONS } from '../session';
+import { PROGRESS_LABEL, TERM_COUNT, TERM_POSITIONS, type TermPosition } from '../session';
 import { SummaryRows } from './SummaryRows';
 
 import './summaryScreen.css';
+
+/**
+ * The review the plan opens after a session (`/explain/review`) is this
+ * screen with three differences: it reads the latest result for each term
+ * across every session rather than this session's, it is read-only — a back
+ * arrow to the plan where Close and Continue were — and its rows open the
+ * review's own sheets.
+ */
+export const REVIEW_HREF = '/explain/review';
+
+/** This session's outcomes on the summary; the latest across sessions on the review. */
+function useScreenOutcomes(review: boolean): SessionOutcomes | null {
+  const session = useSessionOutcomes();
+  const latest = useLatestOutcomes();
+  return review ? latest : session;
+}
+
+/**
+ * Where Continue, Close and the review's back arrow go: the plan the student
+ * will see, which is decided by the latest results across sessions — the same
+ * ones the plan's own header counts.
+ */
+function usePlanHref(): string {
+  const latest = useLatestOutcomes();
+  return latest ? continueHref(latest) : FALLBACK_CONTINUE_HREF;
+}
 
 /**
  * Where Continue and Close go before the outcomes are known. `/plan/to-revisit`
@@ -46,9 +77,8 @@ import './summaryScreen.css';
  */
 const FALLBACK_CONTINUE_HREF = '/plan/to-revisit';
 
-export function SummaryBar({ behindSheet = false }: { behindSheet?: boolean }) {
-  const outcomes = useSessionOutcomes();
-  const closeHref = outcomes ? continueHref(outcomes) : FALLBACK_CONTINUE_HREF;
+export function SummaryBar({ behindSheet = false, review = false }: { behindSheet?: boolean; review?: boolean }) {
+  const planHref = usePlanHref();
 
   // Wrapped rather than given `inert` itself, the way SessionAppBar does it:
   // the prop is not one appBar documents.
@@ -56,7 +86,13 @@ export function SummaryBar({ behindSheet = false }: { behindSheet?: boolean }) {
     <AppBar
       variant="leftAndRightButton"
       aria-label="Session navigation"
-      left={<CloseButton href={closeHref} label="Close" />}
+      left={
+        review ? (
+          <BackButton href={planHref} label="Back to the plan" />
+        ) : (
+          <CloseButton href={planHref} label="Close" />
+        )
+      }
       Slot={
         <ProgressIndicator
           variant="Primary"
@@ -87,8 +123,30 @@ function tapHint(outcomes: SessionOutcomes): string {
     : 'Tap any term to see what you typed and read the full answer.';
 }
 
-export function SummaryContent({ behindSheet = false }: { behindSheet?: boolean }) {
-  const outcomes = useSessionOutcomes();
+export function SummaryContent({
+  behindSheet = false,
+  review = false,
+  focusTerm,
+}: {
+  behindSheet?: boolean;
+  review?: boolean;
+  /** The term whose sheet is open: its row is scrolled into view behind the sheet. */
+  focusTerm?: TermPosition;
+}) {
+  const outcomes = useScreenOutcomes(review);
+  const rowsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!outcomes || !focusTerm) return;
+    const row = rowsRef.current?.children[TERM_POSITIONS.indexOf(focusTerm)];
+    row?.scrollIntoView({ block: 'center' });
+  }, [outcomes, focusTerm]);
+
+  // Reaching the summary is what completes a session, and what puts "Review
+  // answers" on the plan.
+  useEffect(() => {
+    if (!review && !readDemoMode()) markSessionCompleted();
+  }, [review]);
 
   if (!outcomes) return <div className="summaryScreen" />;
 
@@ -124,8 +182,8 @@ export function SummaryContent({ behindSheet = false }: { behindSheet?: boolean 
       </p>
 
       <div className="summaryScreen-terms">
-        <div className="summaryScreen-rows">
-          <SummaryRows outcomes={outcomes} />
+        <div className="summaryScreen-rows" ref={rowsRef}>
+          <SummaryRows outcomes={outcomes} sheetBase={review ? REVIEW_HREF : '/explain/summary'} />
         </div>
 
         <p className="summaryScreen-tapHint">{tapHint(outcomes)}</p>
@@ -135,8 +193,7 @@ export function SummaryContent({ behindSheet = false }: { behindSheet?: boolean 
 }
 
 export function SummaryActions({ behindSheet = false }: { behindSheet?: boolean }) {
-  const outcomes = useSessionOutcomes();
-  const href = outcomes ? continueHref(outcomes) : FALLBACK_CONTINUE_HREF;
+  const href = usePlanHref();
 
   return (
     <div inert={behindSheet || undefined}>

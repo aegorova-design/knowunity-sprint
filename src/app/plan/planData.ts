@@ -114,12 +114,6 @@ export type PlanResult = {
     message: string;
     /** The scheduling line — when Knowie brings these terms back. */
     helper: string;
-    /**
-     * The low-emphasis way to start the recall loop now rather than then. Off
-     * where terms needed help: an immediate second go is recognition, not
-     * recall, and the revisit is the intended second attempt.
-     */
-    action?: string;
   };
 };
 
@@ -190,7 +184,6 @@ export const PLAN_MASTERED: PlanSection[] = [
       state: 'Mastered',
       message: 'You got all 3 terms right',
       helper: "I'll bring them all back Thursday, 2 days before your exam.",
-      action: 'Practice sooner',
     },
   }),
   PLAN_NOTHING_STARTED[1],

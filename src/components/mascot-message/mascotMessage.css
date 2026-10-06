@@ -87,3 +87,12 @@
 .knowieMascotMessage-action {
   display: flex;
 }
+
+/* Several actions in one row, each hugging its label, Space/400 apart — the
+   `mascotMessage` frame's horizontal actionSlot (Tertiary XS buttons). Wraps
+   rather than squeezing a label when the bubble is narrow. */
+.knowieMascotMessage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-400);
+}

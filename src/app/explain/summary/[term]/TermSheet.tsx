@@ -18,17 +18,19 @@
  * (`demoClipHref`), and hides the player if the file is not there.
  */
 
+import { useEffect, useState } from 'react';
+
 import { AnswerBlock } from '@/components/answer-block/AnswerBlock';
 import { Button } from '@/components/button/Button';
 import { IconSlot, type IconName } from '@/components/icon-slot/IconSlot';
 
 import { DemoClipPlayback } from '../../DemoClipPlayback';
 import { useIsDemoMode } from '../../demoMode';
-import { useSessionOutcomes } from '../../outcomes';
+import { useLatestOutcomes, useSessionOutcomes } from '../../outcomes';
 import { RealTakePlayback } from '../../RealTakePlayback';
 import { demoClipHref, type TermOutcome } from '../../script';
 import { SaidAnswer } from '../../SaidAnswer';
-import { readTake } from '../../sessionTakes';
+import { readStoredTake, readTake, type SessionTake } from '../../sessionTakes';
 import { TERMS, type TermPosition } from '../../session';
 import { SheetPanel } from '../../SheetPanel';
 
@@ -46,14 +48,48 @@ const BADGE_ICON: Record<TermOutcome['variant'], IconName> = {
   Skipped: 'skip-forward',
 };
 
-export function TermSheet({ term, dismissHref }: { term: TermPosition; dismissHref: string }) {
+/**
+ * The take behind the review's sheet: read from IndexedDB, so it arrives a
+ * tick after the sheet. Undefined until then, and for good if there is none —
+ * the player stays hidden rather than drawn with nothing behind it.
+ */
+function useStoredTake(term: TermPosition, enabled: boolean): SessionTake | undefined {
+  const [take, setTake] = useState<{ term: TermPosition; take: SessionTake | undefined } | null>(null);
+
+  useEffect(() => {
+    if (!enabled) return;
+    let cancelled = false;
+    readStoredTake(term).then((found) => {
+      if (!cancelled) setTake({ term, take: found });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [term, enabled]);
+
+  return take?.term === term ? take.take : undefined;
+}
+
+export function TermSheet({
+  term,
+  dismissHref,
+  review = false,
+}: {
+  term: TermPosition;
+  dismissHref: string;
+  /** The review the plan opens: the latest result across sessions, and the stored take. */
+  review?: boolean;
+}) {
   const isDemo = useIsDemoMode();
-  const outcomes = useSessionOutcomes();
+  const session = useSessionOutcomes();
+  const latest = useLatestOutcomes();
+  const storedTake = useStoredTake(term, review && !isDemo);
+  const outcomes = review ? latest : session;
   if (!outcomes) return null;
 
   const { name, answer, keyIdeas } = TERMS[term];
   const { variant, transcript, inputMode } = outcomes[term];
-  const take = isDemo ? undefined : readTake(term);
+  const take = isDemo ? undefined : review ? storedTake : readTake(term);
 
   return (
     <SheetPanel label={`${name}, ${variant.toLowerCase()}`} dismissHref={dismissHref}>

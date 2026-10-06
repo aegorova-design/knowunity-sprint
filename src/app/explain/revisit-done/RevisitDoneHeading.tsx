@@ -7,8 +7,11 @@
  * real mode, so the title has to carry the count rather than lean on "both".
  */
 
+import { useEffect } from 'react';
+
+import { readDemoMode } from '../demoMode';
 import { MascotHeading } from '../MascotHeading';
-import { dueTerms, joinNames, useSessionOutcomes } from '../outcomes';
+import { dueTerms, joinNames, markDemoRevisited, useDemoRevisitedTerms, useLatestOutcomes } from '../outcomes';
 
 function title(count: number): string {
   if (count === 1) return 'You got it on your own';
@@ -17,10 +20,22 @@ function title(count: number): string {
 }
 
 export function RevisitDoneHeading() {
-  const outcomes = useSessionOutcomes();
-  if (!outcomes) return null;
+  const outcomes = useLatestOutcomes();
+  const revisited = useDemoRevisitedTerms();
+  // The terms this revisit brought back: the ones still due when it ran. Once
+  // demo mode has written them as revisited they are no longer due, so the
+  // written list is what keeps the heading naming them.
+  const due = revisited ?? (outcomes ? dueTerms(outcomes) : null);
 
-  const due = dueTerms(outcomes);
+  // The stubbed revisit stands for a session the student explained unaided,
+  // so in demo mode it records that: the review on the mastered plan then
+  // matches its "3 of 3" header. Real mode has no revisit session yet and
+  // writes nothing here.
+  useEffect(() => {
+    if (readDemoMode() && outcomes && !revisited) markDemoRevisited(dueTerms(outcomes));
+  }, [outcomes, revisited]);
+
+  if (!due) return null;
 
   return (
     <MascotHeading

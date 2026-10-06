@@ -20,7 +20,14 @@ import type { SessionOutcomes } from '../outcomes';
 import { xpLabel } from '../script';
 import { TERMS, TERM_POSITIONS } from '../session';
 
-export function SummaryRows({ outcomes }: { outcomes: SessionOutcomes }) {
+export function SummaryRows({
+  outcomes,
+  sheetBase,
+}: {
+  outcomes: SessionOutcomes;
+  /** Where a row's sheet lives: the summary's own, or the review's. */
+  sheetBase: string;
+}) {
   const router = useRouter();
 
   return (
@@ -37,7 +44,7 @@ export function SummaryRows({ outcomes }: { outcomes: SessionOutcomes }) {
                up to the total above, and the word beside it says why this one
                is zero. */
             xp={xpLabel(outcome.xp)}
-            onClick={() => router.push(`/explain/summary/${position}`)}
+            onClick={() => router.push(`${sheetBase}/${position}`)}
           />
         );
       })}

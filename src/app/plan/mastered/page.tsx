@@ -16,6 +16,7 @@
  * not a redo of terms that needed help.
  */
 
+import { BubbleActions } from '../PlanBubbleActions';
 import { PlanScreen } from '../PlanScreen';
 import { PLAN_MASTERED } from '../planData';
 import { PLAN_MASTERED_HREF, homeHrefFor } from '../planHref';
@@ -31,6 +32,7 @@ export default function PlanMasteredPage() {
          `20 Home, revisit` still says terms are due — untrue once the section
          is mastered. A bare `/`, typed or reloaded, is the reset. */
       homeHref={homeHrefFor('mastered')}
+      resultActions={<BubbleActions section="mastered" />}
     />
   );
 }

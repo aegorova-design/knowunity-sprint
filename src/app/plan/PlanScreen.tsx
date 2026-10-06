@@ -14,8 +14,9 @@
  * duplicated frame rather than intent.
  */
 
+import type { ReactNode } from 'react';
+
 import { BottomNav } from '@/components/bottom-nav/BottomNav';
-import { Button } from '@/components/button/Button';
 import { IconSlot } from '@/components/icon-slot/IconSlot';
 import { MascotMessage } from '@/components/mascot-message/MascotMessage';
 import { Scaffold } from '@/components/scaffold/Scaffold';
@@ -28,13 +29,10 @@ import { PLAN_HREF } from './planHref';
 import './planScreen.css';
 
 export type PlanScreenProps = {
+  /** The actions in Knowie's bubble on a section with a result. */
+  resultActions?: ReactNode;
   sections: PlanSection[];
-  /**
-   * Where a voice step goes. First run sends the student through the primer.
-   * Knowie's action on a result section goes to the same place: "Practice
-   * sooner", on `21`, starts the recall loop now rather than on the date
-   * Knowie named. `19` has no action — see `PLAN_TO_REVISIT`.
-   */
+  /** Where a voice step goes. First run sends the student through the primer. */
   voiceHref: string;
   /**
    * Where a **learning** step goes, on the first section only.
@@ -79,6 +77,7 @@ export function PlanScreen({
   learningHref,
   homeHref = '/',
   planHref = PLAN_HREF,
+  resultActions,
 }: PlanScreenProps) {
   return (
     <Scaffold
@@ -138,6 +137,7 @@ export function PlanScreen({
                 />
               </div>
 
+
               {section.result ? (
                 <MascotMessage
                   state={section.result.message.state}
@@ -148,27 +148,12 @@ export function PlanScreen({
                      be hidden on the screen that has something to schedule.
                      Frame 19 has it off; reported with the build. */
                   showHelper
-                  actionSlot={
-                    /* Tertiary XS per SPEC.md, and the screen's lowest
-                       emphasis — the scheduled date is the recommendation and
-                       this is the way around it, not the way through. */
-                    section.result.message.action === undefined ? undefined : (
-                    <Button
-                      variant="Tertiary"
-                      size="XS"
-                      CTA={section.result.message.action}
-                      /* The mic, because the action starts the recall loop —
-                         the same icon the plan's Voice step and every "Try
-                         again" in the session carry. The frame reserves a left
-                         icon container without naming what goes in it. */
-                      showLeftIcon
-                      leftIcon="microphone-01"
-                      href={voiceHref}
-                    />
-                    )
-                  }
+                  /* By state — see `PlanBubbleActions`. XS, the size the
+                     bubble's action frame draws. */
+                  actionsSlot={resultActions}
                 />
               ) : null}
+
             </section>
           ))}
         </div>

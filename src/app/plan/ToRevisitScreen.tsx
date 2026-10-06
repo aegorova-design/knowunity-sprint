@@ -12,13 +12,16 @@
  * result, rather than a line about to change.
  */
 
-import { planMessage, unaidedCount, useSessionOutcomes } from '../explain/outcomes';
+import { planMessage, unaidedCount, useLatestOutcomes } from '../explain/outcomes';
 import { TERM_COUNT } from '../explain/session';
 import { PlanScreen, type PlanScreenProps } from './PlanScreen';
 import { PLAN_TO_REVISIT } from './planData';
+import { BubbleActions } from './PlanBubbleActions';
 
 export function ToRevisitScreen(props: Omit<PlanScreenProps, 'sections'>) {
-  const outcomes = useSessionOutcomes();
+  // The latest result for each term across sessions — the same view the
+  // review shows, so the two counts always agree.
+  const outcomes = useLatestOutcomes();
   const [section, ...rest] = PLAN_TO_REVISIT;
 
   const withResult =
@@ -33,5 +36,11 @@ export function ToRevisitScreen(props: Omit<PlanScreenProps, 'sections'>) {
         }
       : { ...section, result: undefined };
 
-  return <PlanScreen {...props} sections={[withResult, ...rest]} />;
+  return (
+    <PlanScreen
+      {...props}
+      sections={[withResult, ...rest]}
+      resultActions={<BubbleActions section="toRevisit" />}
+    />
+  );
 }
