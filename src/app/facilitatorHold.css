@@ -1,8 +1,15 @@
-/* A long press must reach the hold, not the browser: no text selection, no
-   iOS callout or image menu, no scroll-to-cancel on the header itself. */
-.facilitatorHold {
-  user-select: none;
-  -webkit-user-select: none;
+/* A long press must reach the hold, not the browser. Set on the wrapper and on
+   everything in it — Knowie is an <img>, which iOS Safari otherwise lifts into
+   its image menu on a long press, and drags: no callout, no text selection, no
+   image drag, and no scroll gesture starting on the header. */
+.facilitatorHold,
+.facilitatorHold * {
   -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.facilitatorHold {
   touch-action: none;
 }
