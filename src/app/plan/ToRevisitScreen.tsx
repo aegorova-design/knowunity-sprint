@@ -12,7 +12,7 @@
  * result, rather than a line about to change.
  */
 
-import { planMessage, unaidedCount, useLatestOutcomes } from '../explain/outcomes';
+import { planMessage, unaidedCount, useDaysSinceSession, useLatestOutcomes, useRevisitDue } from '../explain/outcomes';
 import { TERM_COUNT } from '../explain/session';
 import { PlanScreen, type PlanScreenProps } from './PlanScreen';
 import { PLAN_TO_REVISIT } from './planData';
@@ -22,6 +22,8 @@ export function ToRevisitScreen(props: Omit<PlanScreenProps, 'sections'>) {
   // The latest result for each term across sessions — the same view the
   // review shows, so the two counts always agree.
   const outcomes = useLatestOutcomes();
+  const revisitDue = useRevisitDue();
+  const days = useDaysSinceSession();
   const [section, ...rest] = PLAN_TO_REVISIT;
 
   const withResult =
@@ -31,7 +33,15 @@ export function ToRevisitScreen(props: Omit<PlanScreenProps, 'sections'>) {
           result: {
             ...section.result,
             status: `${unaidedCount(outcomes)} of ${TERM_COUNT} on your own`,
-            message: { ...section.result.message, message: planMessage(outcomes) },
+            message: {
+              ...section.result.message,
+              message: planMessage(outcomes),
+              // Once the revisit is due, the scheduling line says how long it
+              // has been instead of how long to wait.
+              helper: revisitDue
+                ? `It’s been ${days} ${days === 1 ? 'day' : 'days'}. Try them on your own now.`
+                : section.result.message.helper,
+            },
           },
         }
       : { ...section, result: undefined };

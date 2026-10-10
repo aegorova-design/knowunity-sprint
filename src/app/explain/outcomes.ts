@@ -129,6 +129,15 @@ function recordHistory(term: TermPosition, outcome: RecordedOutcome): void {
   writeHistory({ ...history, terms: { ...history.terms, [term]: outcome } });
 }
 
+/** Reset tester data: every stored result, and the completed-session mark. */
+export function clearHistory(): void {
+  try {
+    window.localStorage.removeItem(HISTORY_KEY);
+  } catch {
+    // Nothing to clear.
+  }
+}
+
 /** Called when a real session reaches its summary. */
 export function markSessionCompleted(): void {
   writeHistory({ ...parseHistory(readHistoryRaw()), completedAt: Date.now() });
@@ -268,6 +277,82 @@ function revisited(position: TermPosition): SessionOutcome {
 }
 
 /**
+ * Plan states for a facilitator (`/tester`): a view-only preview of the plan
+ * after a session, with the revisit due, or mastered — without running the
+ * revisit. Held per tab in `sessionStorage` and never written to the history:
+ * the plan and the review read the preview's results instead, and anything
+ * that would start a session goes to `/plan/not-yet`. A new session ends it.
+ */
+export type PlanPreview = 'after' | 'due' | 'mastered';
+
+const PREVIEW_KEY = 'explain:planPreview';
+
+export function setPlanPreview(state: PlanPreview): void {
+  writeSession(PREVIEW_KEY, state);
+}
+
+export function clearPlanPreview(): void {
+  writeSession(PREVIEW_KEY, null);
+}
+
+function readPreview(): PlanPreview | null {
+  const raw = readSession(PREVIEW_KEY);
+  return raw === 'after' || raw === 'due' || raw === 'mastered' ? raw : null;
+}
+
+export function usePlanPreview(): PlanPreview | null {
+  return useSyncExternalStore(subscribeToNothing, readPreview, () => null);
+}
+
+/**
+ * The results a preview starts from when the tester has none of their own:
+ * Camouflage unaided, Hibernation revealed, Mammal hinted — demo mode's
+ * scripted answers for each.
+ */
+const SAMPLE: SessionOutcomes = {
+  '1': { variant: 'Unaided', xp: UNAIDED_XP, transcript: TERMS['1'].passTake ?? null, inputMode: 'voice' },
+  '2': { variant: 'Revealed', xp: 0, transcript: TERMS['2'].heard[2], inputMode: 'voice' },
+  '3': { variant: 'Hinted', xp: hintedXp(1), transcript: TERMS['3'].heard[1], inputMode: 'voice' },
+};
+
+/**
+ * What a preview shows. The tester's own stored results when they have any —
+ * and, for the revisit-due state, when any of them still needs a revisit —
+ * else the sample. Mastered reads every term not yet unaided as unaided, with
+ * no attempt to quote, since no revisit answer exists.
+ */
+function ownPreviewBase(state: PlanPreview, historyRaw: string | null): SessionOutcomes | null {
+  const stored = parseHistory(historyRaw).terms;
+  if (Object.keys(stored).length === 0) return null;
+  const own = asOutcomes(stored);
+  return state === 'due' && dueTerms(own).length === 0 ? null : own;
+}
+
+export function previewOutcomes(state: PlanPreview, historyRaw: string | null): SessionOutcomes {
+  const base = ownPreviewBase(state, historyRaw) ?? SAMPLE;
+  if (state !== 'mastered') return base;
+
+  return Object.fromEntries(
+    TERM_POSITIONS.map((position) => [
+      position,
+      base[position].variant === 'Unaided'
+        ? base[position]
+        : { variant: 'Unaided', xp: UNAIDED_XP, transcript: null, inputMode: null },
+    ]),
+  ) as SessionOutcomes;
+}
+
+/** Whether a preview shows the tester's own results rather than the sample — for the launcher's labels. */
+export function previewUsesOwnResults(state: PlanPreview): boolean {
+  return ownPreviewBase(state, readHistoryRaw()) !== null;
+}
+
+/** Read once, for the launcher's links. */
+export function readPreviewOutcomes(state: PlanPreview): SessionOutcomes {
+  return previewOutcomes(state, readHistoryRaw());
+}
+
+/**
  * The merged view: each term's latest result across every session, for the
  * review and the plan. Demo mode reads the script, as the summary does — its
  * run ends with hibernation requeued and passed — with any term its stubbed
@@ -277,8 +362,10 @@ export function useLatestOutcomes(): SessionOutcomes | null {
   const isDemo = useIsDemoMode();
   const raw = useSyncExternalStore(subscribeToNothing, readHistoryRaw, () => UNKNOWN);
   const demoRevisited = useDemoRevisitedTerms();
+  const preview = usePlanPreview();
 
   return useMemo(() => {
+    if (preview) return previewOutcomes(preview, raw ?? null);
     if (isDemo) {
       if (!demoRevisited) return SCRIPTED;
       return Object.fromEntries(
@@ -290,7 +377,7 @@ export function useLatestOutcomes(): SessionOutcomes | null {
     }
     if (raw === UNKNOWN) return null;
     return asOutcomes(parseHistory(raw).terms);
-  }, [isDemo, raw, demoRevisited]);
+  }, [isDemo, raw, demoRevisited, preview]);
 }
 
 /**
@@ -317,17 +404,63 @@ export function useRevisitDue(): boolean {
   const timeSkip = useSyncExternalStore(subscribeToNothing, () => readSession(DEMO_TIME_SKIP_KEY), () => null);
   const clock = useSyncExternalStore(subscribeToNothing, readRevisitClock, () => 'not-due');
   const demoRevisited = useDemoRevisitedTerms();
+  const preview = usePlanPreview();
 
   if (!latest || dueTerms(latest).length === 0) return false;
+  if (preview) return preview === 'due';
   if (isDemo) return timeSkip === '1' && demoRevisited === null;
   return clock === 'due';
+}
+
+/** The exam is a week away at the first session — `01 Home`'s "in 1 week". */
+export const EXAM_DAYS_AT_FIRST_SESSION = 7;
+
+/** Days a preview is set after the session: none for "after a session", the revisit interval for the other two. */
+function previewDays(preview: PlanPreview): number {
+  return preview === 'after' ? 0 : REVISIT_AFTER_MS / (24 * 60 * 60 * 1000);
+}
+
+/**
+ * Days left until the exam on a Home screen. `01 Home` (first session) is a
+ * week out and `20 Home, revisit` is the time skip, five days out. A plan-state
+ * preview moves both by the days it is set after the session, so Home matches
+ * the plan: two days closer once the revisit is due, and when mastered.
+ */
+export function useExamDaysLeft(screen: 'first' | 'revisit'): number {
+  const preview = usePlanPreview();
+  if (preview) return EXAM_DAYS_AT_FIRST_SESSION - previewDays(preview);
+  return screen === 'revisit' ? EXAM_DAYS_AT_FIRST_SESSION - 2 : EXAM_DAYS_AT_FIRST_SESSION;
+}
+
+/** "1 week", "5 days", "1 day". */
+export function examCountdown(days: number): string {
+  if (days === 7) return '1 week';
+  return `${days} ${days === 1 ? 'day' : 'days'}`;
+}
+
+function readDaysSinceSession(): number {
+  const { completedAt } = parseHistory(readHistoryRaw());
+  return completedAt === undefined ? 0 : Math.floor((Date.now() - completedAt) / (24 * 60 * 60 * 1000));
+}
+
+/**
+ * Whole days since the last session, for the due bubble's helper line. Demo
+ * mode's time skip and the preview are both two days on.
+ */
+export function useDaysSinceSession(): number {
+  const isDemo = useIsDemoMode();
+  const preview = usePlanPreview();
+  const days = useSyncExternalStore(subscribeToNothing, readDaysSinceSession, () => 0);
+  if (preview) return previewDays(preview);
+  return isDemo ? REVISIT_AFTER_MS / (24 * 60 * 60 * 1000) : days;
 }
 
 /** Whether a session has reached its summary — what puts "Review answers" in Knowie's bubble on the plan. Demo mode's walkthrough always has. */
 export function useHasCompletedSession(): boolean {
   const isDemo = useIsDemoMode();
   const raw = useSyncExternalStore(subscribeToNothing, readHistoryRaw, () => UNKNOWN);
-  if (isDemo) return true;
+  const preview = usePlanPreview();
+  if (isDemo || preview) return true;
   return raw !== UNKNOWN && parseHistory(raw).completedAt !== undefined;
 }
 

@@ -1,0 +1,7 @@
+/* The passcode ask as a screen of its own: centred in the free space. */
+.passcodeGate {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  width: 100%;
+}

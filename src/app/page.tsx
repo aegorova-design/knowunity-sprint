@@ -26,10 +26,10 @@
 import { BottomNav } from '@/components/bottom-nav/BottomNav';
 import { Button } from '@/components/button/Button';
 import { Scaffold } from '@/components/scaffold/Scaffold';
-import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
 
 import { ChromeStrip } from './_chrome/ChromeStrip';
-import { SUBJECT } from './plan/planData';
+import { FacilitatorHold } from './FacilitatorHold';
+import { HomeExamHeader } from './HomeExamHeader';
 import { planHrefFrom } from './plan/planHref';
 import './home.css';
 
@@ -59,12 +59,9 @@ export default async function HomePage({
             {/* Neutral keeps the title on text.primary and pulls the Standby
                 pose — the two things the frame draws. The pose is never set
                 here: the verdict drives it. */}
-            <VerdictHeader
-              verdict="Neutral"
-              titleAs="h1"
-              title={`Your ${SUBJECT} exam is in 1 week`}
-              showCaption={false}
-            />
+            <FacilitatorHold>
+              <HomeExamHeader />
+            </FacilitatorHold>
             <Button variant="Primary" size="M" CTA="Continue studying" href={planHref} />
           </div>
         </div>

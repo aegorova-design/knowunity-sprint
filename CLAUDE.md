@@ -4,7 +4,7 @@
 
 - Voice in, text out. Knowie never speaks — see design-brief.md.
 - Push-to-talk, explicit send. No auto-endpointing — see design-brief.md, voice-ux.md.
-- Two modes on this branch (`v2-real-voice`). **Real mode** (default) records the mic, transcribes it (`/api/voice-test/transcribe`) and judges it (`/api/judge`), behind the `/voice-test` passcode. **Demo mode** (`?demo=1`, saved per session, `?demo=0` to clear) replays the scripted walkthrough in `script.ts`/`session.ts` with no mic and no API calls. Every change must keep both working. sprint-context.md still describes the mocked sprint build; where it says "mocked", read that as demo mode.
+- Two modes on this branch (`v2-real-voice`). **Real mode** (default) records the mic, transcribes it (`/api/voice-test/transcribe`) and judges it (`/api/judge`), behind the tester passcode, which is real mode's very first screen. **Demo mode** (`?demo=1` on any URL, saved per session, `?demo=0` to clear) skips the passcode and replays the scripted walkthrough in `script.ts`/`session.ts` with no mic and no API calls. Every change must keep both working. sprint-context.md still describes the mocked sprint build; where it says "mocked", read that as demo mode.
 - `judge/judging-rubric.json` is the only term source: prompts, answers, key ideas and hints all come from it, through `src/lib/judge-config.ts`. Only demo mode's scripted dialogue lives in `session.ts`.
 - Mobile iOS only, 390px canvas, dark mode only — see design-brief.md.
 - Every design value (color, space, type) comes from tokens/tokens.json, per the rules in design-system.md.
@@ -25,6 +25,12 @@
 - **The plan reads the merged view too**, so the review's unaided count always matches the plan's section header; so do Home's "terms to revisit" count and the summary's Continue destination. The end-of-session summary alone reads only that session.
 - **The plan's entry to the review lives in Knowie's bubble** (`PlanBubbleActions.tsx`, through `mascotMessage`'s `actionsSlot`), all Tertiary XS in one row, practice action first, and only once a session has reached its summary: session done and revisit not yet due — "Review answers"; revisit due (terms still need help and two days have passed since the last session; in demo, after the time skip on `20 Home, revisit`) — "Practice again", "Review answers"; mastered — "Practice sooner", "Review answers". Real mode's "Practice again" starts a new session of the section, since revisit sessions are not built; demo mode's goes to the stubbed revisit. There are no term rows on the plan.
 - **Results persist until replaced.** Each term's latest result is in `localStorage` (`explain:history`) and its take in IndexedDB (`explain-takes`): they survive reloads, closing the browser and server restarts, a new session does not clear them, and a skip does not replace them — only a newer result does, dropping an older take when the new result has none. Per browser and device; iOS Safari deletes them after 7 days without a visit. If a take cannot be read, the sheet hides the player.
+- **Real mode opens on the tester passcode.** `PasscodeGate` (root layout) shows the passcode ask in place of every screen until this browser session has entered it (`/api/voice-test/verify`), and mounts nothing behind it — no mic, no judge call. Demo mode skips it; `/voice-test` keeps its own. It renders nothing on the server, since demo mode lives in `sessionStorage`, so a page is blank until the gate has checked. The passcode is `VOICE_TEST_PASSCODE` (local `.env` and Vercel separately); it also signs the session cookie, so changing it asks everyone once more.
+- **The tester launcher is facilitator tooling at `/tester`**, behind the same passcode, and turns demo mode off for its tab. A facilitator gets back to it from either Home by pressing and holding Knowie's header for two seconds (`FacilitatorHold`); a tap or short press does nothing, and nothing visible marks it. It offers:
+  - **"1 week until exam: first session"** — Home before any session, in voice, with no preview, requeue or session results in the way. Stored results stay.
+  - **Plan states** — view-only previews, per tab in `sessionStorage`: after a session, revisit due (2 days later: "It's been 2 days. Try them on your own now.", Practice again and Review answers), and mastered (every term unaided). They read this browser's stored results when there are any — for revisit due, only if one still needs a revisit — else a sample (Camouflage unaided, Hibernation revealed, Mammal hinted). Mastered quotes no attempt for a term it flipped, since no revisit answer exists. A preview never writes results; Practice again, Practice sooner and every Explain out loud step go to `/plan/not-yet` ("This part isn't in the prototype yet", Back to the same plan state); Review answers reads the preview's results. A new session ends the preview.
+  - **"Reset tester data"**, after a confirmation on the screen — clears results, recordings, input mode, requeue, any preview and the answer in flight. The passcode stays entered.
+- **Home's exam countdown follows the preview.** `01 Home` is a week out and `20 Home, revisit` five days out; a plan-state preview moves both by the days it is set after the session — 1 week after a session, 5 days once the revisit is due, 5 days when mastered (`useExamDaysLeft`).
 
 ## Open questions (not in v2 scope)
 
@@ -72,7 +78,10 @@ When working on UI, use the storybook tools to read the component library before
 - `public/images/knowie-*.svg` — Knowie mascot artwork, one file per pose. Use through `mascotSlot`, per design-system.md.
 - `public/audio/demo/term-{1,2,3}.m4a` — demo mode's sample takes for the summary player, one per term. A missing file hides the player.
 - `src/app/layout.tsx` — root layout, fonts, metadata.
-- `src/app/page.tsx` — 01 Home, first session.
+- `src/app/page.tsx` — 01 Home, first session. `HomeExamHeader.tsx` is its exam line; `FacilitatorHold.tsx` wraps the header on both Homes.
+- `src/app/PasscodeGate.tsx` — real mode's first screen, the tester passcode, in the root layout.
+- `src/app/tester/*` — the tester launcher, and `testerData.ts`, what its first-session and reset buttons clear.
+- `src/app/plan/not-yet/page.tsx` — "This part isn't in the prototype yet", where practice goes in a plan-state preview.
 - `src/app/globals.css` — global resets; imports `build/css/tokens.css`.
 - `src/components/*` — the design-system components, each with a Storybook story. Read through the Storybook tools, not the source.
 - `src/app/explain/*` — the Explain out loud session screens. Shared session-level files:
@@ -84,7 +93,7 @@ When working on UI, use the storybook tools to read the component library before
   - `sessionTakes.ts` — each term's final recording: in memory for the end-of-session summary (lost on reload), and in IndexedDB for the review (kept until a newer result replaces it).
   - `realVerdict.ts` — where a real verdict routes (the real-mode counterpart to `script.ts`'s table).
   - `PendingAnswerGuard.tsx` — sends a reload mid-term back to Idle in real mode.
-  - `VoicePasscodePrompt.tsx` — the passcode ask, shown once per session before the first real judge call.
+  - `VoicePasscodePrompt.tsx` — the passcode ask: the gate's screen, and inline on the checking screen if the session cookie has gone.
   - `RealTakePlayback.tsx` — plays a real recording or audio file, and renders nothing if it cannot. Used on Review (real mode) and the summary sheet (both modes).
   - `ReviewPlayback.tsx`, `TakePlayback.tsx` — Review's choice between the real player and the decorative one demo mode uses.
   - `[term]/checking/CheckingWait.tsx` — the processing wait: demo mode's timer, or real mode's transcribe and judge (each request retried once). Past 5s in real mode it says "Still thinking", and `SlowCancel.tsx` (via `slowWait.ts`) shows "Cancel and try again".

@@ -34,6 +34,7 @@ import { Scaffold } from '@/components/scaffold/Scaffold';
 
 import { PLAN_TO_REVISIT_HREF } from '../../plan/planHref';
 import { ChromeStrip } from '../../_chrome/ChromeStrip';
+import { FacilitatorHold } from '../../FacilitatorHold';
 import { RevisitHeader } from './RevisitHeader';
 
 import '../../home.css';
@@ -47,7 +48,9 @@ export default function HomeRevisitPage() {
           <div className="home-examCard">
             {/* Neutral, as on 01: Knowie and a headline rather than a result.
                 The caption stays on here — it is what says a term is due. */}
-            <RevisitHeader />
+            <FacilitatorHold>
+              <RevisitHeader />
+            </FacilitatorHold>
 
             <div className="home-actions">
               {/* **Stubbed for the stakeholder walkthrough.** It goes

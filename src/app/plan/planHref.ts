@@ -19,6 +19,11 @@ export const PLAN_IN_PROGRESS_HREF = '/plan/in-progress';
 /** `19 Plan, 1 of 3 unaided` — a session is behind the student. */
 export const PLAN_TO_REVISIT_HREF = '/plan/to-revisit';
 
+/** The "not in the prototype yet" screen, coming back to `back`. */
+export function notYetHref(back: string): string {
+  return `/plan/not-yet?back=${encodeURIComponent(back)}`;
+}
+
 /** `21 Plan, section mastered` — the terms have all come back. */
 export const PLAN_MASTERED_HREF = '/plan/mastered';
 

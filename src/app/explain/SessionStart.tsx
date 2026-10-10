@@ -18,7 +18,7 @@ import { useEffect } from 'react';
 
 import { readDemoMode } from './demoMode';
 import { setInputMode } from './inputMode';
-import { clearDemoAfterSession, clearOutcomes } from './outcomes';
+import { clearDemoAfterSession, clearOutcomes, clearPlanPreview } from './outcomes';
 import { clearQueue } from './requeue';
 import { clearTakes } from './sessionTakes';
 import { resetTurnStore } from './turnStore';
@@ -31,6 +31,7 @@ export function SessionStart({ fresh = false, mode }: { fresh?: boolean; mode?: 
     setInputMode(mode ?? 'voice');
     clearQueue();
     clearDemoAfterSession();
+    clearPlanPreview();
     window.history.replaceState(null, '', window.location.pathname);
     if (readDemoMode()) return;
     clearOutcomes();

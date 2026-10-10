@@ -1,0 +1,41 @@
+/* The passcode ask: a heading, the field and Unlock, Space/400 apart. */
+
+.passcodePrompt {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-400);
+  width: 100%;
+}
+
+/* textField's own box and type, on an input that can mask what is typed. */
+.passcodePrompt-field {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--space-400);
+  border-radius: var(--radius-400);
+  background-color: var(--color-background-input);
+  border: var(--stroke-border) solid var(--color-border-default);
+  color: var(--color-text-primary);
+  font-family: var(--greed-body-m-regular-font-family);
+  font-weight: var(--greed-body-m-regular-font-weight);
+  font-size: var(--greed-body-m-regular-font-size);
+  line-height: var(--greed-body-m-regular-line-height);
+}
+
+.passcodePrompt-field::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.passcodePrompt-field:focus-visible {
+  border-color: var(--color-border-focus);
+  outline: none;
+}
+
+.passcodePrompt-error {
+  margin: 0;
+  color: var(--color-text-error);
+  font-family: var(--greed-caption-m-regular-font-family);
+  font-weight: var(--greed-caption-m-regular-font-weight);
+  font-size: var(--greed-caption-m-regular-font-size);
+  line-height: var(--greed-caption-m-regular-line-height);
+}

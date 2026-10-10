@@ -33,6 +33,11 @@ export function parseInputMode(raw: string | undefined): InputModeState {
   return { mode: 'voice', micDenied: false };
 }
 
+/** Reset tester data: back to the default, voice. */
+export function clearInputMode(): void {
+  document.cookie = `${INPUT_MODE_COOKIE}=; path=/; max-age=0; samesite=lax`;
+}
+
 /** Client only. Synchronous, so a link's onClick can set it before the navigation it starts. */
 export function setInputMode(value: StoredValue): void {
   document.cookie = `${INPUT_MODE_COOKIE}=${value}; path=/; samesite=lax`;

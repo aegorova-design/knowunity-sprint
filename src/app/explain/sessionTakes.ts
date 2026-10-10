@@ -69,6 +69,16 @@ export function dropTake(term: TermPosition): void {
   withStore('readwrite', (store) => store.delete(term)).catch(() => {});
 }
 
+/** Reset tester data: every take, in memory and stored. */
+export function clearAllTakes(): void {
+  takes.clear();
+  try {
+    indexedDB.deleteDatabase(DB_NAME);
+  } catch {
+    // Nothing stored.
+  }
+}
+
 /** A new session: this session's takes go. The stored ones stay until a newer result replaces them. */
 export function clearTakes(): void {
   takes.clear();

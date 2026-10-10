@@ -1,28 +1,35 @@
 'use client';
 
 /**
- * The one moment real mode asks for the `/voice-test` passcode — right
- * before the first real transcribe/judge call a session makes, on
- * `09 Processing`. Sprint plan, stage C, rule 5: "Real mode sits behind the
- * same passcode as /voice-test, entered once per session." The session
- * cookie `/api/voice-test/verify` sets is what makes "once per session"
- * true after this: every later real turn's `CheckingWait` checks first and,
- * finding it already set, never shows this again.
+ * The tester passcode — the same one as `/voice-test`, checked by
+ * `/api/voice-test/verify`, which sets the session cookie the transcribe and
+ * judge routes require. Shown as the very first screen in real mode
+ * (`PasscodeGate`), and again inline on the checking screen if that cookie
+ * has gone. Demo mode never asks.
  *
- * Deliberately plain, matching `/voice-test`'s own form rather than
- * reaching for design-system components here: this is a debug/test gate,
- * not a designed screen SPEC.md accounts for.
+ * The field is a plain password input set from the same tokens as
+ * `textField`: `textField` is a textarea and cannot mask what is typed. Logged
+ * in component-gaps.md.
  */
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
-export function VoicePasscodePrompt({ onUnlocked }: { onUnlocked: () => void }) {
+import { Button } from '@/components/button/Button';
+import { TextBlock } from '@/components/text-block/TextBlock';
+
+import './voicePasscodePrompt.css';
+
+export function VoicePasscodePrompt({ onUnlocked, titleAs = 'h2' }: { onUnlocked: () => void; titleAs?: 'h1' | 'h2' }) {
   const [passcode, setPasscode] = useState('');
   const [error, setError] = useState('');
+  const [checking, setChecking] = useState(false);
+  const errorId = useId();
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!passcode) return;
     setError('');
+    setChecking(true);
     try {
       const res = await fetch('/api/voice-test/verify', {
         method: 'POST',
@@ -31,30 +38,50 @@ export function VoicePasscodePrompt({ onUnlocked }: { onUnlocked: () => void }) 
       });
       if (res.ok) {
         onUnlocked();
-      } else {
-        setError('Invalid passcode');
+        return;
       }
+      setError('That passcode didn’t work. Check it and try again.');
     } catch {
-      setError('Verification failed');
+      setError('Couldn’t check the passcode. Try again.');
     }
+    setChecking(false);
   };
 
   return (
-    <div style={{ maxWidth: '320px', margin: '80px auto', padding: '20px', fontFamily: 'monospace' }}>
-      <p style={{ marginBottom: '10px' }}>Real mode needs the voice-test passcode.</p>
-      <form onSubmit={submit}>
-        <input
-          type="password"
-          placeholder="Passcode"
-          value={passcode}
-          onChange={(e) => setPasscode(e.target.value)}
-          style={{ width: '100%', padding: '8px', marginBottom: '10px' }}
-        />
-        <button type="submit" style={{ width: '100%', padding: '8px' }}>
-          Unlock
-        </button>
-      </form>
-      {error && <div style={{ color: 'var(--color-text-error)', marginTop: '10px' }}>{error}</div>}
-    </div>
+    <form className="passcodePrompt" onSubmit={submit}>
+      <TextBlock
+        variant="M"
+        title="Enter the tester passcode"
+        caption="Your facilitator has it. You only need it once."
+        showCaption
+        titleAs={titleAs}
+      />
+      <input
+        className="passcodePrompt-field"
+        type="password"
+        aria-label="Passcode"
+        placeholder="Passcode"
+        autoComplete="off"
+        autoCapitalize="none"
+        autoCorrect="off"
+        spellCheck={false}
+        value={passcode}
+        onChange={(e) => setPasscode(e.target.value.trim())}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? errorId : undefined}
+      />
+      {error ? (
+        <p className="passcodePrompt-error" id={errorId} role="alert">
+          {error}
+        </p>
+      ) : null}
+      <Button
+        variant="Primary"
+        size="L"
+        CTA="Unlock"
+        type="submit"
+        state={checking ? 'Loading' : passcode ? 'Default' : 'Disabled'}
+      />
+    </form>
   );
 }

@@ -1,0 +1,49 @@
+/* The tester launcher: facilitator tooling, set from tokens like every screen. */
+
+.tester {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-600);
+  padding-top: var(--space-600);
+}
+
+.tester-title {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-family: var(--greed-headline-s-font-family);
+  font-size: var(--greed-headline-s-font-size);
+  font-weight: var(--greed-headline-s-font-weight);
+  line-height: var(--greed-headline-s-line-height);
+  letter-spacing: var(--greed-headline-s-letter-spacing);
+}
+
+.tester-section,
+.tester-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+}
+
+.tester-section {
+  gap: var(--space-400);
+}
+
+.tester-heading {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-family: var(--greed-caption-m-bold-font-family);
+  font-size: var(--greed-caption-m-bold-font-size);
+  font-weight: var(--greed-caption-m-bold-font-weight);
+  line-height: var(--greed-caption-m-bold-line-height);
+  letter-spacing: var(--greed-caption-m-bold-letter-spacing);
+}
+
+.tester-note {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-family: var(--greed-caption-m-regular-font-family);
+  font-size: var(--greed-caption-m-regular-font-size);
+  font-weight: var(--greed-caption-m-regular-font-weight);
+  line-height: var(--greed-caption-m-regular-line-height);
+  letter-spacing: var(--greed-caption-m-regular-letter-spacing);
+}

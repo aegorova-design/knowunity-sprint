@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import tokens from "../../tokens/tokens.json";
 
 import { greed } from "./fonts";
+import { PasscodeGate } from "./PasscodeGate";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -35,7 +36,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             — "a screen container has no business fixing its own size" — so the
             device width is the app shell's job, not the component's. On a phone
             this is the whole viewport; on a desktop it is a 390 column. */}
-        <div className="appFrame">{children}</div>
+        <div className="appFrame">
+          {/* Real mode opens on the tester passcode; demo mode skips it. */}
+          <PasscodeGate>{children}</PasscodeGate>
+        </div>
       </body>
     </html>
   );

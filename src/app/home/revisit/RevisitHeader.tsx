@@ -11,11 +11,12 @@ import { useEffect } from 'react';
 import { VerdictHeader } from '@/components/verdict-header/VerdictHeader';
 
 import { readDemoMode } from '../../explain/demoMode';
-import { dueTerms, markDemoTimeSkip, useLatestOutcomes } from '../../explain/outcomes';
+import { dueTerms, examCountdown, markDemoTimeSkip, useExamDaysLeft, useLatestOutcomes } from '../../explain/outcomes';
 import { SUBJECT } from '../../plan/planData';
 
 export function RevisitHeader() {
   const outcomes = useLatestOutcomes();
+  const days = useExamDaysLeft('revisit');
 
   // Demo mode's time skip: this screen is five days on, so from here the
   // revisit is due and the plan offers Practice again.
@@ -29,7 +30,7 @@ export function RevisitHeader() {
     <VerdictHeader
       verdict="Neutral"
       titleAs="h1"
-      title={`Your ${SUBJECT} exam is in 5 days`}
+      title={`Your ${SUBJECT} exam is in ${examCountdown(days)}`}
       caption={due === null ? '' : `${due} ${due === 1 ? 'term' : 'terms'} to revisit`}
       showCaption={due !== null}
     />

@@ -24,6 +24,7 @@ import { SectionHeader } from '@/components/section-header/SectionHeader';
 import { StepperStep } from '@/components/stepper-step/StepperStep';
 
 import { SUBJECT, type PlanSection } from './planData';
+import { VoiceStep } from './PlanBubbleActions';
 import { PLAN_HREF } from './planHref';
 
 import './planScreen.css';
@@ -128,12 +129,12 @@ export function PlanScreen({
                     href={index === 0 ? learningHref : undefined}
                   />
                 ))}
-                <StepperStep
-                  type="Voice"
+                <VoiceStep
                   state={section.voice.state}
                   label={section.voice.label}
                   caption={section.voice.caption}
                   href={voiceHref}
+                  planHref={planHref}
                 />
               </div>
 
