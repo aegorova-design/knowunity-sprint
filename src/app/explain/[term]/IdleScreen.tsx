@@ -15,6 +15,7 @@
 import { Button } from '@/components/button/Button';
 
 import { ButtonPair } from '../ButtonPair';
+import { withQuery } from '../href';
 import { SetModeButton } from '../ModeButtons';
 import { TermPrompt } from './TermPrompt';
 import { StartRecordingButton } from './navigation';
@@ -48,15 +49,18 @@ export function IdleContent({
 
 export function IdleActions({
   term,
+  attempt,
   behindSheet = false,
 }: {
   term: string;
+  /** The rung a take recorded from here is on, when it is not the first — "Record again" on a failed send. */
+  attempt?: number;
   behindSheet?: boolean;
 }) {
   return (
     <div className="idleScreen-bottom" inert={behindSheet || undefined}>
       <div className="idleScreen-micZone">
-        <StartRecordingButton href={`/explain/${term}/recording`} label="Start recording" />
+        <StartRecordingButton href={withQuery(`/explain/${term}/recording`, { attempt })} label="Start recording" />
         {/* The record button's visible label and helper. Not a Storybook
             component — recordButton's own `label` is its accessible name,
             and this copy is the page's. Logged in component-gaps.md. */}
@@ -88,7 +92,7 @@ export function IdleActions({
           CTA="Type instead"
           showLeftIcon
           leftIcon="keyboard-01"
-          href={`/explain/${term}/type`}
+          href={withQuery(`/explain/${term}/type`, { attempt })}
         />
       </ButtonPair>
     </div>

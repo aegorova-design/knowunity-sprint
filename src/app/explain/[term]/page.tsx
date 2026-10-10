@@ -23,7 +23,7 @@ import { parseInputMode } from '../inputMode';
 import { readInputMode } from '../inputModeServer';
 import { RequeueStart } from '../RequeueEffects';
 import { readQueue } from '../requeueServer';
-import { FIRST_ATTEMPT } from '../script';
+import { FIRST_ATTEMPT, parseAttempt } from '../script';
 import { SessionStart } from '../SessionStart';
 import { EMPTY_QUEUE, REQUEUE_INTRO, TERMS, isRequeuePass, isTermPosition, nextTermHref } from '../session';
 import { IdleActions, IdleContent } from './IdleScreen';
@@ -65,13 +65,17 @@ export default async function IdlePage({
     </>
   );
   const caption = requeuePass ? REQUEUE_INTRO : undefined;
+  // `?attempt=` arrives from "Record again" on a failed send: the take is
+  // remade on the rung it was lost on. Any other way in is the first attempt.
+  const attempt = parseAttempt(query.attempt);
+  const laterAttempt = attempt > FIRST_ATTEMPT ? attempt : undefined;
 
   // Type mode is sticky: Idle in type mode is the field, not the mic.
   if (inputMode.mode === 'type') {
     return (
       <TypeAnswerScreen
         term={term}
-        attempt={FIRST_ATTEMPT}
+        attempt={attempt}
         before={before}
         inputMode={inputMode}
         queue={passQueue}
@@ -92,7 +96,7 @@ export default async function IdlePage({
           <IdleContent prompt={current.prompt} caption={caption} />
         </>
       }
-      bottomContent={<IdleActions term={term} />}
+      bottomContent={<IdleActions term={term} attempt={laterAttempt} />}
     />
   );
 }

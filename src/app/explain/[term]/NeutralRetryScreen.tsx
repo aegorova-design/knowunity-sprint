@@ -8,10 +8,13 @@
  * a rung: the `attempt` they arrive with goes straight back out unchanged.
  * Skip stays live and the progress bar does not move — nothing resolved.
  *
- * One header, no card: there is nothing to quote back. One Primary, and Type
- * instead under it, because the text fallback has to be reachable from every
- * answerable state, and these are the ones where the voice path just failed.
+ * One header, no card: there is nothing to quote back. One Primary, and the
+ * other input mode under it, because the text fallback has to be reachable
+ * from every answerable state — except on `failed`, which offers the same
+ * mode again instead (see that page).
  */
+
+import type { ReactNode } from 'react';
 
 import { Button } from '@/components/button/Button';
 import type { IconName } from '@/components/icon-slot/IconSlot';
@@ -35,16 +38,16 @@ export async function NeutralRetryScreen({
   title,
   caption,
   retry,
-  keepTyped = false,
+  secondary,
 }: {
   term: TermPosition;
   attempt: number;
   title: string;
   caption: string;
-  /** What Try again does: record again, or resend the same answer. */
-  retry: { href: string; icon: IconName };
-  /** Whether Type instead brings back a typed answer that was in flight. */
-  keepTyped?: boolean;
+  /** The Primary: record again, or resend the same answer. Labelled "Try again" unless it says otherwise. */
+  retry: { href: string; icon: IconName; label?: string };
+  /** The row under it. Left off, it offers the input mode the student is not in. */
+  secondary?: ReactNode;
 }) {
   const inputMode = await readInputMode();
   const queue = await readQueue();
@@ -64,7 +67,7 @@ export async function NeutralRetryScreen({
             <Button
               variant="Primary"
               size="L"
-              CTA="Try again"
+              CTA={retry.label ?? 'Try again'}
               showLeftIcon
               leftIcon={retry.icon}
               href={retry.href}
@@ -74,16 +77,13 @@ export async function NeutralRetryScreen({
              not a half of it. See `component-gaps.md`. */
           below={
             <ButtonPair>
-              {/* Only `failed` can follow a typed answer, and there the
-                  other mode is voice. */}
-              <OtherModeButton
-                inputMode={inputMode}
-                voiceHref={withQuery(`/explain/${term}/recording`, { attempt })}
-                typeHref={withQuery(`/explain/${term}/type`, {
-                  attempt,
-                  keep: keepTyped ? 1 : undefined,
-                })}
-              />
+              {secondary ?? (
+                <OtherModeButton
+                  inputMode={inputMode}
+                  voiceHref={withQuery(`/explain/${term}/recording`, { attempt })}
+                  typeHref={withQuery(`/explain/${term}/type`, { attempt })}
+                />
+              )}
             </ButtonPair>
           }
         />
